@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: system-ui, sans-serif; margin:0; padding:20px; background:transparent; }
+    h3 { text-align:center; margin:0 0 20px; color:#1e293b; }
+    table { width:100%; border-collapse:separate; border-spacing:8px; }
+    th { font-size:12px; text-transform:uppercase; color:#64748b; padding:8px; }
+    button { width:44px; height:44px; border-radius:50%; border:none; font-weight:600; cursor:pointer; transition:all .2s; }
+    .today { background:#2563eb !important; color:white !important; }
+  </style>
+</head>
+<body>
+
+<h3>Escolha o dia da sua reunião</h3>
+
+<div style="text-align:center; margin-bottom:15px;">
+  <button onclick="prev()" style="padding:8px 16px; border:none; background:#f1f5f9; border-radius:8px; font-size:18px;">◀</button>
+  <span id="mesAno" style="margin:0 30px; font-weight:600; font-size:1.3em;"></span>
+  <button onclick="next()" style="padding:8px 16px; border:none; background:#f1f5f9; border-radius:8px; font-size:18px;">▶</button>
+</div>
+
+<table>
+  <thead><tr><th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th></tr></thead>
+  <tbody id="cal"></tbody>
+</table>
+
+<script>
+const config = { inicio:9, fim:18, dias:[1,2,3,4,5] }; // seg=1 até sex=5
+let data = new Date();
+let mes = data.getMonth();
+let ano = data.getFullYear();
+
+function desenha() {
+  document.getElementById("mesAno").textContent = data.toLocaleDateString('pt-BR', { month:'long', year:'numeric' }).replace(/^./, c=>c.toUpperCase());
+
+  let primeiroDia = new Date(ano, mes, 1).getDay();
+  let diasNoMes = new Date(ano, mes+1, 0).getDate();
+  let html = "";
+  let dia = 1;
+
+  for(let semana=0; semana<6; semana++) {
+    html += "<tr>";
+    for(let d=0; d<7; d++) {
+      if ((semana===0 && d < primeiroDia) || dia > diasNoMes) {
+        html += "<td></td>";
+      } else {
+        let dataISO = `${ano}-${String(ano)}-${String(mes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+        let diaSemana = new Date(ano, mes, dia).getDay();
+        let hoje = new Date(); hoje.setHours(0,0,0,0);
+        let esseDia = new Date(ano, mes, dia);
+        let passado = esseDia < hoje;
+
+        if (!config.dias.includes(diaSemana) || passado) {
+          html += `<td style="color:#cbd5e1">${dia}</td>`;
+        } else {
+          let classe = (esseDia.toDateString() === new Date().toDateString()) ? "today" : "";
+          html += `<td><button class="${classe}" onclick="parent.window.typebot?.setVariables({dataEscolhida:'${dataISO}'}); parent.window.typebot?.next();">${dia}</button></td>`;
+        }
+        dia++;
+      }
+    }
+    html += "</tr>";
+    if (dia > diasNoMes) break;
+  }
+  document.getElementById("cal").innerHTML = html;
+}
+
+function prev() { mes--; if(mes<0){mes=11;ano--;} data=new Date(ano,mes,1); desenha(); }
+function next() { mes++; if(mes>11){mes=0;ano++;} data=new Date(ano,mes,1); desenha(); }
+
+desenha();
+</script>
+
+</body>
+</html>
