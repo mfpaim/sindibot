@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Compras - Condomínio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #2d3748;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #718096;
+            font-size: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .required {
+            color: #e53e3e;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 15px;
+            color: #2d3748;
+            background-color: white;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+            padding-right: 45px;
+        }
+        
+        textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+        
+        .item-list {
+            margin-top: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #fafafa;
+        }
+        
+        .item-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .item-list-header h3 {
+            color: #2d3748;
+            font-size: 16px;
+        }
+        
+        .item-count {
+            background-color: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background-color: white;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .item:hover {
+            background-color: #f7fafc;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+        
+        .item-details {
+            font-size: 13px;
+            color: #718096;
+        }
+        
+        .item-category {
+            display: inline-block;
+            background-color: #edf2f7;
+            color: #4a5568;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 8px;
+        }
+        
+        .item-remove {
+            background-color: #f56565;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .item-remove:hover {
+            background-color: #e53e3e;
+        }
+        
+        .empty-list {
+            text-align: center;
+            color: #a0aec0;
+            padding: 30px;
+            font-size: 15px;
+        }
+        
+        .add-item-section {
+            background-color: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .input-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .input-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .add-item-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .add-item-btn:hover {
+            background-color: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .add-item-btn:active {
+            transform: translateY(0);
+        }
+        
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background-color: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        button[type="submit"]:hover {
+            background-color: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(72, 187, 120, 0.3);
+        }
+        
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+        
+        button[type="submit"]:disabled {
+            background-color: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .error-message {
+            color: #e53e3e;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .success-message {
+            background-color: #48bb78;
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .success-message h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .success-message p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .error-alert {
+            background-color: #f56565;
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .error-alert.show {
+            display: block;
+        }
+        
+        .error-alert h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .error-alert p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .action-button {
+            background-color: white;
+            color: #2d3748;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .info-box {
+            background-color: #ebf8ff;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            font-size: 14px;
+            color: #2c5282;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+            <h2>✓ Lista enviada com sucesso!</h2>
+            <p>Sua lista de compras foi criada e salva com sucesso.</p>
+            <button class="action-button" onclick="resetForm()">Criar Nova Lista</button>
+        </div>
+        
+        <!-- Error Message -->
+        <div class="error-alert" id="errorMessage">
+            <h2>✗ Erro ao enviar lista</h2>
+            <p id="errorText">Ocorreu um erro ao enviar a lista. Por favor, tente novamente.</p>
+            <button class="action-button" onclick="resetForm()">Tentar Novamente</button>
+        </div>
+        
+        <!-- Form Content -->
+        <div id="formContent">
+            <h1>🛒 Lista de Compras do Condomínio</h1>
+            <p class="subtitle">Sistema de gestão de compras e suprimentos para o condomínio</p>
+            
+            <div class="info-box">
+                💡 <strong>Dica:</strong> Use este formulário para criar listas de compras de materiais de limpeza, manutenção, suprimentos de escritório e outros itens necessários para o condomínio.
+            </div>
+            
+            <form id="shoppingListForm">
+                <!-- Basic Info -->
+                <div class="form-group">
+                    <label for="condominio">
+                        Condomínio <span class="required">*</span>
+                    </label>
+                    <select id="condominio" name="condominio" required>
+                        <option value="">Selecione uma opção...</option>
+                        <option value="Calton Hill">Calton Hill</option>
+                        <option value="Parque dos Príncipes">Parque dos Príncipes</option>
+                    </select>
+                    <div class="error-message" id="condominioError">
+                        Este campo é obrigatório
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="responsavel">
+                        Responsável pela Lista <span class="required">*</span>
+                    </label>
+                    <input type="text" id="responsavel" name="responsavel" placeholder="Nome do síndico ou administrador" required>
+                    <div class="error-message" id="responsavelError">
+                        Este campo é obrigatório
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dataCompra">
+                        Data Prevista para Compra
+                    </label>
+                    <input type="date" id="dataCompra" name="dataCompra">
+                </div>
+                
+                <div class="form-group">
+                    <label for="prioridade">
+                        Prioridade da Compra
+                    </label>
+                    <select id="prioridade" name="prioridade">
+                        <option value="normal">Normal</option>
+                        <option value="urgente">Urgente</option>
+                        <option value="baixa">Baixa Prioridade</option>
+                    </select>
+                </div>
+                
+                <!-- Add Items Section -->
+                <div class="add-item-section">
+                    <label style="margin-bottom: 15px; display: block;">
+                        Adicionar Itens à Lista <span class="required">*</span>
+                    </label>
+                    
+                    <div class="input-row">
+                        <div>
+                            <input type="text" id="itemName" placeholder="Nome do item">
+                        </div>
+                        <div>
+                            <input type="number" id="itemQuantity" placeholder="Qtd" min="1" value="1">
+                        </div>
+                        <div>
+                            <select id="itemUnit">
+                                <option value="unidade">Unidade</option>
+                                <option value="kg">Kg</option>
+                                <option value="g">Gramas</option>
+                                <option value="litro">Litro</option>
+                                <option value="ml">ml</option>
+                                <option value="pacote">Pacote</option>
+                                <option value="caixa">Caixa</option>
+                                <option value="rolo">Rolo</option>
+                                <option value="galão">Galão</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="itemCategory">
+                                <option value="limpeza">Limpeza</option>
+                                <option value="manutenção">Manutenção</option>
+                                <option value="escritório">Escritório</option>
+                                <option value="jardim">Jardim</option>
+                                <option value="segurança">Segurança</option>
+                                <option value="elétrica">Elétrica</option>
+                                <option value="hidráulica">Hidráulica</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <textarea id="itemNotes" placeholder="Observações sobre o item (marca específica, especificações técnicas, etc.)" rows="2"></textarea>
+                    </div>
+                    
+                    <button type="button" class="add-item-btn" onclick="addItem()">
+                        + Adicionar Item
+                    </button>
+                </div>
+                
+                <!-- Items List -->
+                <div class="item-list" id="itemsList">
+                    <div class="item-list-header">
+                        <h3>Itens da Lista</h3>
+                        <span class="item-count" id="itemCount">0 itens</span>
+                    </div>
+                    <div class="empty-list" id="emptyList">
+                        Nenhum item adicionado ainda. Adicione itens acima.
+                    </div>
+                    <div id="itemsContainer"></div>
+                </div>
+                
+                <div class="error-message" id="itemsError" style="margin-top: 10px;">
+                    Adicione pelo menos um item à lista
+                </div>
+                
+                <!-- Additional Notes -->
+                <div class="form-group" style="margin-top: 25px;">
+                    <label for="observacoes">
+                        Observações Gerais
+                    </label>
+                    <textarea id="observacoes" name="observacoes" placeholder="Informações adicionais sobre a lista (orçamento estimado, fornecedores sugeridos, prazos, etc.)" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" id="submitBtn">Enviar Lista de Compras</button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px; color: #718096;">Enviando lista...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // CONFIGURE YOUR N8N WEBHOOK URL HERE
+        const WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL_HERE';
+        
+        const form = document.getElementById('shoppingListForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const formContent = document.getElementById('formContent');
+        
+        let shoppingItems = [];
+        
+        // Set today's date as minimum for date input
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('dataCompra').setAttribute('min', today);
+        
+        // Function to add item to list
+        function addItem() {
+            const itemName = document.getElementById('itemName').value.trim();
+            const itemQuantity = document.getElementById('itemQuantity').value;
+            const itemUnit = document.getElementById('itemUnit').value;
+            const itemCategory = document.getElementById('itemCategory').value;
+            const itemNotes = document.getElementById('itemNotes').value.trim();
+            
+            if (!itemName) {
+                alert('Por favor, informe o nome do item');
+                document.getElementById('itemName').focus();
+                return;
+            }
+            
+            if (!itemQuantity || itemQuantity <= 0) {
+                alert('Por favor, informe uma quantidade válida');
+                document.getElementById('itemQuantity').focus();
+                return;
+            }
+            
+            const item = {
+                id: Date.now(),
+                name: itemName,
+                quantity: itemQuantity,
+                unit: itemUnit,
+                category: itemCategory,
+                notes: itemNotes
+            };
+            
+            shoppingItems.push(item);
+            renderItems();
+            clearItemInputs();
+            
+            // Hide error message if items exist
+            document.getElementById('itemsError').classList.remove('show');
+        }
+        
+        // Function to remove item
+        function removeItem(id) {
+            shoppingItems = shoppingItems.filter(item => item.id !== id);
+            renderItems();
+        }
+        
+        // Function to render items list
+        function renderItems() {
+            const container = document.getElementById('itemsContainer');
+            const emptyList = document.getElementById('emptyList');
+            const itemCount = document.getElementById('itemCount');
+            
+            if (shoppingItems.length === 0) {
+                emptyList.style.display = 'block';
+                container.innerHTML = '';
+                itemCount.textContent = '0 itens';
+                return;
+            }
+            
+            emptyList.style.display = 'none';
+            itemCount.textContent = `${shoppingItems.length} ${shoppingItems.length === 1 ? 'item' : 'itens'}`;
+            
+            const categoryLabels = {
+                'limpeza': 'Limpeza',
+                'manutenção': 'Manutenção',
+                'escritório': 'Escritório',
+                'jardim': 'Jardim',
+                'segurança': 'Segurança',
+                'elétrica': 'Elétrica',
+                'hidráulica': 'Hidráulica',
+                'outros': 'Outros'
+            };
+            
+            container.innerHTML = shoppingItems.map(item => `
+                <div class="item">
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-details">
+                            <span class="item-category">${categoryLabels[item.category]}</span>
+                            ${item.quantity} ${item.unit}
+                            ${item.notes ? `• ${item.notes}` : ''}
+                        </div>
+                    </div>
+                    <button type="button" class="item-remove" onclick="removeItem(${item.id})">
+                        Remover
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        // Function to clear item inputs
+        function clearItemInputs() {
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemQuantity').value = '1';
+            document.getElementById('itemUnit').value = 'unidade';
+            document.getElementById('itemCategory').value = 'limpeza';
+            document.getElementById('itemNotes').value = '';
+            document.getElementById('itemName').focus();
+        }
+        
+        // Function to reset form
+        function resetForm() {
+            form.reset();
+            shoppingItems = [];
+            renderItems();
+            successMessage.classList.remove('show');
+            errorMessage.classList.remove('show');
+            formContent.style.display = 'block';
+            submitBtn.disabled = false;
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+        }
+        
+        // Allow adding item with Enter key
+        document.getElementById('itemName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addItem();
+            }
+        });
+        
+        document.getElementById('itemNotes').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                addItem();
+            }
+        });
+        
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            
+            // Validate form
+            const condominio = document.getElementById('condominio').value;
+            const responsavel = document.getElementById('responsavel').value.trim();
+            
+            let hasError = false;
+            
+            if (!condominio) {
+                document.getElementById('condominioError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (!responsavel) {
+                document.getElementById('responsavelError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (shoppingItems.length === 0) {
+                document.getElementById('itemsError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (hasError) return;
+            
+            // Show loading
+            formContent.style.display = 'none';
+            loading.classList.add('show');
+            submitBtn.disabled = true;
+            
+            try {
+                // Prepare data
+                const formData = {
+                    condominio: condominio,
+                    responsavel: responsavel,
+                    dataCompra: document.getElementById('dataCompra').value || null,
+                    prioridade: document.getElementById('prioridade').value,
+                    itens: shoppingItems,
+                    observacoes: document.getElementById('observacoes').value.trim(),
+                    dataCriacao: new Date().toISOString(),
+                    totalItens: shoppingItems.length
+                };
+                
+                // Send to n8n webhook
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                loading.classList.remove('show');
+                
+                if (response.ok) {
+                    // Show success message
+                    successMessage.classList.add('show');
+                } else {
+                    // Show error message
+                    const errorData = await response.json().catch(() => ({}));
+                    document.getElementById('errorText').textContent = 
+                        errorData.message || 'Ocorreu um erro ao enviar a lista. Por favor, tente novamente.';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                loading.classList.remove('show');
+                document.getElementById('errorText').textContent = 
+                    'Erro de conexão. Verifique sua internet e tente novamente.';
+                errorMessage.classList.add('show');
+            }
+        });
+    </script>
+</body>
+</html>
