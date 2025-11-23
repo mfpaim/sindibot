@@ -1,23 +1,4 @@
-input[type="text"]:focus,
-        input[type="number"]:focus,
-        input[type="date"]:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        select {
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 20px;
-            padding-right: 45px;
-            min-height: 50px;
-        }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -141,9 +122,29 @@ input[type="text"]:focus,
             min-height: 50px;
         }
         
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+            padding-right: 45px;
+        }
+        
         input[type="date"] {
             position: relative;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3e%3c/rect%3e%3cline x1='16' y1='2' x2='16' y2='6'%3e%3c/line%3e%3cline x1='8' y1='2' x2='8' y2='6'%3e%3c/line%3e%3cline x1='3' y1='10' x2='21' y2='10'%3e%3c/line%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 15px center;
             background-size: 20px;
@@ -160,7 +161,6 @@ input[type="text"]:focus,
         textarea {
             min-height: 80px;
             resize: vertical;
-            padding: 14px 15px;
             line-height: 1.5;
         }
         
@@ -172,12 +172,6 @@ input[type="text"]:focus,
             max-height: 400px;
             overflow-y: auto;
             background-color: #fafafa;
-        }
-        
-        @media (min-width: 768px) {
-            .item-list {
-                padding: 15px;
-            }
         }
         
         .item-list-header {
@@ -485,8 +479,6 @@ input[type="text"]:focus,
         
         @media (min-width: 768px) {
             .info-box {
-                padding: 15px;
-                font-size: 14px;
                 margin-bottom: 25px;
             }
         }
@@ -494,21 +486,18 @@ input[type="text"]:focus,
 </head>
 <body>
     <div class="container">
-        <!-- Success Message -->
         <div class="success-message" id="successMessage">
             <h2>✓ Lista enviada com sucesso!</h2>
             <p>Sua lista de compras foi criada e salva com sucesso.</p>
             <button class="action-button" onclick="resetForm()">Criar Nova Lista</button>
         </div>
         
-        <!-- Error Message -->
         <div class="error-alert" id="errorMessage">
             <h2>✗ Erro ao enviar lista</h2>
             <p id="errorText">Ocorreu um erro ao enviar a lista. Por favor, tente novamente.</p>
             <button class="action-button" onclick="resetForm()">Tentar Novamente</button>
         </div>
         
-        <!-- Form Content -->
         <div id="formContent">
             <h1>🛒 Lista de Compras do Condomínio</h1>
             <p class="subtitle">Sistema de gestão de compras e suprimentos para o condomínio</p>
@@ -518,7 +507,6 @@ input[type="text"]:focus,
             </div>
             
             <form id="shoppingListForm">
-                <!-- Basic Info -->
                 <div class="form-group">
                     <label for="condominio">
                         Condomínio <span class="required">*</span>
@@ -551,7 +539,6 @@ input[type="text"]:focus,
                     </select>
                 </div>
                 
-                <!-- Add Items Section -->
                 <div class="add-item-section">
                     <label style="margin-bottom: 15px; display: block;">
                         Adicionar Itens à Lista <span class="required">*</span>
@@ -600,7 +587,6 @@ input[type="text"]:focus,
                     </button>
                 </div>
                 
-                <!-- Items List -->
                 <div class="item-list" id="itemsList">
                     <div class="item-list-header">
                         <h3>Itens da Lista</h3>
@@ -616,7 +602,6 @@ input[type="text"]:focus,
                     Adicione pelo menos um item à lista
                 </div>
                 
-                <!-- Additional Notes -->
                 <div class="form-group" style="margin-top: 25px;">
                     <label for="observacoes">
                         Observações Gerais
@@ -635,7 +620,6 @@ input[type="text"]:focus,
     </div>
     
     <script>
-        // CONFIGURE YOUR N8N WEBHOOK URL HERE
         const WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL_HERE';
         
         const form = document.getElementById('shoppingListForm');
@@ -647,11 +631,9 @@ input[type="text"]:focus,
         
         let shoppingItems = [];
         
-        // Set today's date as minimum for date input
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('dataCompra').setAttribute('min', today);
         
-        // Function to add item to list
         function addItem() {
             const itemName = document.getElementById('itemName').value.trim();
             const itemQuantity = document.getElementById('itemQuantity').value;
@@ -684,17 +666,14 @@ input[type="text"]:focus,
             renderItems();
             clearItemInputs();
             
-            // Hide error message if items exist
             document.getElementById('itemsError').classList.remove('show');
         }
         
-        // Function to remove item
         function removeItem(id) {
             shoppingItems = shoppingItems.filter(item => item.id !== id);
             renderItems();
         }
         
-        // Function to render items list
         function renderItems() {
             const container = document.getElementById('itemsContainer');
             const emptyList = document.getElementById('emptyList');
@@ -738,7 +717,6 @@ input[type="text"]:focus,
             `).join('');
         }
         
-        // Function to clear item inputs
         function clearItemInputs() {
             document.getElementById('itemName').value = '';
             document.getElementById('itemQuantity').value = '1';
@@ -748,7 +726,6 @@ input[type="text"]:focus,
             document.getElementById('itemName').focus();
         }
         
-        // Function to reset form
         function resetForm() {
             form.reset();
             shoppingItems = [];
@@ -760,7 +737,6 @@ input[type="text"]:focus,
             document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
         }
         
-        // Allow adding item with Enter key
         document.getElementById('itemName').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -775,14 +751,11 @@ input[type="text"]:focus,
             }
         });
         
-        // Form submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Clear previous errors
             document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
             
-            // Validate form
             const condominio = document.getElementById('condominio').value;
             
             let hasError = false;
@@ -799,13 +772,11 @@ input[type="text"]:focus,
             
             if (hasError) return;
             
-            // Show loading
             formContent.style.display = 'none';
             loading.classList.add('show');
             submitBtn.disabled = true;
             
             try {
-                // Prepare data
                 const formData = {
                     condominio: condominio,
                     dataCompra: document.getElementById('dataCompra').value || null,
@@ -816,7 +787,6 @@ input[type="text"]:focus,
                     totalItens: shoppingItems.length
                 };
                 
-                // Send to n8n webhook
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
@@ -828,10 +798,8 @@ input[type="text"]:focus,
                 loading.classList.remove('show');
                 
                 if (response.ok) {
-                    // Show success message
                     successMessage.classList.add('show');
                 } else {
-                    // Show error message
                     const errorData = await response.json().catch(() => ({}));
                     document.getElementById('errorText').textContent = 
                         errorData.message || 'Ocorreu um erro ao enviar a lista. Por favor, tente novamente.';
