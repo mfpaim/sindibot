@@ -5,54 +5,57 @@
 <title>Planejador Estratégico • Sindi Coruja</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  :root { --laranja:#FF6B35; --roxo:#635bff; --verde:#10b981; --cinza:#f3f4f6;}
-  body {margin:0; font-family:system-ui,-apple-system,sans-serif; background:#f9fafb; color:#1f2937; line-height:1.5}
-  .container {max-width:860px; margin:20px auto; padding:0 16px}
-  header {text-align:center; padding:32px 20px; background:white; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08); margin-bottom:30px}
-  .coruja {width:100px; height:100px; border:5px solid var(--laranja); border-radius:50%; box-shadow:0 8px 25px rgba(255,107,53,0.3)}
-  h1 {margin:16px 0 8px; font-size:28px; color:#111}
-  .subtitle {color:#666; font-size:17px}
-  
-  .botoes {text-align:center; margin:20px 0}
-  .add-btn, .pdf-btn {
-    background:var(--laranja); color:white; border:none; padding:14px 28px; border-radius:50px; font-size:16px; cursor:pointer; font-weight:600; margin:0 8px}
-  .pdf-btn {background:#10b981}
-  .pdf-btn:hover {background:#059669}
+  :root { --laranja:#FF6B35; --cinza:#f1f5f9; --texto:#1e293b; }
+  body {margin:0; font-family:system-ui,-apple-system,sans-serif; background:#f8fafc; color:var(--texto); line-height:1.5}
+  .container {max-width:900px; margin:20px auto; padding:0 16px}
 
-  .demanda {background:white; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 4px 15px rgba(0,0,0,0.06); position:relative}
-  .delete {position:absolute; top:16px; right:16px; background:none; border:none; font-size:24px; cursor:pointer; color:#999}
-  .titulo {font-size:19px; font-weight:600; margin:0 0 12px; color:#111}
-  .tags {display:flex; flex-wrap:wrap; gap:8px; margin:12px 0}
-  .tag {padding:5px 12px; border-radius:20px; font-size:13px; font-weight:600}
+  header {text-align:center; padding:40px 20px; background:white; border-radius:24px; box-shadow:0 10px 40px rgba(0,0,0,0.08); margin-bottom:30px}
+  .coruja {width:110px; height:110px; border:6px solid var(--laranja); border-radius:50%; box-shadow:0 10px 30px rgba(255,107,53,0.3)}
+  h1 {margin:20px 0 8px; font-size:30px; color:#111}
+  .subtitle {color:#64748b; font-size:17px}
+
+  .botoes {text-align:center; margin:30px 0}
+  .btn {background:var(--laranja); color:white; border:none; padding:14px 32px; border-radius:50px; font-size:17px; cursor:pointer; font-weight:600; margin:0 10px; box-shadow:0 6px 20px rgba(255,107,53,0.3)}
+  .pdf {background:#10b981}
+  .pdf:hover {background:#059669}
+
+  /* FORMULÁRIO BONITO */
+  .form {background:white; border-radius:20px; padding:32px; box-shadow:0 10px 40px rgba(0,0,0,0.08); margin-bottom:40px}
+  .grid {display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px}
+  @media(max-width:640px) {.grid {grid-template-columns:1fr}}
+  input, select {width:100%; padding:16px; border:2px solid #e2e8f0; border-radius:12px; font-size:16px}
+  input:focus, select:focus {outline:none; border-color:var(--laranja); box-shadow:0 0 0 4px rgba(255,107,53,0.15)}
+  label {display:block; margin:20px 0 8px; font-weight:600; color:#334155}
+  .checkbox {display:flex; align-items:center; gap:10px; margin:20px 0}
+  .acoes {display:flex; gap:12px; flex-wrap:wrap}
+  .cancelar {background:#e2e8f0; color:#475569}
+
+  .demandas-lista {margin:40px 0}
+  .demanda-card {background:white; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 4px 20px rgba(0,0,0,0.06)}
+  .editar {background:#f59e0b; color:white; border:none; padding:8px 16px; border-radius:50px; cursor:pointer; font-size:14px}
+  .excluir {background:#ef4444; color:white}
+
+  .fila {margin-top:50px}
+  .item {background:white; border-radius:16px; padding:24px; margin-bottom:20px; box-shadow:0 8px 30px rgba(0,0,0,0.1); border-left:6px solid var(--laranja); position:relative}
+  .rank {font-size:42px; font-weight:800; color:var(--laranja); float:left; margin-right:20px}
+  .tag {display:inline-block; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; margin:4px}
   .baixa {background:#dbeafe; color:#4338ca}
   .media {background:#fef3c7; color:#92400e}
   .alta {background:#fee2e2; color:#991b1b}
-  .critica {background:#FECACA; color:#7f1d1d; animation:pulse 2s infinite}
-  .estetica {background:#f0e6ff; color:#6b21a8}
+  .critica {background:#fecaca; color:#7f1d1d; animation:pulse 2s infinite}
   .seguranca {background:#fecaca; color:#991b1b}
-  .lazer {background:#d1fae5; color:#065f46}
-  .manutencao {background:#dbeafe; color:#1e40af}
   .legal {background:#ffedd5; color:#9a3412}
 
-  .fila {margin-top:40px}
-  .item {background:white; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 6px 20px rgba(0,0,0,0.08); border-left:6px solid var(--laranja)}
-  .rank {font-size:36px; font-weight:800; color:var(--laranja); display:inline-block; width:60px}
-  .score {font-size:14px; color:#666}
+  .insights {background:linear-gradient(135deg,#6366f1,#4f46e6); color:white; padding:28px; border-radius:20px; margin:50px 0}
+  .insights h3 {margin:0 0 16px; font-size:21px}
 
-  .insights {background:linear-gradient(135deg,#635bff,#4f46e6); color:white; padding:24px; border-radius:20px; margin:40px 0}
-  .insights h3 {margin:0 0 12px; font-size:20px}
+  @keyframes pulse {0%{box-shadow:0 0 0 0 rgba(255,107,53,0.5)}70%{box-shadow:0 0 0 12px rgba(255,107,53,0)}100%{box-shadow:0 0 0 0 rgba(255,107,53,0)}}
 
-  @keyframes pulse {0%{box-shadow:0 0 0 0 rgba(255,107,53,0.4)}70%{box-shadow:0 0 0 10px rgba(255,107,53,0)}100%{box-shadow:0 0 0 0 rgba(255,107,53,0)}}
-
-  /* ESTILO PARA IMPRESSÃO / PDF */
   @media print {
-    body {background:white; margin:0; padding:20px}
-    .container {max-width:none; margin:0; padding:0}
-    header, .botoes, .delete {display:none !important}
-    .demanda, .item {box-shadow:none; page-break-inside:avoid; border:1px solid #eee; margin:15px 0}
-    .insights {background:#635bff !important; -webkit-print-color-adjust:exact; color-adjust:exact}
-    h1 {font-size:26px; margin-top:0}
-    .rank {color:var(--laranja) !important; -webkit-print-color-adjust:exact}
+    body {background:white; padding:20px}
+    .botoes, .form, .demandas-lista > button {display:none !important}
+    .item {box-shadow:none; border:1px solid #ddd; page-break-inside:avoid}
+    header {box-shadow:none}
   }
 </style>
 </head>
@@ -62,15 +65,69 @@
   <header>
     <img src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" class="coruja" alt="Sindi">
     <h1>Planejador Estratégico para Síndicos</h1>
-    <p class="subtitle">Seu segundo cérebro – prioriza o que realmente importa</p>
+    <p class="subtitle">Seu segundo cérebro — decisões inteligentes para o condomínio</p>
   </header>
 
   <div class="botoes">
-    <button class="add-btn" onclick="novaDemanda()">+ Nova Demanda</button>
-    <button class="pdf-btn" onclick="window.print()">Exportar em PDF</button>
+    <button class="btn" onclick="mostrarForm()">+ Nova Demanda</button>
+    <button class="btn pdf" onclick="window.print()">Exportar em PDF</button>
   </div>
 
-  <div id="listaDemandas"></div>
+  <!-- FORMULÁRIO BONITO -->
+  <div class="form" id="form" style="display:none">
+    <h2 style="margin-top:0; color:#111">Nova Demanda</h2>
+    <label>Título da demanda</label>
+    <input type="text" id="titulo" placeholder="Ex: Reparo no elevador principal">
+
+    <div class="grid">
+      <div>
+        <label>Moradores afetados</label>
+        <input type="number" id="moradores" placeholder="120" value="50">
+      </div>
+      <div>
+        <label>Categoria de impacto</label>
+        <select id="impacto">
+          <option>Estética</option>
+          <option>Segurança</option>
+          <option selected>Manutenção</option>
+          <option>Lazer</option>
+          <option>Obrigação Legal</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <label>Urgência</label>
+        <select id="urgencia">
+          <option>Baixa</option>
+          <option selected>Média</option>
+          <option>Alta</option>
+          <option>Crítica</option>
+        </select>
+      </div>
+      <div>
+        <label>Impacto percebido</label>
+        <select id="impactoNivel">
+          <option>Baixo</option>
+          <option selected>Médio</option>
+          <option>Alto</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="checkbox">
+      <input type="checkbox" id="legal">
+      <label for="legal" style="margin:0; font-weight:500">Obrigação legal (multa, bombeiros, etc)</label>
+    </div>
+
+    <div class="acoes">
+      <button class="btn" onclick="salvarDemanda()">Adicionar</button>
+      <button class="btn cancelar" onclick="esconderForm()">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="lista"></div>
 
   <div class="fila">
     <h2>Fila de Priorização Inteligente</h2>
@@ -86,100 +143,150 @@
 <script>
 const demandas = [];
 
-function novaDemanda() {
-  const titulo = prompt("Título da demanda", "")?.trim();
-  if (!titulo) return;
+function mostrarForm(editId = null) {
+  document.getElementById("form").style.display = "block";
+  if (editId !== null) {
+    const d = demandas.find(x => x.id === editId);
+    document.getElementById("titulo").value = d.titulo;
+    document.getElementById("moradores").value = d.moradores;
+    document.getElementById("urgencia").value = d.urgencia;
+    document.getElementById("impacto").value = d.impacto;
+    document.getElementById("impactoNivel").value = d.impactoNivel;
+    document.getElementById("legal").checked = d.legal;
+    window.editandoId = editId;
+  } else {
+    document.getElementById("titulo").value = "";
+    document.getElementById("moradores").value = "50";
+    document.getElementById("urgencia").value = "Média";
+    document.getElementById("impacto").value = "Manutenção";
+    document.getElementById("impactoNivel").value = "Médio";
+    document.getElementById("legal").checked = false;
+    window.editandoId = null;
+  }
+}
 
-  const urgencia = prompt("Urgência\nBaixa • Média • Alta • Crítica", "Média")?.trim().toLowerCase() || "média";
-  const impacto = prompt("Impacto principal\nEstética • Segurança • Lazer • Manutenção • Obrigação Legal", "Manutenção")?.trim() || "Manutenção";
-  const moradores = parseInt(prompt("Quantos moradores afetados?", "50")) || 0;
-  const legal = confirm("É Obrigação legal?");
+function esconderForm() {
+  document.getElementById("form").style.display = "none";
+}
 
-  demandas.push({titulo, urgencia, impacto, moradores, legal, id:Date.now()});
+function salvarDemanda() {
+  const titulo = document.getElementById("titulo").value.trim();
+  if (!titulo) return alert("Preencha o título!");
+
+  const demanda = {
+    id: window.editandoId || Date.now(),
+    titulo,
+    moradores: +document.getElementById("moradores").value || 0,
+    urgencia: document.getElementById("urgencia").value,
+    impacto: document.getElementById("impacto").value,
+    impactoNivel: document.getElementById("impactoNivel").value,
+    legal: document.getElementById("legal").checked
+  };
+
+  if (window.editandoId) {
+    const index = demandas.findIndex(x => x.id === window.editandoId);
+    demandas[index] = demanda;
+  } else {
+    demandas.push(demanda);
+  }
+
+  esconderForm();
   atualizarTudo();
+}
+
+function editar(id) {
+  mostrarForm(id);
+}
+
+function excluir(id) {
+  if (confirm("Excluir esta demanda?")) {
+    const index = demandas.findIndex(x => x.id === id);
+    demandas.splice(index,1);
+    atualizarTudo();
+  }
 }
 
 function calcularScore(d) {
   let score = 0;
-  if (d.urgencia === "crítica") score += 50;
-  else if (d.urgencia === "alta") score += 30;
-  else if (d.urgencia === "média") score += 10;
+  // Urgência
+  const urg = {Baixa:10, Média:30, Alta:60, Crítica:90}[d.urgencia];
+  score += urg;
+  // Obrigação legal
+  if (d.legal) score += 50;
+  // Segurança
+  if (d.impacto === "Segurança") score += 40;
+  // Impacto percebido
+  const imp = {Baixo:5, Médio:15, Alto:30}[d.impactoNivel];
+  score += imp;
+  // Moradores
+  score += Math.min(d.moradores / 3, 25);
 
-  if (d.legal) score += 40;
-  if (d.impacto.toLowerCase().includes("segurança")) score += 35;
-  if (d.impacto.toLowerCase().includes("legal")) score += 30;
-  score += Math.min(d.moradores / 2, 30);
-  return Math.min(score, 100);
+  return Math.round(Math.min(score, 100));
 }
 
 function tagClass(valor, tipo) {
   const map = {
-    urgencia: {baixa:"baixa", média:"media", alta:"alta", crítica:"critica"},
-    impacto: {"estética":"estetica", "segurança":"seguranca", "lazer":"lazer", "manutenção":"manutencao", "obrigação legal":"legal"}
+    urgencia: {Baixa:"baixa", Média:"media", Alta:"alta", Crítica:"critica"},
+    impacto: {"Estética":"estetica", "Segurança":"seguranca", "Lazer":"lazer", "Manutenção":"manutencao", "Obrigação Legal":"legal"}
   };
-  return map[tipo][valor.toLowerCase()] || "media";
+  return map[tipo][valor] || "";
 }
 
 function atualizarTudo() {
-  // lista de demandas cadastradas
-  let html = "";
+  // Lista crua (opcional, pode até esconder se quiser)
+  let listaHtml = "";
   demandas.forEach(d => {
-    html += `
-      <div class="demanda">
-        <button class="delete" onclick="remover(${d.id})">×</button>
-        <div class="titulo">${d.titulo}</div>
-        <div class="tags">
-          <span class="tag ${tagClass(d.urgencia,'urgencia')}">${d.urgencia.toUpperCase()}</span>
-          <span class="tag ${tagClass(d.impacto,'impacto')}">${d.impacto}</span>
-          <span class="tag">${d.moradores} moradores</span>
-          ${d.legal ? '<span class="tag legal">OBRIGAÇÃO LEGAL</span>' : ''}
+    listaHtml += `
+      <div class="demanda-card">
+        <strong>${d.titulo}</strong>
+        <div style="margin-top:12px">
+          <button class="editar" onclick="editar(${d.id})">Editar</button>
+          <button class="excluir" onclick="excluir(${d.id})">Excluir</button>
         </div>
       </div>`;
   });
-  document.getElementById("listaDemandas").innerHTML = html || "<p style='text-align:center;color:#999'>Nenhuma demanda ainda</p>";
+  document.getElementById("lista").innerHTML = listaHtml;
 
-  // fila inteligente
+  // Fila inteligente
   const ordenadas = [...demandas].sort((a,b) => calcularScore(b) - calcularScore(a));
   let filaHtml = "";
   ordenadas.forEach((d,i) => {
     const score = calcularScore(d);
     filaHtml += `
       <div class="item">
-        <span class="rank">#${i+1}</span>
-        <strong>${d.titulo}</strong>
-        <div class="tags">
-          <span class="tag ${tagClass(d.urgencia,'urgencia')}">${d.urgencia}</span>
-          <span class="tag ${tagClass(d.impacto,'impacto')}">${d.impacto}</span>
-          <span class="tag">${d.moradores} moradores</span>
-          ${d.legal ? '<span class="tag legal">LEGAL</span>' : ''}
+        <div class="rank">#${i+1}</div>
+        <div style="flex:1">
+          <strong style="font-size:20px">${d.titulo}</strong>
+          <div class="tags" style="margin:12px 0">
+            <span class="tag ${tagClass(d.urgencia,'urgencia')}">${d.urgencia}</span>
+            <span class="tag ${tagClass(d.impacto,'impacto')}">${d.impacto}</span>
+            <span class="tag">${d.moradores} moradores</span>
+            ${d.legal ? '<span class="tag legal">OBRIGAÇÃO LEGAL</span>' : ''}
+          </div>
+          <div style="margin-top:12px; font-size:18px; font-weight:600; color:${score>=80?'#dc2626':score>=50?'#f59e0b':'#64748b'}">
+            Score: ${score} ${score>=80?'CRÍTICO':''}
+          </div>
+          <button class="editar" style="margin-top:12px" onclick="editar(${d.id})">Editar Demanda</button>
         </div>
-        <div><strong style="color:${score>=80?'#dc2626':score>=50?'#f59e0b':'#6b7280'}">Score: ${score}</strong>
-        ${score>=70?' <span style="color:#dc2626">CRÍTICO</span>':''}
       </div>`;
   });
-  document.getElementById("fila").innerHTML = filaHtml || "<p style='color:#999'>Adicione demandas para ver a fila</p>";
+  document.getElementById("fila").innerHTML = filaHtml || "<p style='color:#999; text-align:center'>Nenhuma demanda cadastrada</p>";
 
-  // insights
-  const criticas = demandas.filter(d=>d.urgencia==="crítica").length;
+  // Insights
+  const criticas = demandas.filter(d=>d.urgencia==="Crítica").length;
   const legais = demandas.filter(d=>d.legal).length;
-  const seguranca = demandas.filter(d=>d.impacto.toLowerCase().includes("segurança")).length;
+  const seguranca = demandas.filter(d=>d.impacto==="Segurança").length;
 
   let insights = [];
-  if (legais>0) insights.push("Priorizar obrigações legais para evitar multas e problemas jurídicos");
-  if (criticas>0) insights.push(`Atenção: ${criticas} item(s) CRÍTICO(S) na fila`);
-  if (seguranca>0) insights.push("Segurança em primeiro lugar – execute logo");
-  if (demandas.length>6) insights.push("Foque nas 3 primeiras da fila");
+  if (legais>0) insights.push(`Priorize as ${legais} obrigação(ões) legais para evitar multas`);
+  if (criticas>0) insights.push(`ATENÇÃO: ${criticas} item(s) com urgência CRÍTICA`);
+  if (seguranca>0) insights.push("Segurança sempre em primeiro lugar");
+  if (demandas.length>5) insights.push("Foque nas 3 primeiras da fila");
 
   if (insights.length===0) insights.push("Tudo sob controle! Continue acompanhando");
 
   document.getElementById("listaInsights").innerHTML = insights.map(t=>`<li>${t}</li>`).join("");
   document.getElementById("insights").style.display = demandas.length > 0 ? "block" : "none";
-}
-
-function remover(id) {
-  const i = demandas.findIndex(d=>d.id===id);
-  if(i!==-1) demandas.splice(i,1);
-  atualizarTudo();
 }
 
 atualizarTudo();
