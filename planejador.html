@@ -1,406 +1,631 @@
-import React, { useState } from 'react';
-import { Plus, TrendingUp, AlertTriangle, DollarSign, Calendar, CheckCircle, Edit2, Trash2 } from 'lucide-react';
-
-export default function SindicoPlanner() {
-  const [demands, setDemands] = useState([
-    {
-      id: 1,
-      title: "Reparo elevador principal",
-      cost: 8500,
-      urgency: "alta",
-      impact: "alta",
-      legal: true,
-      affected: 120,
-      category: "Segurança",
-      status: "pendente"
-    },
-    {
-      id: 2,
-      title: "Pintura fachada",
-      cost: 45000,
-      urgency: "baixa",
-      impact: "média",
-      legal: false,
-      affected: 120,
-      category: "Estética",
-      status: "pendente"
-    },
-    {
-      id: 3,
-      title: "Troca bomba piscina",
-      cost: 3200,
-      urgency: "média",
-      impact: "baixa",
-      legal: false,
-      affected: 80,
-      category: "Lazer",
-      status: "pendente"
-    },
-    {
-      id: 4,
-      title: "Adequação hidrantes (bombeiros)",
-      cost: 12000,
-      urgency: "alta",
-      impact: "alta",
-      legal: true,
-      affected: 120,
-      category: "Segurança",
-      status: "pendente"
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Planejador Estratégico</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-  ]);
-
-  const [budget, setBudget] = useState(25000);
-  const [showForm, setShowForm] = useState(false);
-  const [newDemand, setNewDemand] = useState({
-    title: "",
-    cost: "",
-    urgency: "média",
-    impact: "média",
-    legal: false,
-    affected: "",
-    category: "Manutenção"
-  });
-
-  const calculatePriority = (demand) => {
-    let score = 0;
     
-    // Urgência
-    if (demand.urgency === "alta") score += 40;
-    else if (demand.urgency === "média") score += 20;
-    else score += 5;
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #fff5f0 0%, #ffe8dc 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
     
-    // Impacto
-    if (demand.impact === "alta") score += 30;
-    else if (demand.impact === "média") score += 15;
-    else score += 5;
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
     
-    // Legal obrigatório
-    if (demand.legal) score += 25;
+    .header {
+      background: white;
+      border-radius: 28px;
+      padding: 32px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 1px solid #eee;
+    }
     
-    // Número de afetados (normalizado)
-    score += (demand.affected / 120) * 5;
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #FF6B35;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+    }
     
-    return score;
-  };
-
-  const sortedDemands = [...demands]
-    .filter(d => d.status === "pendente")
-    .sort((a, b) => calculatePriority(b) - calculatePriority(a));
-
-  const calculateScenario = () => {
-    let remaining = budget;
-    const executable = [];
-    const waitlist = [];
+    h1 {
+      font-size: 28px;
+      color: #222;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
     
-    sortedDemands.forEach(demand => {
-      if (remaining >= demand.cost) {
-        executable.push(demand);
-        remaining -= demand.cost;
-      } else {
-        waitlist.push(demand);
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .btn-add {
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+      transition: all 0.3s;
+    }
+    
+    .btn-add:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    }
+    
+    .form-card {
+      background: white;
+      border-radius: 24px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+      display: none;
+    }
+    
+    .form-card.active {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
       }
-    });
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
     
-    return { executable, waitlist, remaining };
-  };
-
-  const scenario = calculateScenario();
-
-  const addDemand = () => {
-    if (!newDemand.title || !newDemand.cost) return;
+    .form-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 20px;
+    }
     
-    setDemands([...demands, {
-      ...newDemand,
-      id: Date.now(),
-      cost: parseFloat(newDemand.cost),
-      affected: parseInt(newDemand.affected) || 0,
-      status: "pendente"
-    }]);
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
     
-    setNewDemand({
-      title: "",
-      cost: "",
-      urgency: "média",
-      impact: "média",
-      legal: false,
-      affected: "",
-      category: "Manutenção"
-    });
-    setShowForm(false);
-  };
-
-  const deleteDemand = (id) => {
-    setDemands(demands.filter(d => d.id !== id));
-  };
-
-  const getUrgencyColor = (urgency) => {
-    if (urgency === "alta") return "bg-red-100 text-red-800";
-    if (urgency === "média") return "bg-yellow-100 text-yellow-800";
-    return "bg-green-100 text-green-800";
-  };
-
-  const getPriorityBadge = (score) => {
-    if (score >= 80) return <span className="text-red-600 font-bold">🔥 Crítico</span>;
-    if (score >= 60) return <span className="text-orange-600 font-semibold">⚠️ Alto</span>;
-    if (score >= 40) return <span className="text-yellow-600">📋 Médio</span>;
-    return <span className="text-gray-600">📌 Baixo</span>;
-  };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-800">Planejador Estratégico</h1>
-              <p className="text-gray-600">Decisões inteligentes para seu condomínio</p>
-            </div>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-indigo-700 transition"
-            >
-              <Plus size={20} />
-              Nova Demanda
-            </button>
-          </div>
-
-          {/* Budget Control */}
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-200">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              💰 Orçamento Disponível
-            </label>
-            <div className="flex items-center gap-4">
-              <input
-                type="number"
-                value={budget}
-                onChange={(e) => setBudget(parseFloat(e.target.value) || 0)}
-                className="flex-1 px-4 py-2 border-2 border-green-300 rounded-lg text-xl font-bold text-gray-800 focus:ring-2 focus:ring-green-500 focus:border-transparent"
-              />
-              <span className="text-2xl font-bold text-green-700">R$</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Form Nova Demanda */}
-        {showForm && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h3 className="text-xl font-bold mb-4">Nova Demanda</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Título da demanda"
-                value={newDemand.title}
-                onChange={(e) => setNewDemand({...newDemand, title: e.target.value})}
-                className="col-span-2 px-4 py-2 border rounded-lg"
-              />
-              <input
-                type="number"
-                placeholder="Custo (R$)"
-                value={newDemand.cost}
-                onChange={(e) => setNewDemand({...newDemand, cost: e.target.value})}
-                className="px-4 py-2 border rounded-lg"
-              />
-              <input
-                type="number"
-                placeholder="Moradores afetados"
-                value={newDemand.affected}
-                onChange={(e) => setNewDemand({...newDemand, affected: e.target.value})}
-                className="px-4 py-2 border rounded-lg"
-              />
-              <select
-                value={newDemand.urgency}
-                onChange={(e) => setNewDemand({...newDemand, urgency: e.target.value})}
-                className="px-4 py-2 border rounded-lg"
-              >
-                <option value="baixa">Urgência: Baixa</option>
-                <option value="média">Urgência: Média</option>
-                <option value="alta">Urgência: Alta</option>
-              </select>
-              <select
-                value={newDemand.impact}
-                onChange={(e) => setNewDemand({...newDemand, impact: e.target.value})}
-                className="px-4 py-2 border rounded-lg"
-              >
-                <option value="baixa">Impacto: Baixo</option>
-                <option value="média">Impacto: Médio</option>
-                <option value="alta">Impacto: Alto</option>
-              </select>
-              <select
-                value={newDemand.category}
-                onChange={(e) => setNewDemand({...newDemand, category: e.target.value})}
-                className="px-4 py-2 border rounded-lg"
-              >
-                <option value="Segurança">Segurança</option>
-                <option value="Manutenção">Manutenção</option>
-                <option value="Estética">Estética</option>
-                <option value="Lazer">Lazer</option>
-              </select>
-              <label className="flex items-center gap-2 px-4 py-2 border rounded-lg">
-                <input
-                  type="checkbox"
-                  checked={newDemand.legal}
-                  onChange={(e) => setNewDemand({...newDemand, legal: e.target.checked})}
-                  className="w-5 h-5"
-                />
-                <span>Obrigação legal</span>
-              </label>
-            </div>
-            <div className="flex gap-2 mt-4">
-              <button
-                onClick={addDemand}
-                className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700"
-              >
-                Adicionar
-              </button>
-              <button
-                onClick={() => setShowForm(false)}
-                className="bg-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-400"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Scenario Analysis */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <CheckCircle className="text-green-600" size={28} />
-              <div>
-                <p className="text-sm text-gray-600">Executável Agora</p>
-                <p className="text-2xl font-bold text-green-600">{scenario.executable.length}</p>
-              </div>
-            </div>
-            <p className="text-sm text-gray-600">
-              Total: <span className="font-bold">R$ {scenario.executable.reduce((acc, d) => acc + d.cost, 0).toLocaleString()}</span>
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <Calendar className="text-orange-600" size={28} />
-              <div>
-                <p className="text-sm text-gray-600">Aguardando Orçamento</p>
-                <p className="text-2xl font-bold text-orange-600">{scenario.waitlist.length}</p>
-              </div>
-            </div>
-            <p className="text-sm text-gray-600">
-              Faltam: <span className="font-bold">R$ {(scenario.waitlist.reduce((acc, d) => acc + d.cost, 0) - scenario.remaining).toLocaleString()}</span>
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <DollarSign className="text-blue-600" size={28} />
-              <div>
-                <p className="text-sm text-gray-600">Saldo Remanescente</p>
-                <p className="text-2xl font-bold text-blue-600">R$ {scenario.remaining.toLocaleString()}</p>
-              </div>
-            </div>
-            <p className="text-sm text-gray-600">
-              {scenario.remaining > 5000 ? "Reserva saudável ✅" : scenario.remaining > 0 ? "Reserva justa ⚠️" : "Sem reserva ❌"}
-            </p>
-          </div>
-        </div>
-
-        {/* Priority Queue */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            <TrendingUp className="text-indigo-600" />
-            Fila de Priorização Inteligente
-          </h2>
-          
-          <div className="space-y-3">
-            {sortedDemands.map((demand, index) => {
-              const priority = calculatePriority(demand);
-              const canExecute = scenario.executable.includes(demand);
-              
-              return (
-                <div
-                  key={demand.id}
-                  className={`border-2 rounded-lg p-4 transition ${
-                    canExecute ? 'border-green-300 bg-green-50' : 'border-gray-200 bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="bg-indigo-600 text-white font-bold px-3 py-1 rounded-full text-sm">
-                          #{index + 1}
-                        </span>
-                        <h3 className="font-bold text-lg text-gray-800">{demand.title}</h3>
-                        {demand.legal && <AlertTriangle className="text-red-600" size={20} />}
-                      </div>
-                      
-                      <div className="flex flex-wrap gap-2 mb-2">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getUrgencyColor(demand.urgency)}`}>
-                          {demand.urgency.charAt(0).toUpperCase() + demand.urgency.slice(1)}
-                        </span>
-                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
-                          {demand.category}
-                        </span>
-                        <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
-                          {demand.affected} moradores
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <button
-                      onClick={() => deleteDemand(demand.id)}
-                      className="text-red-500 hover:text-red-700 p-2"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <span className="text-2xl font-bold text-gray-800">
-                        R$ {demand.cost.toLocaleString()}
-                      </span>
-                      {getPriorityBadge(priority)}
-                      <span className="text-sm text-gray-500">Score: {priority.toFixed(0)}</span>
-                    </div>
-                    
-                    {canExecute ? (
-                      <span className="bg-green-600 text-white px-4 py-2 rounded-lg font-semibold">
-                        ✓ Executar Agora
-                      </span>
-                    ) : (
-                      <span className="bg-orange-100 text-orange-800 px-4 py-2 rounded-lg font-semibold">
-                        ⏳ Aguardar Orçamento
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Insights */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl shadow-lg p-6 mt-6 text-white">
-          <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-            💡 Insights Estratégicos
-          </h3>
-          <ul className="space-y-2 text-sm">
-            {scenario.executable.some(d => d.legal) && (
-              <li>• Priorize as obrigações legais para evitar multas e problemas jurídicos</li>
-            )}
-            {scenario.remaining < 5000 && (
-              <li>• Atenção: Reserva de emergência baixa. Considere adiar itens não críticos</li>
-            )}
-            {scenario.waitlist.length > scenario.executable.length && (
-              <li>• Há mais demandas do que orçamento. Considere aumentar taxa condominial ou buscar parcelamento</li>
-            )}
-            {scenario.executable.length === sortedDemands.length && (
-              <li>• ✅ Excelente! Orçamento suficiente para todas as demandas pendentes</li>
-            )}
-          </ul>
-        </div>
+    @media (min-width: 640px) {
+      .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      font-size: 15px;
+      background: white;
+      color: #333;
+      transition: all 0.3s;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #FF6B35;
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+    }
+    
+    .full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .checkbox-label:hover {
+      border-color: #FF6B35;
+      background: rgba(255,107,53,0.05);
+    }
+    
+    .checkbox-label input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #FF6B35;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+    }
+    
+    .btn-secondary {
+      flex: 1;
+      background: #f5f5f5;
+      color: #666;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-secondary:hover {
+      background: #e8e8e8;
+    }
+    
+    .demands-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .demand-card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      border: 2px solid #e8e8e8;
+      transition: all 0.3s;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .demand-card:hover {
+      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    
+    .demand-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .position-badge {
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      min-width: 50px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(255,107,53,0.3);
+    }
+    
+    .demand-title-text {
+      flex: 1;
+      font-size: 18px;
+      font-weight: 700;
+      color: #222;
+      line-height: 1.4;
+    }
+    
+    .btn-delete {
+      background: transparent;
+      border: none;
+      color: #999;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-size: 18px;
+    }
+    
+    .btn-delete:hover {
+      color: #ff4444;
+      background: #fff0f0;
+    }
+    
+    .demand-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .badge {
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .badge-urgency-alta {
+      background: #fee;
+      color: #c33;
+    }
+    
+    .badge-urgency-media {
+      background: #fff8e1;
+      color: #f57c00;
+    }
+    
+    .badge-urgency-baixa {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .badge-category {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    
+    .badge-affected {
+      background: #f3e5f5;
+      color: #7b1fa2;
+    }
+    
+    .badge-legal {
+      background: #ffebee;
+      color: #c62828;
+      border: 2px solid #ef5350;
+    }
+    
+    .demand-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 2px solid #f5f5f5;
+    }
+    
+    .priority-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    
+    .priority-critical {
+      color: #c33;
+    }
+    
+    .priority-high {
+      color: #f57c00;
+    }
+    
+    .priority-medium {
+      color: #fbc02d;
+    }
+    
+    .priority-low {
+      color: #999;
+    }
+    
+    .score-badge {
+      background: #f5f5f5;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #666;
+    }
+    
+    .empty-state {
+      background: white;
+      border-radius: 20px;
+      padding: 48px 24px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      border: 2px dashed #e0e0e0;
+    }
+    
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    
+    .empty-state-text {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    
+    .empty-state-subtext {
+      font-size: 14px;
+      color: #999;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      padding: 20px;
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .footer span {
+      color: #FF6B35;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Planejador Estratégico</h1>
+      <p class="subtitle">Organize as demandas do condomínio por prioridade inteligente</p>
+      <button class="btn-add" onclick="toggleForm()">➕ Nova Demanda</button>
+    </div>
+    
+    <div class="form-card" id="formCard">
+      <h3 class="form-title">Nova Demanda</h3>
+      <div class="form-grid">
+        <input type="text" id="title" placeholder="Título da demanda" class="full-width">
+        <input type="number" id="affected" placeholder="Moradores afetados">
+        
+        <select id="urgency">
+          <option value="baixa">Urgência: Baixa</option>
+          <option value="media" selected>Urgência: Média</option>
+          <option value="alta">Urgência: Alta</option>
+        </select>
+        
+        <select id="impact">
+          <option value="baixa">Impacto: Baixo</option>
+          <option value="media" selected>Impacto: Médio</option>
+          <option value="alta">Impacto: Alto</option>
+        </select>
+        
+        <select id="category">
+          <option value="Segurança">Segurança</option>
+          <option value="Manutenção" selected>Manutenção</option>
+          <option value="Estética">Estética</option>
+          <option value="Lazer">Lazer</option>
+        </select>
+        
+        <label class="checkbox-label">
+          <input type="checkbox" id="legal">
+          <span>⚠️ Obrigação legal</span>
+        </label>
+      </div>
+      
+      <div class="form-actions">
+        <button class="btn-primary" onclick="addDemand()">Adicionar</button>
+        <button class="btn-secondary" onclick="toggleForm()">Cancelar</button>
       </div>
     </div>
-  );
-}
+    
+    <h2 class="demands-title">📊 Fila de Priorização</h2>
+    <div id="demandsList"></div>
+    
+    <div class="footer">
+      🦉 Sindi • Planejador Estratégico <span>© Sindibot - Impactar LLC</span>
+    </div>
+  </div>
+  
+  <script>
+    var demands = [
+      {
+        id: 1,
+        title: "Reparo elevador principal",
+        urgency: "alta",
+        impact: "alta",
+        legal: true,
+        affected: 120,
+        category: "Segurança",
+        status: "pendente"
+      },
+      {
+        id: 2,
+        title: "Pintura fachada",
+        urgency: "baixa",
+        impact: "media",
+        legal: false,
+        affected: 120,
+        category: "Estética",
+        status: "pendente"
+      },
+      {
+        id: 3,
+        title: "Troca bomba piscina",
+        urgency: "media",
+        impact: "baixa",
+        legal: false,
+        affected: 80,
+        category: "Lazer",
+        status: "pendente"
+      },
+      {
+        id: 4,
+        title: "Adequação hidrantes (bombeiros)",
+        urgency: "alta",
+        impact: "alta",
+        legal: true,
+        affected: 120,
+        category: "Segurança",
+        status: "pendente"
+      }
+    ];
+    
+    function calculatePriority(demand) {
+      var score = 0;
+      
+      if (demand.urgency === "alta") score += 40;
+      else if (demand.urgency === "media") score += 20;
+      else score += 5;
+      
+      if (demand.impact === "alta") score += 30;
+      else if (demand.impact === "media") score += 15;
+      else score += 5;
+      
+      if (demand.legal) score += 25;
+      
+      score += (demand.affected / 120) * 5;
+      
+      return score;
+    }
+    
+    function getPriorityLabel(score) {
+      if (score >= 80) return { text: "🔥 Crítico", cls: "priority-critical" };
+      if (score >= 60) return { text: "⚠️ Alto", cls: "priority-high" };
+      if (score >= 40) return { text: "📋 Médio", cls: "priority-medium" };
+      return { text: "📌 Baixo", cls: "priority-low" };
+    }
+    
+    function getUrgencyClass(urgency) {
+      return "badge-urgency-" + urgency;
+    }
+    
+    function renderDemands() {
+      var sortedDemands = demands
+        .filter(function(d) { return d.status === "pendente"; })
+        .sort(function(a, b) { return calculatePriority(b) - calculatePriority(a); });
+      
+      var listEl = document.getElementById('demandsList');
+      
+      if (sortedDemands.length === 0) {
+        listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🦉</div><div class="empty-state-text">Nenhuma demanda cadastrada</div><div class="empty-state-subtext">Adicione sua primeira demanda para começar</div></div>';
+        return;
+      }
+      
+      var html = '';
+      for (var i = 0; i < sortedDemands.length; i++) {
+        var demand = sortedDemands[i];
+        var priority = calculatePriority(demand);
+        var priorityInfo = getPriorityLabel(priority);
+        var legalBadge = demand.legal ? '<span class="badge badge-legal">⚠️ Obrigação Legal</span>' : '';
+        
+        html += '<div class="demand-card">' +
+          '<div class="demand-header">' +
+            '<div class="position-badge">#' + (i + 1) + '</div>' +
+            '<div class="demand-title-text">' + demand.title + '</div>' +
+            '<button class="btn-delete" onclick="deleteDemand(' + demand.id + ')">🗑️</button>' +
+          '</div>' +
+          '<div class="demand-badges">' +
+            '<span class="badge ' + getUrgencyClass(demand.urgency) + '">' +
+              (demand.urgency.charAt(0).toUpperCase() + demand.urgency.slice(1)) +
+            '</span>' +
+            '<span class="badge badge-category">' + demand.category + '</span>' +
+            '<span class="badge badge-affected">' + demand.affected + ' moradores</span>' +
+            legalBadge +
+          '</div>' +
+          '<div class="demand-footer">' +
+            '<div class="priority-indicator ' + priorityInfo.cls + '">' +
+              priorityInfo.text +
+            '</div>' +
+            '<div class="score-badge">Score: ' + priority.toFixed(0) + '</div>' +
+          '</div>' +
+        '</div>';
+      }
+      
+      listEl.innerHTML = html;
+    }
+    
+    function toggleForm() {
+      var form = document.getElementById('formCard');
+      form.classList.toggle('active');
+    }
+    
+    function addDemand() {
+      var title = document.getElementById('title').value.trim();
+      var affected = parseInt(document.getElementById('affected').value) || 0;
+      var urgency = document.getElementById('urgency').value;
+      var impact = document.getElementById('impact').value;
+      var category = document.getElementById('category').value;
+      var legal = document.getElementById('legal').checked;
+      
+      if (!title) {
+        alert('Por favor, preencha o título da demanda');
+        return;
+      }
+      
+      demands.push({
+        id: Date.now(),
+        title: title,
+        urgency: urgency,
+        impact: impact,
+        legal: legal,
+        affected: affected,
+        category: category,
+        status: "pendente"
+      });
+      
+      document.getElementById('title').value = '';
+      document.getElementById('affected').value = '';
+      document.getElementById('urgency').value = 'media';
+      document.getElementById('impact').value = 'media';
+      document.getElementById('category').value = 'Manutenção';
+      document.getElementById('legal').checked = false;
+      
+      toggleForm();
+      renderDemands();
+    }
+    
+    function deleteDemand(id) {
+      if (confirm('Tem certeza que deseja remover esta demanda?')) {
+        demands = demands.filter(function(d) { return d.id !== id; });
+        renderDemands();
+      }
+    }
+    
+    renderDemands();
+  </script>
+</body>
+</html>
