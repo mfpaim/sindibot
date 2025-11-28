@@ -3,131 +3,162 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sindi Radio Ultra</title>
+  <title>Sindi Radio</title>
   <style>
-    body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:#f8f9fa;font-family:system-ui,-apple-system,sans-serif}
-    .player{background:white;border-radius:28px;padding:34px 28px;width:90%;max-width:420px;box-shadow:0 15px 50px rgba(0,0,0,0.13);text-align:center;border:1px solid #eee}
-    .owl img{width:88px;height:88px;border-radius:50%;border:4px solid #FF6B35;margin-bottom:14px;box-shadow:0 6px 20px rgba(255,107,53,0.3)}
-    @media(min-width:480px){.owl img{width:100px;height:100px}}
-    h1{margin:0 0 6px;font-size:27px;color:#222;font-weight:700}
-    p{margin:0 0 26px;color:#666;font-size:16px}
-    select{width:100%;padding:16px 18px;border:2px solid #e0e0e0;border-radius:16px;background:white;color:#333;font-size:17px;margin-bottom:20px;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 16px center}
-    select:focus{outline:none;border-color:#FF6B35;box-shadow:0 0 0 4px rgba(255,107,53,0.15)}
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8f9fa;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .player {
+      background: white;
+      border-radius: 28px;
+      padding: 34px 28px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.12);
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    .owl img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #FF6B35;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+    }
+    @media (min-width: 480px) {
+      .owl img { width: 100px; height: 100px; }
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 27px;
+      color: #222;
+      font-weight: 700;
+    }
+    p {
+      margin: 0 0 26px;
+      color: #666;
+      font-size: 16px;
+    }
+    select {
+      width: 100%;
+      padding: 16px 18px;
+      border: 2px solid #e0e0e0;
+      border-radius: 16px;
+      background: white;
+      color: #333;
+      font-size: 17px;
+      margin-bottom: 24px;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+    }
+    select:focus {
+      outline: none;
+      border-color: #FF6B35;
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+    }
 
-    .now-playing{display:flex;flex-direction:column;align-items:center;margin:20px 0 10px;min-height:100px}
-    .cover{width:140px;height:140px;border-radius:16px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,0.2);margin-bottom:14px;background:#eee}
-    .cover img{width:100%;height:100%;object-fit:cover}
-    .track{font-weight:600;font-size:18px;color:#222;margin:4px 0}
-    .artist{color:#FF6B35;font-size:16px;margin-bottom:8px}
+    /* Equalizador laranja quando toca */
+    .equalizer {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      height: 46px;
+      margin: 20px 0 12px;
+      align-items: flex-end;
+    }
+    .bar {
+      width: 8px;
+      background: linear-gradient(to top, #FF6B35, #ff9a6c);
+      border-radius: 4px;
+      animation: wave 1.3s ease-in-out infinite;
+    }
+    .bar:nth-child(1) { animation-delay: 0ms; }
+    .bar:nth-child(2) { animation-delay: 150ms; }
+    .bar:nth-child(3) { animation-delay: 300ms; }
+    .bar:nth-child(4) { animation-delay: 450ms; }
+    .bar:nth-child(5) { animation-delay: 600ms; }
 
-    .equalizer{display:flex;justify-content:center;gap:7px;height:46px;margin:16px 0 8px;align-items:flex-end}
-    .bar{width:8px;background:linear-gradient(to top,#FF6B35,#ff9a6c);border-radius:4px;animation:wave 1.3s ease-in-out infinite}
-    .bar:nth-child(1){animation-delay:0ms}.bar:nth-child(2){animation-delay:150ms}
-    .bar:nth-child(3){animation-delay:300ms}.bar:nth-child(4){animation-delay:450ms}
-    .bar:nth-child(5){animation-delay:600ms}
-    @keyframes wave{0%,100%{height:6px}50%{height:36px}}
+    @keyframes wave {
+      0%, 100% { height: 6px; }
+      50% { height: 36px; }
+    }
 
-    audio{width:100%;margin-top:8px}
-    .footer{margin-top:28px;font-size:14px;color:#888}
-    .footer span{color:#FF6B35;font-weight:bold}
+    audio {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .footer {
+      margin-top: 28px;
+      font-size: 14px;
+      color: #888;
+    }
+    .footer span {
+      color: #FF6B35;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <div class="player">
-    <div class="owl"><img src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi"></div>
+    <div class="owl">
+      <img src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi Coruja">
+    </div>
     <h1>Sindi Radio</h1>
-    <p>Escolha sua vibe e relaxa</p>
+    <p>Escolha o estilo da sua vibe hoje</p>
 
     <select id="stationSelect">
       <option value="https://icy.unitedradio.it/um033.mp3">Radio Voice / Pop Atual</option>
       <option value="https://icy.unitedradio.it/RadioItalia.mp3">MPB & Brasileira</option>
       <option value="https://icy.unitedradio.it/Virgin.mp3">Rádio Rock</option>
       <option value="https://icy.unitedradio.it/m2o.mp3">Eletrônica / Dance</option>
-      <option value="https://icy.unitedradio.it/105.mp3">Hits 2000–2010</option>
+      <option value="https://icy.unitedradio.it/105.mp3">Hits dos Anos 2000–2010</option>
       <option value="https://icy.unitedradio.it/RMC.mp3">Chill & Lounge</option>
-      <option value="https://icy.unitedradio.it/Deejay.mp3">Flashback 80-90-2000</option>
+      <option value="https://icy.unitedradio.it/Deejay.mp3">Flashback 80–90–2000</option>
       <option value="https://icy.unitedradio.it/um011.mp3">Ibiza Summer</option>
     </select>
 
-    <div class="now-playing" id="nowPlaying">
-      <div class="cover" id="cover"><img src="" id="coverImg" style="display:none"></div>
-      <div class="track" id="track">Carregando música...</div>
-      <div class="artist" id="artist">Sindi Radio</div>
-    </div>
-
-    <div class="equalizer" id="eq" style="display:none">
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    <div class="equalizer" id="eq" style="display:none;">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
     </div>
 
     <audio id="radio" controls preload="none"></audio>
 
-    <div class="footer">Sindi Radio • 24h com você <span>Coruja</span></div>
+    <div class="footer">
+      🦉 Sindi Radio • 24h com você <span>© Sindibot - Impactar LLC</span>
+    </div>
   </div>
 
   <script>
     const select = document.getElementById('stationSelect');
     const audio = document.getElementById('radio');
     const eq = document.getElementById('eq');
-    const track = document.getElementById('track');
-    const artist = document.getElementById('artist');
-    const coverImg = document.getElementById('coverImg');
-
-    // Mapeamento manual rápido das rádios que têm metadata confiável (as outras deixam capa genérica da Sindi)
-    const metadataUrls = {
-      "um033.mp3": "https://radiometadata.unitedradio.it/um033.json",
-      "RadioItalia.mp3": "https://radiometadata.unitedradio.it/RadioItalia.json",
-      "m2o.mp3": "https://radiometadata.unitedradio.it/m2o.json",
-      "105.mp3": "https://radiometadata.unitedradio.it/105.json",
-      "RMC.mp3": "https://radiometadata.unitedradio.it/RMC.json",
-      "Virgin.mp3": "https://radiometadata.unitedradio.it/Virgin.json",
-      "Deejay.mp3": "https://radiometadata.unitedradio.it/Deejay.json"
-    };
-
-    let currentStation = "";
-    let metadataInterval;
 
     function loadStation() {
-      const url = select.value;
-      const filename = url.split('/').pop();
-      currentStation = filename;
-      audio.src = url;
-      audio.play().catch(()=>{});
-
-      // limpa metadata anterior
-      clearInterval(metadataInterval);
-      track.textContent = "Conectando...";
-      artist.textContent = select.selectedOptions[0].textContent;
-      coverImg.style.display = "none";
-
-      if (metadataUrls[filename]) {
-        fetchMetadata(); 
-        metadataInterval = setInterval(fetchMetadata, 8000);
-      }
-    }
-
-    function fetchMetadata() {
-      if (!metadataUrls[currentStation]) return;
-      fetch(metadataUrls[currentStation] + "?t=" + Date.now())
-        .then(r => r.ok ? r.json() : null)
-        .then(data => {
-          if (data && data.now) {
-            track.textContent = data.now.title || "Música ao vivo";
-            artist.textContent = data.now.artist || "Sindi Radio";
-            if (data.now.cover) {
-              coverImg.src = data.now.cover;
-              coverImg.style.display = "block";
-            }
-          }
-        })
-        .catch(() => {});
+      audio.src = select.value;
+      audio.play().catch(() => {});
     }
 
     select.addEventListener('change', loadStation);
 
     audio.addEventListener('play', () => eq.style.display = 'flex');
     audio.addEventListener('pause', () => eq.style.display = 'none');
+    audio.addEventListener('ended', () => eq.style.display = 'none');
 
-    loadStation();
+    loadStation(); // inicia automaticamente
   </script>
 </body>
 </html>
