@@ -1,631 +1,188 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sindi - Planejador Estratégico</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #fff5f0 0%, #ffe8dc 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
-    
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    
-    .header {
-      background: white;
-      border-radius: 28px;
-      padding: 32px 28px;
-      margin-bottom: 24px;
-      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
-      text-align: center;
-      border: 1px solid #eee;
-    }
-    
-    .logo {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 4px solid #FF6B35;
-      margin: 0 auto 16px;
-      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
-    }
-    
-    h1 {
-      font-size: 28px;
-      color: #222;
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-    
-    .subtitle {
-      color: #666;
-      font-size: 16px;
-      margin-bottom: 24px;
-    }
-    
-    .btn-add {
-      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
-      color: white;
-      border: none;
-      padding: 14px 28px;
-      border-radius: 16px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
-      transition: all 0.3s;
-    }
-    
-    .btn-add:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255,107,53,0.4);
-    }
-    
-    .form-card {
-      background: white;
-      border-radius: 24px;
-      padding: 28px;
-      margin-bottom: 24px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      border: 1px solid #eee;
-      display: none;
-    }
-    
-    .form-card.active {
-      display: block;
-      animation: slideDown 0.3s ease;
-    }
-    
-    @keyframes slideDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    .form-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: #222;
-      margin-bottom: 20px;
-    }
-    
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-      margin-bottom: 20px;
-    }
-    
-    @media (min-width: 640px) {
-      .form-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    
-    input, select {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 14px;
-      font-size: 15px;
-      background: white;
-      color: #333;
-      transition: all 0.3s;
-    }
-    
-    input:focus, select:focus {
-      outline: none;
-      border-color: #FF6B35;
-      box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
-    }
-    
-    .full-width {
-      grid-column: 1 / -1;
-    }
-    
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 14px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .checkbox-label:hover {
-      border-color: #FF6B35;
-      background: rgba(255,107,53,0.05);
-    }
-    
-    .checkbox-label input[type="checkbox"] {
-      width: 20px;
-      height: 20px;
-      cursor: pointer;
-      accent-color: #FF6B35;
-    }
-    
-    .form-actions {
-      display: flex;
-      gap: 12px;
-    }
-    
-    .btn-primary {
-      flex: 1;
-      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
-      color: white;
-      border: none;
-      padding: 14px;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
-    }
-    
-    .btn-secondary {
-      flex: 1;
-      background: #f5f5f5;
-      color: #666;
-      border: none;
-      padding: 14px;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    
-    .btn-secondary:hover {
-      background: #e8e8e8;
-    }
-    
-    .demands-title {
-      font-size: 24px;
-      font-weight: 700;
-      color: #222;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .demand-card {
-      background: white;
-      border-radius: 20px;
-      padding: 24px;
-      margin-bottom: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-      border: 2px solid #e8e8e8;
-      transition: all 0.3s;
-      animation: fadeIn 0.4s ease;
-    }
-    
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    .demand-card:hover {
-      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
-      transform: translateY(-2px);
-    }
-    
-    .demand-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    
-    .position-badge {
-      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
-      color: white;
-      font-weight: 700;
-      padding: 8px 16px;
-      border-radius: 12px;
-      font-size: 16px;
-      min-width: 50px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(255,107,53,0.3);
-    }
-    
-    .demand-title-text {
-      flex: 1;
-      font-size: 18px;
-      font-weight: 700;
-      color: #222;
-      line-height: 1.4;
-    }
-    
-    .btn-delete {
-      background: transparent;
-      border: none;
-      color: #999;
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 8px;
-      transition: all 0.3s;
-      font-size: 18px;
-    }
-    
-    .btn-delete:hover {
-      color: #ff4444;
-      background: #fff0f0;
-    }
-    
-    .demand-badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-    
-    .badge {
-      padding: 6px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-    
-    .badge-urgency-alta {
-      background: #fee;
-      color: #c33;
-    }
-    
-    .badge-urgency-media {
-      background: #fff8e1;
-      color: #f57c00;
-    }
-    
-    .badge-urgency-baixa {
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
-    
-    .badge-category {
-      background: #e3f2fd;
-      color: #1565c0;
-    }
-    
-    .badge-affected {
-      background: #f3e5f5;
-      color: #7b1fa2;
-    }
-    
-    .badge-legal {
-      background: #ffebee;
-      color: #c62828;
-      border: 2px solid #ef5350;
-    }
-    
-    .demand-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 12px;
-      border-top: 2px solid #f5f5f5;
-    }
-    
-    .priority-indicator {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 600;
-    }
-    
-    .priority-critical {
-      color: #c33;
-    }
-    
-    .priority-high {
-      color: #f57c00;
-    }
-    
-    .priority-medium {
-      color: #fbc02d;
-    }
-    
-    .priority-low {
-      color: #999;
-    }
-    
-    .score-badge {
-      background: #f5f5f5;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 13px;
-      color: #666;
-    }
-    
-    .empty-state {
-      background: white;
-      border-radius: 20px;
-      padding: 48px 24px;
-      text-align: center;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-      border: 2px dashed #e0e0e0;
-    }
-    
-    .empty-state-icon {
-      font-size: 64px;
-      margin-bottom: 16px;
-    }
-    
-    .empty-state-text {
-      font-size: 18px;
-      color: #666;
-      margin-bottom: 8px;
-    }
-    
-    .empty-state-subtext {
-      font-size: 14px;
-      color: #999;
-    }
-    
-    .footer {
-      text-align: center;
-      margin-top: 32px;
-      padding: 20px;
-      color: #888;
-      font-size: 14px;
-    }
-    
-    .footer span {
-      color: #FF6B35;
-      font-weight: bold;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Planejador Estratégico • Sindi Coruja</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root { --laranja:#FF6B35; --roxo:#635bff; --verde:#10b981; --cinza:#f3f4f6;}
+  body {margin:0; font-family:system-ui,-apple-system,sans-serif; background:#f9fafb; color:#1f2937; line-height:1.5}
+  .container {max-width:860px; margin:20px auto; padding:0 16px}
+  header {text-align:center; padding:32px 20px; background:white; border-radius:20px; box-shadow:0 10px 30px rgba(0,0,0,0.08); margin-bottom:30px}
+  .coruja {width:100px; height:100px; border:5px solid var(--laranja); border-radius:50%; box-shadow:0 8px 25px rgba(255,107,53,0.3)}
+  h1 {margin:16px 0 8px; font-size:28px; color:#111}
+  .subtitle {color:#666; font-size:17px}
+  
+  .botoes {text-align:center; margin:20px 0}
+  .add-btn, .pdf-btn {
+    background:var(--laranja); color:white; border:none; padding:14px 28px; border-radius:50px; font-size:16px; cursor:pointer; font-weight:600; margin:0 8px}
+  .pdf-btn {background:#10b981}
+  .pdf-btn:hover {background:#059669}
+
+  .demanda {background:white; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 4px 15px rgba(0,0,0,0.06); position:relative}
+  .delete {position:absolute; top:16px; right:16px; background:none; border:none; font-size:24px; cursor:pointer; color:#999}
+  .titulo {font-size:19px; font-weight:600; margin:0 0 12px; color:#111}
+  .tags {display:flex; flex-wrap:wrap; gap:8px; margin:12px 0}
+  .tag {padding:5px 12px; border-radius:20px; font-size:13px; font-weight:600}
+  .baixa {background:#dbeafe; color:#4338ca}
+  .media {background:#fef3c7; color:#92400e}
+  .alta {background:#fee2e2; color:#991b1b}
+  .critica {background:#FECACA; color:#7f1d1d; animation:pulse 2s infinite}
+  .estetica {background:#f0e6ff; color:#6b21a8}
+  .seguranca {background:#fecaca; color:#991b1b}
+  .lazer {background:#d1fae5; color:#065f46}
+  .manutencao {background:#dbeafe; color:#1e40af}
+  .legal {background:#ffedd5; color:#9a3412}
+
+  .fila {margin-top:40px}
+  .item {background:white; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 6px 20px rgba(0,0,0,0.08); border-left:6px solid var(--laranja)}
+  .rank {font-size:36px; font-weight:800; color:var(--laranja); display:inline-block; width:60px}
+  .score {font-size:14px; color:#666}
+
+  .insights {background:linear-gradient(135deg,#635bff,#4f46e6); color:white; padding:24px; border-radius:20px; margin:40px 0}
+  .insights h3 {margin:0 0 12px; font-size:20px}
+
+  @keyframes pulse {0%{box-shadow:0 0 0 0 rgba(255,107,53,0.4)}70%{box-shadow:0 0 0 10px rgba(255,107,53,0)}100%{box-shadow:0 0 0 0 rgba(255,107,53,0)}}
+
+  /* ESTILO PARA IMPRESSÃO / PDF */
+  @media print {
+    body {background:white; margin:0; padding:20px}
+    .container {max-width:none; margin:0; padding:0}
+    header, .botoes, .delete {display:none !important}
+    .demanda, .item {box-shadow:none; page-break-inside:avoid; border:1px solid #eee; margin:15px 0}
+    .insights {background:#635bff !important; -webkit-print-color-adjust:exact; color-adjust:exact}
+    h1 {font-size:26px; margin-top:0}
+    .rank {color:var(--laranja) !important; -webkit-print-color-adjust:exact}
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
-      <h1>Planejador Estratégico</h1>
-      <p class="subtitle">Organize as demandas do condomínio por prioridade inteligente</p>
-      <button class="btn-add" onclick="toggleForm()">➕ Nova Demanda</button>
-    </div>
-    
-    <div class="form-card" id="formCard">
-      <h3 class="form-title">Nova Demanda</h3>
-      <div class="form-grid">
-        <input type="text" id="title" placeholder="Título da demanda" class="full-width">
-        <input type="number" id="affected" placeholder="Moradores afetados">
-        
-        <select id="urgency">
-          <option value="baixa">Urgência: Baixa</option>
-          <option value="media" selected>Urgência: Média</option>
-          <option value="alta">Urgência: Alta</option>
-        </select>
-        
-        <select id="impact">
-          <option value="baixa">Impacto: Baixo</option>
-          <option value="media" selected>Impacto: Médio</option>
-          <option value="alta">Impacto: Alto</option>
-        </select>
-        
-        <select id="category">
-          <option value="Segurança">Segurança</option>
-          <option value="Manutenção" selected>Manutenção</option>
-          <option value="Estética">Estética</option>
-          <option value="Lazer">Lazer</option>
-        </select>
-        
-        <label class="checkbox-label">
-          <input type="checkbox" id="legal">
-          <span>⚠️ Obrigação legal</span>
-        </label>
-      </div>
-      
-      <div class="form-actions">
-        <button class="btn-primary" onclick="addDemand()">Adicionar</button>
-        <button class="btn-secondary" onclick="toggleForm()">Cancelar</button>
-      </div>
-    </div>
-    
-    <h2 class="demands-title">📊 Fila de Priorização</h2>
-    <div id="demandsList"></div>
-    
-    <div class="footer">
-      🦉 Sindi • Planejador Estratégico <span>© Sindibot - Impactar LLC</span>
-    </div>
+
+<div class="container">
+  <header>
+    <img src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" class="coruja" alt="Sindi">
+    <h1>Planejador Estratégico para Síndicos</h1>
+    <p class="subtitle">Seu segundo cérebro – prioriza o que realmente importa</p>
+  </header>
+
+  <div class="botoes">
+    <button class="add-btn" onclick="novaDemanda()">+ Nova Demanda</button>
+    <button class="pdf-btn" onclick="window.print()">Exportar em PDF</button>
   </div>
-  
-  <script>
-    var demands = [
-      {
-        id: 1,
-        title: "Reparo elevador principal",
-        urgency: "alta",
-        impact: "alta",
-        legal: true,
-        affected: 120,
-        category: "Segurança",
-        status: "pendente"
-      },
-      {
-        id: 2,
-        title: "Pintura fachada",
-        urgency: "baixa",
-        impact: "media",
-        legal: false,
-        affected: 120,
-        category: "Estética",
-        status: "pendente"
-      },
-      {
-        id: 3,
-        title: "Troca bomba piscina",
-        urgency: "media",
-        impact: "baixa",
-        legal: false,
-        affected: 80,
-        category: "Lazer",
-        status: "pendente"
-      },
-      {
-        id: 4,
-        title: "Adequação hidrantes (bombeiros)",
-        urgency: "alta",
-        impact: "alta",
-        legal: true,
-        affected: 120,
-        category: "Segurança",
-        status: "pendente"
-      }
-    ];
-    
-    function calculatePriority(demand) {
-      var score = 0;
-      
-      if (demand.urgency === "alta") score += 40;
-      else if (demand.urgency === "media") score += 20;
-      else score += 5;
-      
-      if (demand.impact === "alta") score += 30;
-      else if (demand.impact === "media") score += 15;
-      else score += 5;
-      
-      if (demand.legal) score += 25;
-      
-      score += (demand.affected / 120) * 5;
-      
-      return score;
-    }
-    
-    function getPriorityLabel(score) {
-      if (score >= 80) return { text: "🔥 Crítico", cls: "priority-critical" };
-      if (score >= 60) return { text: "⚠️ Alto", cls: "priority-high" };
-      if (score >= 40) return { text: "📋 Médio", cls: "priority-medium" };
-      return { text: "📌 Baixo", cls: "priority-low" };
-    }
-    
-    function getUrgencyClass(urgency) {
-      return "badge-urgency-" + urgency;
-    }
-    
-    function renderDemands() {
-      var sortedDemands = demands
-        .filter(function(d) { return d.status === "pendente"; })
-        .sort(function(a, b) { return calculatePriority(b) - calculatePriority(a); });
-      
-      var listEl = document.getElementById('demandsList');
-      
-      if (sortedDemands.length === 0) {
-        listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🦉</div><div class="empty-state-text">Nenhuma demanda cadastrada</div><div class="empty-state-subtext">Adicione sua primeira demanda para começar</div></div>';
-        return;
-      }
-      
-      var html = '';
-      for (var i = 0; i < sortedDemands.length; i++) {
-        var demand = sortedDemands[i];
-        var priority = calculatePriority(demand);
-        var priorityInfo = getPriorityLabel(priority);
-        var legalBadge = demand.legal ? '<span class="badge badge-legal">⚠️ Obrigação Legal</span>' : '';
-        
-        html += '<div class="demand-card">' +
-          '<div class="demand-header">' +
-            '<div class="position-badge">#' + (i + 1) + '</div>' +
-            '<div class="demand-title-text">' + demand.title + '</div>' +
-            '<button class="btn-delete" onclick="deleteDemand(' + demand.id + ')">🗑️</button>' +
-          '</div>' +
-          '<div class="demand-badges">' +
-            '<span class="badge ' + getUrgencyClass(demand.urgency) + '">' +
-              (demand.urgency.charAt(0).toUpperCase() + demand.urgency.slice(1)) +
-            '</span>' +
-            '<span class="badge badge-category">' + demand.category + '</span>' +
-            '<span class="badge badge-affected">' + demand.affected + ' moradores</span>' +
-            legalBadge +
-          '</div>' +
-          '<div class="demand-footer">' +
-            '<div class="priority-indicator ' + priorityInfo.cls + '">' +
-              priorityInfo.text +
-            '</div>' +
-            '<div class="score-badge">Score: ' + priority.toFixed(0) + '</div>' +
-          '</div>' +
-        '</div>';
-      }
-      
-      listEl.innerHTML = html;
-    }
-    
-    function toggleForm() {
-      var form = document.getElementById('formCard');
-      form.classList.toggle('active');
-    }
-    
-    function addDemand() {
-      var title = document.getElementById('title').value.trim();
-      var affected = parseInt(document.getElementById('affected').value) || 0;
-      var urgency = document.getElementById('urgency').value;
-      var impact = document.getElementById('impact').value;
-      var category = document.getElementById('category').value;
-      var legal = document.getElementById('legal').checked;
-      
-      if (!title) {
-        alert('Por favor, preencha o título da demanda');
-        return;
-      }
-      
-      demands.push({
-        id: Date.now(),
-        title: title,
-        urgency: urgency,
-        impact: impact,
-        legal: legal,
-        affected: affected,
-        category: category,
-        status: "pendente"
-      });
-      
-      document.getElementById('title').value = '';
-      document.getElementById('affected').value = '';
-      document.getElementById('urgency').value = 'media';
-      document.getElementById('impact').value = 'media';
-      document.getElementById('category').value = 'Manutenção';
-      document.getElementById('legal').checked = false;
-      
-      toggleForm();
-      renderDemands();
-    }
-    
-    function deleteDemand(id) {
-      if (confirm('Tem certeza que deseja remover esta demanda?')) {
-        demands = demands.filter(function(d) { return d.id !== id; });
-        renderDemands();
-      }
-    }
-    
-    renderDemands();
-  </script>
+
+  <div id="listaDemandas"></div>
+
+  <div class="fila">
+    <h2>Fila de Priorização Inteligente</h2>
+    <div id="fila"></div>
+  </div>
+
+  <div class="insights" id="insights" style="display:none">
+    <h3>Insights Estratégicos da Coruja</h3>
+    <ul id="listaInsights"></ul>
+  </div>
+</div>
+
+<script>
+const demandas = [];
+
+function novaDemanda() {
+  const titulo = prompt("Título da demanda", "")?.trim();
+  if (!titulo) return;
+
+  const urgencia = prompt("Urgência\nBaixa • Média • Alta • Crítica", "Média")?.trim().toLowerCase() || "média";
+  const impacto = prompt("Impacto principal\nEstética • Segurança • Lazer • Manutenção • Obrigação Legal", "Manutenção")?.trim() || "Manutenção";
+  const moradores = parseInt(prompt("Quantos moradores afetados?", "50")) || 0;
+  const legal = confirm("É Obrigação legal?");
+
+  demandas.push({titulo, urgencia, impacto, moradores, legal, id:Date.now()});
+  atualizarTudo();
+}
+
+function calcularScore(d) {
+  let score = 0;
+  if (d.urgencia === "crítica") score += 50;
+  else if (d.urgencia === "alta") score += 30;
+  else if (d.urgencia === "média") score += 10;
+
+  if (d.legal) score += 40;
+  if (d.impacto.toLowerCase().includes("segurança")) score += 35;
+  if (d.impacto.toLowerCase().includes("legal")) score += 30;
+  score += Math.min(d.moradores / 2, 30);
+  return Math.min(score, 100);
+}
+
+function tagClass(valor, tipo) {
+  const map = {
+    urgencia: {baixa:"baixa", média:"media", alta:"alta", crítica:"critica"},
+    impacto: {"estética":"estetica", "segurança":"seguranca", "lazer":"lazer", "manutenção":"manutencao", "obrigação legal":"legal"}
+  };
+  return map[tipo][valor.toLowerCase()] || "media";
+}
+
+function atualizarTudo() {
+  // lista de demandas cadastradas
+  let html = "";
+  demandas.forEach(d => {
+    html += `
+      <div class="demanda">
+        <button class="delete" onclick="remover(${d.id})">×</button>
+        <div class="titulo">${d.titulo}</div>
+        <div class="tags">
+          <span class="tag ${tagClass(d.urgencia,'urgencia')}">${d.urgencia.toUpperCase()}</span>
+          <span class="tag ${tagClass(d.impacto,'impacto')}">${d.impacto}</span>
+          <span class="tag">${d.moradores} moradores</span>
+          ${d.legal ? '<span class="tag legal">OBRIGAÇÃO LEGAL</span>' : ''}
+        </div>
+      </div>`;
+  });
+  document.getElementById("listaDemandas").innerHTML = html || "<p style='text-align:center;color:#999'>Nenhuma demanda ainda</p>";
+
+  // fila inteligente
+  const ordenadas = [...demandas].sort((a,b) => calcularScore(b) - calcularScore(a));
+  let filaHtml = "";
+  ordenadas.forEach((d,i) => {
+    const score = calcularScore(d);
+    filaHtml += `
+      <div class="item">
+        <span class="rank">#${i+1}</span>
+        <strong>${d.titulo}</strong>
+        <div class="tags">
+          <span class="tag ${tagClass(d.urgencia,'urgencia')}">${d.urgencia}</span>
+          <span class="tag ${tagClass(d.impacto,'impacto')}">${d.impacto}</span>
+          <span class="tag">${d.moradores} moradores</span>
+          ${d.legal ? '<span class="tag legal">LEGAL</span>' : ''}
+        </div>
+        <div><strong style="color:${score>=80?'#dc2626':score>=50?'#f59e0b':'#6b7280'}">Score: ${score}</strong>
+        ${score>=70?' <span style="color:#dc2626">CRÍTICO</span>':''}
+      </div>`;
+  });
+  document.getElementById("fila").innerHTML = filaHtml || "<p style='color:#999'>Adicione demandas para ver a fila</p>";
+
+  // insights
+  const criticas = demandas.filter(d=>d.urgencia==="crítica").length;
+  const legais = demandas.filter(d=>d.legal).length;
+  const seguranca = demandas.filter(d=>d.impacto.toLowerCase().includes("segurança")).length;
+
+  let insights = [];
+  if (legais>0) insights.push("Priorizar obrigações legais para evitar multas e problemas jurídicos");
+  if (criticas>0) insights.push(`Atenção: ${criticas} item(s) CRÍTICO(S) na fila`);
+  if (seguranca>0) insights.push("Segurança em primeiro lugar – execute logo");
+  if (demandas.length>6) insights.push("Foque nas 3 primeiras da fila");
+
+  if (insights.length===0) insights.push("Tudo sob controle! Continue acompanhando");
+
+  document.getElementById("listaInsights").innerHTML = insights.map(t=>`<li>${t}</li>`).join("");
+  document.getElementById("insights").style.display = demandas.length > 0 ? "block" : "none";
+}
+
+function remover(id) {
+  const i = demandas.findIndex(d=>d.id===id);
+  if(i!==-1) demandas.splice(i,1);
+  atualizarTudo();
+}
+
+atualizarTudo();
+</script>
 </body>
 </html>
