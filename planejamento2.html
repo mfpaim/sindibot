@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Planejador Estrategico</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #fff5f0 0%, #ffe8dc 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 28px;
+      padding: 32px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #FF6B35;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+    }
+    
+    h1 {
+      font-size: 28px;
+      color: #222;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .btn-add {
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+      transition: all 0.3s;
+    }
+    
+    .btn-add:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    }
+    
+    .form-card {
+      background: white;
+      border-radius: 24px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+      display: none;
+    }
+    
+    .form-card.active {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .form-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 20px;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    @media (min-width: 640px) {
+      .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      font-size: 15px;
+      background: white;
+      color: #333;
+      transition: all 0.3s;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+      border-color: #FF6B35;
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+    }
+    
+    .full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .checkbox-label:hover {
+      border-color: #FF6B35;
+      background: rgba(255,107,53,0.05);
+    }
+    
+    .checkbox-label input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #FF6B35;
+    }
+    
+    .form-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+    }
+    
+    .btn-secondary {
+      flex: 1;
+      background: #f5f5f5;
+      color: #666;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-secondary:hover {
+      background: #e8e8e8;
+    }
+    
+    .demands-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .demand-card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      border: 2px solid #e8e8e8;
+      transition: all 0.3s;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .demand-card:hover {
+      box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    
+    .demand-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    .position-badge {
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      font-weight: 700;
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 16px;
+      min-width: 50px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(255,107,53,0.3);
+    }
+    
+    .demand-title-text {
+      flex: 1;
+      font-size: 18px;
+      font-weight: 700;
+      color: #222;
+      line-height: 1.4;
+    }
+    
+    .btn-delete {
+      background: transparent;
+      border: none;
+      color: #999;
+      cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: all 0.3s;
+      font-size: 14px;
+    }
+    
+    .btn-delete:hover {
+      color: #ff4444;
+      background: #fff0f0;
+    }
+    
+    .demand-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .badge {
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    
+    .badge-urgency-alta {
+      background: #fee;
+      color: #c33;
+    }
+    
+    .badge-urgency-media {
+      background: #fff8e1;
+      color: #f57c00;
+    }
+    
+    .badge-urgency-baixa {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .badge-category {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    
+    .badge-affected {
+      background: #f3e5f5;
+      color: #7b1fa2;
+    }
+    
+    .badge-legal {
+      background: #ffebee;
+      color: #c62828;
+      border: 2px solid #ef5350;
+    }
+    
+    .demand-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 12px;
+      border-top: 2px solid #f5f5f5;
+    }
+    
+    .priority-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    
+    .priority-critical {
+      color: #c33;
+    }
+    
+    .priority-high {
+      color: #f57c00;
+    }
+    
+    .priority-medium {
+      color: #fbc02d;
+    }
+    
+    .priority-low {
+      color: #999;
+    }
+    
+    .score-badge {
+      background: #f5f5f5;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #666;
+    }
+    
+    .empty-state {
+      background: white;
+      border-radius: 20px;
+      padding: 48px 24px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      border: 2px dashed #e0e0e0;
+    }
+    
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    
+    .empty-state-text {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    
+    .empty-state-subtext {
+      font-size: 14px;
+      color: #999;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      padding: 20px;
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .footer span {
+      color: #FF6B35;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Planejador Estrategico</h1>
+      <p class="subtitle">Organize as demandas do condominio por prioridade inteligente</p>
+      <button class="btn-add" onclick="toggleForm()">+ Nova Demanda</button>
+    </div>
+    
+    <div class="form-card" id="formCard">
+      <h3 class="form-title">Nova Demanda</h3>
+      <div class="form-grid">
+        <input type="text" id="title" placeholder="Titulo da demanda" class="full-width">
+        <input type="number" id="affected" placeholder="Moradores afetados">
+        
+        <select id="urgency">
+          <option value="baixa">Urgencia: Baixa</option>
+          <option value="media" selected>Urgencia: Media</option>
+          <option value="alta">Urgencia: Alta</option>
+        </select>
+        
+        <select id="impact">
+          <option value="baixa">Impacto: Baixo</option>
+          <option value="media" selected>Impacto: Medio</option>
+          <option value="alta">Impacto: Alto</option>
+        </select>
+        
+        <select id="category">
+          <option value="Seguranca">Seguranca</option>
+          <option value="Manutencao" selected>Manutencao</option>
+          <option value="Estetica">Estetica</option>
+          <option value="Lazer">Lazer</option>
+        </select>
+        
+        <label class="checkbox-label">
+          <input type="checkbox" id="legal">
+          <span>Obrigacao legal</span>
+        </label>
+      </div>
+      
+      <div class="form-actions">
+        <button class="btn-primary" onclick="addDemand()">Adicionar</button>
+        <button class="btn-secondary" onclick="toggleForm()">Cancelar</button>
+      </div>
+    </div>
+    
+    <h2 class="demands-title">Fila de Priorizacao</h2>
+    <div id="demandsList"></div>
+    
+    <div class="footer">
+      Sindi - Planejador Estrategico <span>Sindibot - Impactar LLC</span>
+    </div>
+  </div>
+  
+  <script>
+    var demands = [];
+    
+    function initDemands() {
+      demands.push({
+        id: 1,
+        title: "Reparo elevador principal",
+        urgency: "alta",
+        impact: "alta",
+        legal: true,
+        affected: 120,
+        category: "Seguranca",
+        status: "pendente"
+      });
+      
+      demands.push({
+        id: 2,
+        title: "Pintura fachada",
+        urgency: "baixa",
+        impact: "media",
+        legal: false,
+        affected: 120,
+        category: "Estetica",
+        status: "pendente"
+      });
+      
+      demands.push({
+        id: 3,
+        title: "Troca bomba piscina",
+        urgency: "media",
+        impact: "baixa",
+        legal: false,
+        affected: 80,
+        category: "Lazer",
+        status: "pendente"
+      });
+      
+      demands.push({
+        id: 4,
+        title: "Adequacao hidrantes",
+        urgency: "alta",
+        impact: "alta",
+        legal: true,
+        affected: 120,
+        category: "Seguranca",
+        status: "pendente"
+      });
+    }
+    
+    function calculatePriority(demand) {
+      var score = 0;
+      
+      if (demand.urgency === "alta") {
+        score = score + 40;
+      } else if (demand.urgency === "media") {
+        score = score + 20;
+      } else {
+        score = score + 5;
+      }
+      
+      if (demand.impact === "alta") {
+        score = score + 30;
+      } else if (demand.impact === "media") {
+        score = score + 15;
+      } else {
+        score = score + 5;
+      }
+      
+      if (demand.legal) {
+        score = score + 25;
+      }
+      
+      score = score + ((demand.affected / 120) * 5);
+      
+      return score;
+    }
+    
+    function getPriorityLabel(score) {
+      var result = {};
+      if (score >= 80) {
+        result.text = "Critico";
+        result.cls = "priority-critical";
+      } else if (score >= 60) {
+        result.text = "Alto";
+        result.cls = "priority-high";
+      } else if (score >= 40) {
+        result.text = "Medio";
+        result.cls = "priority-medium";
+      } else {
+        result.text = "Baixo";
+        result.cls = "priority-low";
+      }
+      return result;
+    }
+    
+    function getUrgencyClass(urgency) {
+      return "badge-urgency-" + urgency;
+    }
+    
+    function renderDemands() {
+      var sortedDemands = [];
+      for (var i = 0; i < demands.length; i++) {
+        if (demands[i].status === "pendente") {
+          sortedDemands.push(demands[i]);
+        }
+      }
+      
+      sortedDemands.sort(function(a, b) {
+        return calculatePriority(b) - calculatePriority(a);
+      });
+      
+      var listEl = document.getElementById('demandsList');
+      
+      if (sortedDemands.length === 0) {
+        listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">Owl</div><div class="empty-state-text">Nenhuma demanda cadastrada</div><div class="empty-state-subtext">Adicione sua primeira demanda para comecar</div></div>';
+        return;
+      }
+      
+      var html = '';
+      for (var i = 0; i < sortedDemands.length; i++) {
+        var demand = sortedDemands[i];
+        var priority = calculatePriority(demand);
+        var priorityInfo = getPriorityLabel(priority);
+        var legalBadge = '';
+        
+        if (demand.legal) {
+          legalBadge = '<span class="badge badge-legal">Obrigacao Legal</span>';
+        }
+        
+        var urgencyText = demand.urgency.charAt(0).toUpperCase() + demand.urgency.slice(1);
+        
+        html = html + '<div class="demand-card">';
+        html = html + '<div class="demand-header">';
+        html = html + '<div class="position-badge">#' + (i + 1) + '</div>';
+        html = html + '<div class="demand-title-text">' + demand.title + '</div>';
+        html = html + '<button class="btn-delete" onclick="deleteDemand(' + demand.id + ')">Deletar</button>';
+        html = html + '</div>';
+        html = html + '<div class="demand-badges">';
+        html = html + '<span class="badge ' + getUrgencyClass(demand.urgency) + '">' + urgencyText + '</span>';
+        html = html + '<span class="badge badge-category">' + demand.category + '</span>';
+        html = html + '<span class="badge badge-affected">' + demand.affected + ' moradores</span>';
+        html = html + legalBadge;
+        html = html + '</div>';
+        html = html + '<div class="demand-footer">';
+        html = html + '<div class="priority-indicator ' + priorityInfo.cls + '">' + priorityInfo.text + '</div>';
+        html = html + '<div class="score-badge">Score: ' + priority.toFixed(0) + '</div>';
+        html = html + '</div>';
+        html = html + '</div>';
+      }
+      
+      listEl.innerHTML = html;
+    }
+    
+    function toggleForm() {
+      var form = document.getElementById('formCard');
+      if (form.classList.contains('active')) {
+        form.classList.remove('active');
+      } else {
+        form.classList.add('active');
+      }
+    }
+    
+    function addDemand() {
+      var title = document.getElementById('title').value.trim();
+      var affected = parseInt(document.getElementById('affected').value) || 0;
+      var urgency = document.getElementById('urgency').value;
+      var impact = document.getElementById('impact').value;
+      var category = document.getElementById('category').value;
+      var legal = document.getElementById('legal').checked;
+      
+      if (!title) {
+        alert('Por favor, preencha o titulo da demanda');
+        return;
+      }
+      
+      var newDemand = {
+        id: Date.now(),
+        title: title,
+        urgency: urgency,
+        impact: impact,
+        legal: legal,
+        affected: affected,
+        category: category,
+        status: "pendente"
+      };
+      
+      demands.push(newDemand);
+      
+      document.getElementById('title').value = '';
+      document.getElementById('affected').value = '';
+      document.getElementById('urgency').value = 'media';
+      document.getElementById('impact').value = 'media';
+      document.getElementById('category').value = 'Manutencao';
+      document.getElementById('legal').checked = false;
+      
+      toggleForm();
+      renderDemands();
+    }
+    
+    function deleteDemand(id) {
+      if (confirm('Tem certeza que deseja remover esta demanda?')) {
+        var newDemands = [];
+        for (var i = 0; i < demands.length; i++) {
+          if (demands[i].id !== id) {
+            newDemands.push(demands[i]);
+          }
+        }
+        demands = newDemands;
+        renderDemands();
+      }
+    }
+    
+    initDemands();
+    renderDemands();
+  </script>
+</body>
+</html>
