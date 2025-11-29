@@ -491,51 +491,10 @@
   
   <script>
     var demands = [];
+    var showExample = true;
     
     function initDemands() {
-      demands.push({
-        id: 1,
-        title: "Reparo elevador principal",
-        urgency: "alta",
-        impact: "alta",
-        legal: true,
-        affected: 120,
-        category: "Seguranca",
-        status: "pendente"
-      });
-      
-      demands.push({
-        id: 2,
-        title: "Pintura fachada",
-        urgency: "baixa",
-        impact: "media",
-        legal: false,
-        affected: 120,
-        category: "Estetica",
-        status: "pendente"
-      });
-      
-      demands.push({
-        id: 3,
-        title: "Troca bomba piscina",
-        urgency: "media",
-        impact: "baixa",
-        legal: false,
-        affected: 80,
-        category: "Lazer",
-        status: "pendente"
-      });
-      
-      demands.push({
-        id: 4,
-        title: "Adequacao hidrantes",
-        urgency: "alta",
-        impact: "alta",
-        legal: true,
-        affected: 120,
-        category: "Seguranca",
-        status: "pendente"
-      });
+      // Nao adiciona demandas de exemplo ao array principal
     }
     
     function calculatePriority(demand) {
@@ -602,12 +561,36 @@
       
       var listEl = document.getElementById('demandsList');
       
-      if (sortedDemands.length === 0) {
+      if (sortedDemands.length === 0 && !showExample) {
         listEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">Owl</div><div class="empty-state-text">Nenhuma demanda cadastrada</div><div class="empty-state-subtext">Adicione sua primeira demanda para comecar</div></div>';
         return;
       }
       
       var html = '';
+      
+      if (showExample && sortedDemands.length === 0) {
+        html = html + '<div class="demand-card" style="border: 2px dashed #FF6B35; background: #fff9f5;">';
+        html = html + '<div class="demand-header">';
+        html = html + '<div class="position-badge">#1</div>';
+        html = html + '<div class="demand-title-text">Reparo elevador principal <span style="font-size: 12px; color: #FF6B35; font-weight: normal;">(Exemplo)</span></div>';
+        html = html + '<button class="btn-delete" onclick="hideExample()">Deletar</button>';
+        html = html + '</div>';
+        html = html + '<div class="demand-badges">';
+        html = html + '<span class="badge badge-urgency-alta">Alta</span>';
+        html = html + '<span class="badge badge-category">Seguranca</span>';
+        html = html + '<span class="badge badge-affected">120 moradores</span>';
+        html = html + '<span class="badge badge-legal">Obrigacao Legal</span>';
+        html = html + '</div>';
+        html = html + '<div class="demand-footer">';
+        html = html + '<div class="priority-indicator priority-critical">Critico</div>';
+        html = html + '<div class="score-badge">Score: 95</div>';
+        html = html + '</div>';
+        html = html + '<div style="margin-top: 12px; padding: 12px; background: #fff3e0; border-radius: 10px; font-size: 13px; color: #e65100;">';
+        html = html + 'Este e um exemplo para voce entender como funciona. Adicione sua primeira demanda ou delete este card para comecar!';
+        html = html + '</div>';
+        html = html + '</div>';
+      }
+      
       for (var i = 0; i < sortedDemands.length; i++) {
         var demand = sortedDemands[i];
         var priority = calculatePriority(demand);
@@ -643,12 +626,18 @@
     }
     
     function toggleForm() {
+      hideExample();
       var form = document.getElementById('formCard');
       if (form.classList.contains('active')) {
         form.classList.remove('active');
       } else {
         form.classList.add('active');
       }
+    }
+    
+    function hideExample() {
+      showExample = false;
+      renderDemands();
     }
     
     function addDemand() {
