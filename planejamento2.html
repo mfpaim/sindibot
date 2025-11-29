@@ -13,7 +13,7 @@
     
     body {
       font-family: system-ui, -apple-system, sans-serif;
-      background: linear-gradient(135deg, #fff5f0 0%, #ffe8dc 100%);
+      background: white;
       min-height: 100vh;
       padding: 20px;
     }
@@ -31,6 +31,13 @@
       box-shadow: 0 15px 45px rgba(0,0,0,0.08);
       text-align: center;
       border: 1px solid #eee;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
     
     .logo {
@@ -412,7 +419,10 @@
       <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
       <h1>Planejador Estrategico</h1>
       <p class="subtitle">Organize as demandas do condominio por prioridade inteligente</p>
-      <button class="btn-add" onclick="toggleForm()">+ Nova Demanda</button>
+      <div class="header-actions">
+        <button class="btn-add" onclick="toggleForm()">+ Nova Demanda</button>
+        <button class="btn-add" onclick="generatePDF()">Gerar PDF</button>
+      </div>
     </div>
     
     <div class="form-card" id="formCard">
@@ -674,6 +684,53 @@
     
     initDemands();
     renderDemands();
+    
+    function generatePDF() {
+      var sortedDemands = [];
+      for (var i = 0; i < demands.length; i++) {
+        if (demands[i].status === "pendente") {
+          sortedDemands.push(demands[i]);
+        }
+      }
+      
+      sortedDemands.sort(function(a, b) {
+        return calculatePriority(b) - calculatePriority(a);
+      });
+      
+      if (sortedDemands.length === 0) {
+        alert('Nenhuma demanda para gerar PDF');
+        return;
+      }
+      
+      var pdfContent = 'PLANEJADOR ESTRATEGICO - SINDI\n';
+      pdfContent = pdfContent + 'Fila de Priorização Sugerida de Demandas\n';
+      pdfContent = pdfContent + '================================\n\n';
+      
+      for (var i = 0; i < sortedDemands.length; i++) {
+        var demand = sortedDemands[i];
+        var priority = calculatePriority(demand);
+        var priorityInfo = getPriorityLabel(priority);
+        
+        pdfContent = pdfContent + 'POSICAO: #' + (i + 1) + '\n';
+        pdfContent = pdfContent + 'Titulo: ' + demand.title + '\n';
+        pdfContent = pdfContent + 'Categoria: ' + demand.category + '\n';
+        pdfContent = pdfContent + 'Urgencia: ' + demand.urgency + '\n';
+        pdfContent = pdfContent + 'Impacto: ' + demand.impact + '\n';
+        pdfContent = pdfContent + 'Moradores afetados: ' + demand.affected + '\n';
+        pdfContent = pdfContent + 'Obrigacao legal: ' + (demand.legal ? 'Sim' : 'Nao') + '\n';
+        pdfContent = pdfContent + 'Prioridade: ' + priorityInfo.text + ' (Score: ' + priority.toFixed(0) + ')\n';
+        pdfContent = pdfContent + '--------------------------------\n\n';
+      }
+      
+      pdfContent = pdfContent + '\nGerado em: ' + new Date().toLocaleString('pt-BR') + '\n';
+      pdfContent = pdfContent + 'Sindi - Sindibot - Impactar LLC';
+      
+      var blob = new Blob([pdfContent], { type: 'text/plain;charset=utf-8' });
+      var link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'planejamento-demandas-' + Date.now() + '.txt';
+      link.click();
+    }
   </script>
 </body>
 </html>
