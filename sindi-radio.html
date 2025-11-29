@@ -160,42 +160,5 @@
 
     loadStation(); // inicia automaticamente
   </script>
-  <script>
-  function sendHeightToTypebot() {
-    // Calculate the full height (includes padding/margins)
-    const height = Math.max(
-      document.body.scrollHeight,
-      document.body.offsetHeight,
-      document.documentElement.clientHeight,
-      document.documentElement.scrollHeight,
-      document.documentElement.offsetHeight
-    );
-    
-    // Send to Typebot chat (listens for this exact message type)
-    window.parent.postMessage({
-      type: 'iframeHeight',  // Custom event name—match this in Typebot
-      height: height + 20    // +20px buffer for any borders/padding
-    }, '*');  // '*' allows cross-origin; restrict to your domain if needed
-  }
-
-  // Initial send after load
-  window.addEventListener('load', sendHeightToTypebot);
-  
-  // Watch for dynamic changes (e.g., form fields appearing)
-  const observer = new MutationObserver(sendHeightToTypebot);
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    characterData: true
-  });
-  
-  // Fallback: Send every 500ms for safety (stops after 10s to avoid spam)
-  let fallbackInterval = setInterval(sendHeightToTypebot, 500);
-  setTimeout(() => clearInterval(fallbackInterval), 10000);
-  
-  // Also on window resize (e.g., mobile orientation)
-  window.addEventListener('resize', sendHeightToTypebot);
-</script>
 </body>
 </html>
