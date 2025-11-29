@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sindi - Planejador Estratégico</title>
+  <title>Sindi - Planejador Estrategico</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -78,6 +79,24 @@
     .btn-add:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    }
+    
+    .btn-pdf {
+      background: #e0e0e0;
+      color: #666;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.3s;
+    }
+    
+    .btn-pdf:hover {
+      background: #d0d0d0;
+      transform: translateY(-1px);
     }
     
     .form-card {
@@ -421,7 +440,7 @@
       <p class="subtitle">Organize as demandas do condominio por prioridade inteligente</p>
       <div class="header-actions">
         <button class="btn-add" onclick="toggleForm()">+ Nova Demanda</button>
-        <button class="btn-add" onclick="generatePDF()">Gerar PDF</button>
+        <button class="btn-pdf" onclick="generatePDF()">Gerar PDF</button>
       </div>
     </div>
     
@@ -462,7 +481,7 @@
       </div>
     </div>
     
-    <h2 class="demands-title">🦉 Fila de Priorização Sugerida de Demandas</h2>
+    <h2 class="demands-title">Fila de Priorizacao Sugerida de Demandas</h2>
     <div id="demandsList"></div>
     
     <div class="footer">
@@ -596,7 +615,7 @@
         var legalBadge = '';
         
         if (demand.legal) {
-          legalBadge = '<span class="badge badge-legal">Obrigação Legal</span>';
+          legalBadge = '<span class="badge badge-legal">Obrigacao Legal</span>';
         }
         
         var urgencyText = demand.urgency.charAt(0).toUpperCase() + demand.urgency.slice(1);
@@ -702,34 +721,86 @@
         return;
       }
       
-      var pdfContent = 'PLANEJADOR ESTRATEGICO - SINDI\n';
-      pdfContent = pdfContent + 'Fila de Priorização Sugerida de Demandas\n';
-      pdfContent = pdfContent + '================================\n\n';
+      var jsPDF = window.jspdf.jsPDF;
+      var doc = new jsPDF();
+      
+      var pageWidth = doc.internal.pageSize.getWidth();
+      var margin = 20;
+      var yPosition = 20;
+      var lineHeight = 7;
+      
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text('PLANEJADOR ESTRATEGICO - SINDI', margin, yPosition);
+      yPosition = yPosition + 10;
+      
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'normal');
+      doc.text('Fila de Priorizacao Sugerida de Demandas', margin, yPosition);
+      yPosition = yPosition + 10;
+      
+      doc.setLineWidth(0.5);
+      doc.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition = yPosition + 10;
       
       for (var i = 0; i < sortedDemands.length; i++) {
         var demand = sortedDemands[i];
         var priority = calculatePriority(demand);
         var priorityInfo = getPriorityLabel(priority);
         
-        pdfContent = pdfContent + 'POSICAO: #' + (i + 1) + '\n';
-        pdfContent = pdfContent + 'Titulo: ' + demand.title + '\n';
-        pdfContent = pdfContent + 'Categoria: ' + demand.category + '\n';
-        pdfContent = pdfContent + 'Urgencia: ' + demand.urgency + '\n';
-        pdfContent = pdfContent + 'Impacto: ' + demand.impact + '\n';
-        pdfContent = pdfContent + 'Moradores afetados: ' + demand.affected + '\n';
-        pdfContent = pdfContent + 'Obrigacao legal: ' + (demand.legal ? 'Sim' : 'Nao') + '\n';
-        pdfContent = pdfContent + 'Prioridade: ' + priorityInfo.text + ' (Score: ' + priority.toFixed(0) + ')\n';
-        pdfContent = pdfContent + '--------------------------------\n\n';
+        if (yPosition > 260) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        
+        doc.setFontSize(14);
+        doc.setFont(undefined, 'bold');
+        doc.text('POSICAO: #' + (i + 1), margin, yPosition);
+        yPosition = yPosition + lineHeight;
+        
+        doc.setFontSize(11);
+        doc.setFont(undefined, 'normal');
+        
+        doc.text('Titulo: ' + demand.title, margin, yPosition);
+        yPosition = yPosition + lineHeight;
+        
+        doc.text('Categoria: ' + demand.category, margin, yPosition);
+        yPosition = yPosition + lineHeight;
+        
+        doc.text('Urgencia: ' + demand.urgency, margin, yPosition);
+        yPosition = yPosition + lineHeight;
+        
+        doc.text('Impacto: ' + demand.impact, margin, yPosition);
+        yPosition = yPosition + lineHeight;
+        
+        doc.text('Moradores afetados: ' + demand.affected, margin, yPosition);
+        yPosition = yPosition + lineHeight;
+        
+        doc.text('Obrigacao legal: ' + (demand.legal ? 'Sim' : 'Nao'), margin, yPosition);
+        yPosition = yPosition + lineHeight;
+        
+        doc.setFont(undefined, 'bold');
+        doc.text('Prioridade: ' + priorityInfo.text + ' (Score: ' + priority.toFixed(0) + ')', margin, yPosition);
+        yPosition = yPosition + lineHeight + 3;
+        
+        doc.setLineWidth(0.2);
+        doc.line(margin, yPosition, pageWidth - margin, yPosition);
+        yPosition = yPosition + 7;
       }
       
-      pdfContent = pdfContent + '\nGerado em: ' + new Date().toLocaleString('pt-BR') + '\n';
-      pdfContent = pdfContent + 'Sindi - Sindibot - Impactar LLC';
+      if (yPosition > 260) {
+        doc.addPage();
+        yPosition = 20;
+      }
       
-      var blob = new Blob([pdfContent], { type: 'text/plain;charset=utf-8' });
-      var link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'planejamento-demandas-' + Date.now() + '.txt';
-      link.click();
+      yPosition = yPosition + 5;
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'italic');
+      doc.text('Gerado em: ' + new Date().toLocaleString('pt-BR'), margin, yPosition);
+      yPosition = yPosition + 5;
+      doc.text('Sindi - Sindibot - Impactar LLC', margin, yPosition);
+      
+      doc.save('planejamento-demandas-' + Date.now() + '.pdf');
     }
   </script>
 </body>
