@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Pedido de Orcamento</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 28px;
+      padding: 32px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #FF6B35;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+    }
+    
+    h1 {
+      font-size: 28px;
+      color: #222;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .form-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #FF6B35;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #ffe8dc;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .required {
+      color: #FF6B35;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      font-size: 15px;
+      background: white;
+      color: #333;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #FF6B35;
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    
+    @media (min-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .form-hint {
+      font-size: 13px;
+      color: #999;
+      margin-top: 6px;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+      transition: all 0.3s;
+      margin-top: 32px;
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    }
+    
+    .btn-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .success-message {
+      background: #e8f5e9;
+      border: 2px solid #4caf50;
+      color: #2e7d32;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .success-message.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .error-message {
+      background: #ffebee;
+      border: 2px solid #f44336;
+      color: #c62828;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      padding: 20px;
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .footer span {
+      color: #FF6B35;
+      font-weight: bold;
+    }
+    
+    .select-wrapper {
+      position: relative;
+    }
+    
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 45px;
+    }
+    
+    .priority-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    
+    .priority-urgent {
+      background: #ffebee;
+      color: #c62828;
+    }
+    
+    .priority-high {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    
+    .priority-normal {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #1565c0;
+    }
+    
+    .info-box strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Pedido de Orcamento</h1>
+      <p class="subtitle">Solicite orcamentos de forma profissional e organizada</p>
+    </div>
+    
+    <div id="successMessage" class="success-message">
+      Pedido de orcamento enviado com sucesso!
+    </div>
+    
+    <div id="errorMessage" class="error-message">
+      Erro ao enviar pedido. Por favor, tente novamente.
+    </div>
+    
+    <div class="form-card">
+      <form id="orcamentoForm">
+        <div class="info-box">
+          <strong>Dica Profissional</strong>
+          Seja claro e detalhado na descricao do servico. Quanto mais informacoes voce fornecer, mais preciso sera o orcamento recebido.
+        </div>
+        
+        <h3 class="section-title">Dados do Condominio</h3>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Condominio <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="condominio" required>
+                <option value="">Selecione o condominio</option>
+                <option value="Edificio Central Park">Edificio Central Park</option>
+                <option value="Residencial Jardins">Residencial Jardins</option>
+                <option value="Condominio Vista Verde">Condominio Vista Verde</option>
+                <option value="Torres do Sol">Torres do Sol</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Nome do Sindico <span class="required">*</span></label>
+            <input type="text" id="nomeSindico" placeholder="Seu nome completo" required>
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Email <span class="required">*</span></label>
+            <input type="email" id="email" placeholder="seu@email.com" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Telefone <span class="required">*</span></label>
+            <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+          </div>
+        </div>
+        
+        <h3 class="section-title">Detalhes do Servico</h3>
+        
+        <div class="form-group">
+          <label class="form-label">Categoria do Servico <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="categoria" required>
+              <option value="">Selecione a categoria</option>
+              <option value="Manutencao Predial">Manutencao Predial</option>
+              <option value="Eletrica">Eletrica</option>
+              <option value="Hidraulica">Hidraulica</option>
+              <option value="Pintura">Pintura</option>
+              <option value="Jardinagem">Jardinagem</option>
+              <option value="Limpeza">Limpeza</option>
+              <option value="Seguranca">Seguranca</option>
+              <option value="Elevadores">Elevadores</option>
+              <option value="Piscina">Piscina</option>
+              <option value="Portaria">Portaria</option>
+              <option value="Reformas">Reformas</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Titulo do Servico <span class="required">*</span></label>
+          <input type="text" id="tituloServico" placeholder="Ex: Reparo no elevador principal" required>
+          <div class="form-hint">Resuma o servico em poucas palavras</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Descricao Detalhada <span class="required">*</span></label>
+          <textarea id="descricao" placeholder="Descreva o servico necessario, incluindo:
+- O que precisa ser feito
+- Localizacao especifica
+- Problemas identificados
+- Especificacoes tecnicas (se houver)
+- Materiais necessarios (se souber)" required></textarea>
+          <div class="form-hint">Quanto mais detalhes, melhor o orcamento</div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Prioridade <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="prioridade" required>
+                <option value="">Selecione a prioridade</option>
+                <option value="Urgente">Urgente - Risco ou emergencia</option>
+                <option value="Alta">Alta - Precisa ser feito em breve</option>
+                <option value="Normal">Normal - Pode aguardar</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Prazo Desejado</label>
+            <input type="date" id="prazo">
+            <div class="form-hint">Quando gostaria que fosse executado</div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Orcamento Estimado (opcional)</label>
+          <input type="number" id="orcamentoEstimado" placeholder="0.00" step="0.01" min="0">
+          <div class="form-hint">Se tiver uma ideia do valor, ajuda na negociacao</div>
+        </div>
+        
+        <h3 class="section-title">Justificativa Profissional</h3>
+        
+        <div class="form-group">
+          <label class="form-label">Justificativa <span class="required">*</span></label>
+          <textarea id="justificativa" placeholder="Explique a necessidade deste servico:
+- Por que e necessario?
+- Qual o impacto se nao for feito?
+- Houve solicitacoes de moradores?
+- Ha riscos envolvidos?
+- E preventivo ou corretivo?
+
+Esta justificativa sera usada para apresentar o orcamento ao conselho e/ou assembleia." required></textarea>
+          <div class="form-hint">Uma boa justificativa facilita a aprovacao do orcamento</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Observacoes Adicionais</label>
+          <textarea id="observacoes" placeholder="Outras informacoes relevantes para o fornecedor..."></textarea>
+        </div>
+        
+        <button type="submit" class="btn-submit" id="submitBtn">
+          Enviar Pedido de Orcamento
+        </button>
+      </form>
+    </div>
+    
+    <div class="footer">
+      Sindi - Pedido de Orcamento <span>Sindibot - Impactar LLC</span>
+    </div>
+  </div>
+  
+  <script>
+    var WEBHOOK_URL = 'https://seu-webhook-n8n.com/webhook/pedido-orcamento';
+    
+    var form = document.getElementById('orcamentoForm');
+    var submitBtn = document.getElementById('submitBtn');
+    var successMessage = document.getElementById('successMessage');
+    var errorMessage = document.getElementById('errorMessage');
+    
+    var prazoInput = document.getElementById('prazo');
+    var today = new Date();
+    var tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    prazoInput.min = tomorrow.toISOString().split('T')[0];
+    
+    var telefoneInput = document.getElementById('telefone');
+    telefoneInput.addEventListener('input', function(e) {
+      var valor = e.target.value.replace(/\D/g, '');
+      if (valor.length <= 11) {
+        if (valor.length <= 2) {
+          e.target.value = valor;
+        } else if (valor.length <= 6) {
+          e.target.value = '(' + valor.substring(0, 2) + ') ' + valor.substring(2);
+        } else if (valor.length <= 10) {
+          e.target.value = '(' + valor.substring(0, 2) + ') ' + valor.substring(2, 6) + '-' + valor.substring(6);
+        } else {
+          e.target.value = '(' + valor.substring(0, 2) + ') ' + valor.substring(2, 7) + '-' + valor.substring(7, 11);
+        }
+      }
+    });
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      successMessage.classList.remove('show');
+      errorMessage.classList.remove('show');
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando pedido...';
+      
+      var formData = {
+        condominio: document.getElementById('condominio').value,
+        nomeSindico: document.getElementById('nomeSindico').value,
+        email: document.getElementById('email').value,
+        telefone: document.getElementById('telefone').value,
+        categoria: document.getElementById('categoria').value,
+        tituloServico: document.getElementById('tituloServico').value,
+        descricao: document.getElementById('descricao').value,
+        prioridade: document.getElementById('prioridade').value,
+        prazo: document.getElementById('prazo').value || null,
+        orcamentoEstimado: document.getElementById('orcamentoEstimado').value || null,
+        justificativa: document.getElementById('justificativa').value,
+        observacoes: document.getElementById('observacoes').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Erro na requisicao');
+      })
+      .then(function(data) {
+        successMessage.classList.add('show');
+        form.reset();
+        prazoInput.min = tomorrow.toISOString().split('T')[0];
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        setTimeout(function() {
+          successMessage.classList.remove('show');
+        }, 5000);
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        errorMessage.classList.add('show');
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        setTimeout(function() {
+          errorMessage.classList.remove('show');
+        }, 5000);
+      })
+      .finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar Pedido de Orcamento';
+      });
+    });
+  </script>
+</body>
+</html>
