@@ -370,8 +370,10 @@
   </div>
   
   <script>
-    var WEBHOOK_SEARCH_URL = 'https://n8n.polenta.chat/webhook-test/pesquisar-infracao';//buscar normas
-    var WEBHOOK_SUBMIT_URL = 'https://n8n.polenta.chat/webhook-test/infracao'; //gerar documento
+    // WEBHOOK 1: Busca de normas na Vector Store (POST)
+    var WEBHOOK_SEARCH_URL = 'https://n8n.polenta.chat/webhook-test/pesquisar-infracao';
+    // WEBHOOK 2: Gerar documento no Google Drive (POST)
+    var WEBHOOK_SUBMIT_URL = 'https://n8n.polenta.chat/webhook-test/infracao';
     
     var form = document.getElementById('infracaoForm');
     var submitBtn = document.getElementById('submitBtn');
