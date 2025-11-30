@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Registro de Infracao</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 28px;
+      padding: 32px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #FF6B35;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+    }
+    
+    h1 {
+      font-size: 28px;
+      color: #222;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .form-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .required {
+      color: #FF6B35;
+    }
+    
+    input[type="text"],
+    input[type="date"],
+    input[type="time"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      font-size: 15px;
+      background: white;
+      color: #333;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #FF6B35;
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    
+    @media (min-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .form-hint {
+      font-size: 13px;
+      color: #999;
+      margin-top: 6px;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+      transition: all 0.3s;
+      margin-top: 32px;
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    }
+    
+    .btn-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .success-message {
+      background: #e8f5e9;
+      border: 2px solid #4caf50;
+      color: #2e7d32;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .success-message.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .error-message {
+      background: #ffebee;
+      border: 2px solid #f44336;
+      color: #c62828;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      padding: 20px;
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .footer span {
+      color: #FF6B35;
+      font-weight: bold;
+    }
+    
+    .select-wrapper {
+      position: relative;
+    }
+    
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 45px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Registro de Infracao</h1>
+      <p class="subtitle">Documente ocorrencias de forma rapida e organizada</p>
+    </div>
+    
+    <div id="successMessage" class="success-message">
+      Registro enviado com sucesso!
+    </div>
+    
+    <div id="errorMessage" class="error-message">
+      Erro ao enviar registro. Por favor, tente novamente.
+    </div>
+    
+    <div class="form-card">
+      <form id="infracaoForm">
+        <div class="form-group">
+          <label class="form-label">Condominio <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="condominio" required>
+              <option value="">Selecione o condominio</option>
+              <option value="Edificio Central Park">Edificio Central Park</option>
+              <option value="Residencial Jardins">Residencial Jardins</option>
+              <option value="Condominio Vista Verde">Condominio Vista Verde</option>
+              <option value="Torres do Sol">Torres do Sol</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Numero da Unidade <span class="required">*</span></label>
+            <input type="text" id="unidade" placeholder="Ex: 101, 202, 303" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Bloco</label>
+            <input type="text" id="bloco" placeholder="Ex: A, B, C">
+            <div class="form-hint">Deixe em branco se nao houver</div>
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Data da Ocorrencia <span class="required">*</span></label>
+            <input type="date" id="data" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Horario <span class="required">*</span></label>
+            <input type="time" id="horario" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Tipo de Infracao <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="tipoInfracao" required>
+              <option value="">Selecione o tipo</option>
+              <option value="Barulho excessivo">Barulho excessivo</option>
+              <option value="Uso indevido de areas comuns">Uso indevido de areas comuns</option>
+              <option value="Descarte irregular de lixo">Descarte irregular de lixo</option>
+              <option value="Animais sem guia">Animais sem guia</option>
+              <option value="Reforma sem autorizacao">Reforma sem autorizacao</option>
+              <option value="Vaga de garagem">Vaga de garagem</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Descricao da Ocorrencia <span class="required">*</span></label>
+          <textarea id="descricao" placeholder="Descreva detalhadamente o ocorrido..." required></textarea>
+          <div class="form-hint">Seja claro e objetivo na descricao</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Normas Desrespeitadas <span class="required">*</span></label>
+          <textarea id="normas" placeholder="Ex: Artigo 3, paragrafo 2 do regimento interno..." required></textarea>
+          <div class="form-hint">Cite as normas ou artigos do regimento interno</div>
+        </div>
+        
+        <button type="submit" class="btn-submit" id="submitBtn">
+          Gerar Documento
+        </button>
+      </form>
+    </div>
+    
+    <div class="footer">
+      Sindi - Registro de Infracoes <span>Sindibot - Impactar LLC</span>
+    </div>
+  </div>
+  
+  <script>
+    var WEBHOOK_URL = 'https://seu-webhook-n8n.com/webhook/infracao';
+    
+    var form = document.getElementById('infracaoForm');
+    var submitBtn = document.getElementById('submitBtn');
+    var successMessage = document.getElementById('successMessage');
+    var errorMessage = document.getElementById('errorMessage');
+    
+    var dataInput = document.getElementById('data');
+    var today = new Date().toISOString().split('T')[0];
+    dataInput.value = today;
+    dataInput.max = today;
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      successMessage.classList.remove('show');
+      errorMessage.classList.remove('show');
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+      
+      var formData = {
+        condominio: document.getElementById('condominio').value,
+        unidade: document.getElementById('unidade').value,
+        bloco: document.getElementById('bloco').value,
+        data: document.getElementById('data').value,
+        horario: document.getElementById('horario').value,
+        tipoInfracao: document.getElementById('tipoInfracao').value,
+        descricao: document.getElementById('descricao').value,
+        normas: document.getElementById('normas').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Erro na requisicao');
+      })
+      .then(function(data) {
+        successMessage.classList.add('show');
+        form.reset();
+        dataInput.value = today;
+        
+        setTimeout(function() {
+          successMessage.classList.remove('show');
+        }, 5000);
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        errorMessage.classList.add('show');
+        
+        setTimeout(function() {
+          errorMessage.classList.remove('show');
+        }, 5000);
+      })
+      .finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Gerar Documento';
+      });
+    });
+  </script>
+</body>
+</html>
