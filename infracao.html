@@ -151,6 +151,51 @@
       transform: none;
     }
     
+    .btn-search {
+      width: 100%;
+      background: #f5f5f5;
+      color: #666;
+      border: 2px solid #e0e0e0;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .btn-search:hover:not(:disabled) {
+      background: #e8e8e8;
+      border-color: #FF6B35;
+      color: #FF6B35;
+    }
+    
+    .btn-search:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .info-box {
+      background: #fff3e0;
+      border-left: 4px solid #FF6B35;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 14px;
+      color: #e65100;
+      display: none;
+    }
+    
+    .info-box.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
     .success-message {
       background: #e8f5e9;
       border: 2px solid #4caf50;
@@ -298,6 +343,13 @@
           <label class="form-label">Descricao da Ocorrencia <span class="required">*</span></label>
           <textarea id="descricao" placeholder="Descreva detalhadamente o ocorrido..." required></textarea>
           <div class="form-hint">Seja claro e objetivo na descricao</div>
+          <button type="button" class="btn-search" id="searchBtn" disabled>
+            <span id="searchIcon">🔍</span>
+            <span id="searchText">Buscar Normas Relacionadas</span>
+          </button>
+          <div id="searchInfo" class="info-box">
+            Preencha o condominio e a descricao para buscar normas relacionadas
+          </div>
         </div>
         
         <div class="form-group">
@@ -318,17 +370,115 @@
   </div>
   
   <script>
-    var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/infracao';
+    var WEBHOOK_SEARCH_URL = 'https://n8n.polenta.chat/webhook-test/pesquisar-infracao';//buscar normas
+    var WEBHOOK_SUBMIT_URL = 'https://n8n.polenta.chat/webhook-test/infracao'; //gerar documento
     
     var form = document.getElementById('infracaoForm');
     var submitBtn = document.getElementById('submitBtn');
+    var searchBtn = document.getElementById('searchBtn');
     var successMessage = document.getElementById('successMessage');
     var errorMessage = document.getElementById('errorMessage');
+    var searchInfo = document.getElementById('searchInfo');
+    var searchIcon = document.getElementById('searchIcon');
+    var searchText = document.getElementById('searchText');
+    
+    var condominioSelect = document.getElementById('condominio');
+    var descricaoInput = document.getElementById('descricao');
+    var normasInput = document.getElementById('normas');
     
     var dataInput = document.getElementById('data');
     var today = new Date().toISOString().split('T')[0];
     dataInput.value = today;
     dataInput.max = today;
+    
+    function checkSearchEnabled() {
+      var condominio = condominioSelect.value;
+      var descricao = descricaoInput.value.trim();
+      
+      if (condominio && descricao.length > 10) {
+        searchBtn.disabled = false;
+        searchInfo.classList.remove('show');
+      } else {
+        searchBtn.disabled = true;
+        if (descricao.length > 0 && descricao.length <= 10) {
+          searchInfo.textContent = 'A descricao precisa ter mais de 10 caracteres';
+          searchInfo.classList.add('show');
+        } else if (!condominio && descricao.length > 10) {
+          searchInfo.textContent = 'Selecione o condominio antes de buscar';
+          searchInfo.classList.add('show');
+        }
+      }
+    }
+    
+    condominioSelect.addEventListener('change', checkSearchEnabled);
+    descricaoInput.addEventListener('input', checkSearchEnabled);
+    
+    searchBtn.addEventListener('click', function() {
+      var condominio = condominioSelect.value;
+      var descricao = descricaoInput.value.trim();
+      
+      if (!condominio || !descricao) {
+        searchInfo.textContent = 'Preencha o condominio e a descricao';
+        searchInfo.classList.add('show');
+        return;
+      }
+      
+      searchBtn.disabled = true;
+      searchIcon.textContent = '⏳';
+      searchText.textContent = 'Buscando normas...';
+      normasInput.value = 'Buscando normas relacionadas...';
+      searchInfo.classList.remove('show');
+      
+      var searchData = {
+        condominio: condominio,
+        descricao: descricao
+      };
+      
+      fetch(WEBHOOK_SEARCH_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(searchData)
+      })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Erro na busca');
+      })
+      .then(function(data) {
+        if (data.normas) {
+          normasInput.value = data.normas;
+          searchInfo.textContent = 'Normas encontradas! Revise e edite se necessario';
+          searchInfo.style.background = '#e8f5e9';
+          searchInfo.style.borderLeftColor = '#4caf50';
+          searchInfo.style.color = '#2e7d32';
+          searchInfo.classList.add('show');
+        } else {
+          normasInput.value = '';
+          searchInfo.textContent = 'Nenhuma norma encontrada. Preencha manualmente';
+          searchInfo.style.background = '#fff3e0';
+          searchInfo.style.borderLeftColor = '#FF6B35';
+          searchInfo.style.color = '#e65100';
+          searchInfo.classList.add('show');
+        }
+      })
+      .catch(function(error) {
+        console.error('Erro na busca:', error);
+        normasInput.value = '';
+        searchInfo.textContent = 'Erro ao buscar normas. Tente novamente ou preencha manualmente';
+        searchInfo.style.background = '#ffebee';
+        searchInfo.style.borderLeftColor = '#f44336';
+        searchInfo.style.color = '#c62828';
+        searchInfo.classList.add('show');
+      })
+      .finally(function() {
+        searchBtn.disabled = false;
+        searchIcon.textContent = '🔍';
+        searchText.textContent = 'Buscar Normas Relacionadas';
+      });
+    });
     
     form.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -351,7 +501,7 @@
         timestamp: new Date().toISOString()
       };
       
-      fetch(WEBHOOK_URL, {
+      fetch(WEBHOOK_SUBMIT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
