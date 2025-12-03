@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sindi - Enviar Arquivos</title>
+    <style>
+        /* Todo o CSS anterior continua igual – só copiei o necessário para não ficar gigante aqui */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; padding: 20px; }
+        .container { max-width: 760px; margin: 0 auto; }
+        .header { background: white; border-radius: 28px; padding: 36px 28px; margin-bottom: 24px;
+                  box-shadow: 0 15px 45px rgba(0,0,0,0.08); text-align: center; border: 1px solid #eee; }
+        .logo { width: 85px; height: 85px; border-radius: 50%; border: 5px solid #FF6B35;
+                margin: 0 auto 18px; box-shadow: 0 6px 16px rgba(255,107,53,0.3); }
+        h1 { font-size: 30px; color: #222; margin-bottom: 10px; font-weight: 700; }
+        .subtitle { color: #666; font-size: 16.5px; line-height: 1.6; }
+
+        .form-card { background: white; border-radius: 24px; padding: 36px 32px;
+                     box-shadow: 0 12px 40px rgba(0,0,0,0.09); border: 1px solid #eee; }
+        .form-group { margin-bottom: 28px; }
+        .form-label { display: block; font-size: 15.5px; font-weight: 600; color: #333; margin-bottom: 10px; }
+        .required { color: #FF6B35; }
+
+        select, input[type="text"], textarea {
+            width: 100%; padding: 16px 18px; border: 2px solid #e0e0e0;
+            border-radius: 16px; font-size: 16px; background: white; transition: all 0.3s;
+        }
+        select:focus, input[type="text"]:focus, textarea:focus {
+            outline: none; border-color: #FF6B35; box-shadow: 0 0 0 4px rgba(255,107,53,0.15);
+        }
+        textarea { min-height: 110px; resize: vertical; font-family: inherit; }
+
+        input[type="file"] { padding: 16px 18px; border: 2px dashed #ccc; background: #fcfcfc; border-radius: 16px; }
+        input[type="file"]::file-selector-button {
+            padding: 12px 28px; background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+            color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;
+        }
+
+        .file-list { margin-top: 16px; padding: 18px; background: #f8f9fa; border-radius: 14px;
+                     border: 1px dashed #bbb; max-height: 260px; overflow-y: auto; }
+        .error-message { color: #FF6B35; font-size: 14px; margin-top: 8px; display: none; }
+
+        .btn-submit { width: 100%; background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+                      color: white; border: none; padding: 18px; border-radius: 18px; font-size: 18px;
+                      font-weight: 600; cursor: pointer; margin-top: 15px; box-shadow: 0 6px 18px rgba(255,107,53,0.35); }
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255,107,53,0.45); }
+
+        .success-message, .error-alert, .loading { display: none; background: white; border-radius: 24px;
+            padding: 50px 35px; box-shadow: 0 12px 40px rgba(0,0,0,0.09); text-align: center; margin-top: 30px; }
+        .success-message.show, .error-alert.show, .loading.show { display: block; animation: slideDown 0.4s; }
+        .file-success-list { background: #f8fff8; padding: 20px; border-radius: 14px; margin: 24px 0;
+                             border: 1px solid #d4edda; max-height: 320px; overflow-y: auto; }
+        .action-button { background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+                         color: white; padding: 16px 36px; border: none; border-radius: 16px;
+                         font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 20px; }
+        .spinner { border: 5px solid #f3f3f3; border-top: 5px solid #FF6B35; border-radius: 50%;
+                   width: 70px; height: 70px; animation: spin 1s linear infinite; margin: 0 auto 25px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+            <h1>Enviar Arquivos para o Condomínio</h1>
+            <p class="subtitle">
+                Fotos, vídeos, áudios, PDFs, documentos Word/Excel/PowerPoint<br>
+                <strong>Máximo 50 MB por arquivo</strong>
+            </p>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Enviando arquivos...<br><small>Pode demorar um pouco com arquivos grandes</small></p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <h2>Arquivos enviados com sucesso!</h2>
+            <p>Tudo foi salvo com segurança.</p>
+            <div class="file-success-list" id="successFileList"></div>
+            <button class="action-button" onclick="resetForm()">Enviar Mais Arquivos</button>
+        </div>
+
+        <div class="error-alert" id="errorMessage">
+            <h2>Erro no envio</h2>
+            <p id="errorText">Houve um problema. Tente novamente.</p>
+            <button class="action-button" onclick="resetForm()">Tentar Novamente</button>
+        </div>
+
+        <div class="form-card" id="formContent">
+            <form id="documentForm">
+                <div class="form-group">
+                    <label class="form-label" for="condominio">Condomínio <span class="required">*</span></label>
+                    <select id="condominio" required>
+                        <option value="">Selecione o condomínio</option>
+                        <option value="Calton Hill">Calton Hill</option>
+                        <option value="Parque dos Príncipes">Parque dos Príncipes</option>
+                        <!-- adicione mais -->
+                    </select>
+                    <div class="error-message" id="condominioError">Campo obrigatório</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="categoria">Tipo de Arquivo <span class="required">*</span></label>
+                    <select id="categoria" required>
+                        <option value="">Escolha a categoria</option>
+                        <option value="Reclamação">Reclamação / Denúncia</option>
+                        <option value="Sugestão">Sugestão</option>
+                        <option value="Documento Oficial">Documento Oficial</option>
+                        <option value="Foto de Problema">Foto de Problema</option>
+                        <option value="Vídeo">Vídeo</option>
+                        <option value="Áudio">Áudio</option>
+                        <option value="Boleto">Boleto / Comprovante</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                    <div class="error-message" id="categoriaError">Campo obrigatório</div>
+                </div>
+
+                <!-- NOVO CAMPO OBRIGATÓRIO -->
+                <div class="form-group">
+                    <label class="form-label" for="descricao">
+                        Descrição do(s) arquivo(s) <span class="required">*</span>
+                        <br><small style="color:#666; font-weight:normal;">
+                            Ex: Vazamento na garagem bloco B – 15/03, Ata da assembleia 2024, Vídeo barulho apartamento 502
+                        </small>
+                    </label>
+                    <textarea id="descricao" placeholder="Descreva o conteúdo dos arquivos de forma clara (será usado para busca futura)" required></textarea>
+                    <div class="error-message" id="descricaoError">A descrição é obrigatória</div>
+                </div>
+
+                <div class="form-group>
+                    <label class="form-label" for="arquivos">
+                        Arquivos <span class="required">*</span> (máx. 50 MB cada)
+                    </label>
+                    <input type="file" id="arquivos" multiple>
+                    <div class="file-list" id="fileList">
+                        <em>Clique para selecionar os arquivos</em>
+                    </div>
+                    <div class="error-message" id="arquivosError">Selecione pelo menos um arquivo</div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">Enviar Arquivos</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const WEBHOOK_URL = 'https://n8n.seudominio.com/webhook/enviar-arquivos-s3'; // ALTERE AQUI
+        const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+
+        const form = document.getElementById('documentForm');
+        const fileInput = document.getElementById('arquivos');
+        const fileList = document.getElementById('fileList');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const formContent = document.getElementById('formContent');
+        const successFileList = document.getElementById('successFileList');
+
+        fileInput.addEventListener('change', updateFileList);
+
+        function updateFileList() {
+            fileList.innerHTML = '';
+            if (fileInput.files.length === 0) {
+                fileList.innerHTML = '<em>Clique para selecionar os arquivos</em>';
+                return;
+            }
+            Array.from(fileInput.files).forEach(file => {
+                const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+                const item = document.createElement('div');
+                item.style.padding = '8px 0';
+                item.innerHTML = `${file.size > MAX_FILE_SIZE ? 'Tamanho excedido' : 'Documento'} ${file.name} <span style="color:#666">(${sizeMB} MB)</span>`;
+                if (file.size > MAX_FILE_SIZE) item.style.color = '#FF6B35';
+                fileList.appendChild(item);
+            });
+        }
+
+        form.addEventListener('submit', async e => {
+            e.preventDefault();
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+
+            const condominio = document.getElementById('condominio').value.trim();
+            const categoria = document.getElementById('categoria').value.trim();
+            const descricao = document.getElementById('descricao').value.trim();
+            const files = fileInput.files;
+
+            let erro = false;
+
+            if (!condominio) { document.getElementById('condominioError').classList.add('show'); erro = true; }
+            if (!categoria) { document.getElementById('categoriaError').classList.add('show'); erro = true; }
+            if (!descricao) { document.getElementById('descricaoError').classList.add('show'); erro = true; }
+            if (files.length === 0) { document.getElementById('arquivosError').classList.add('show'); erro = true; }
+
+            for (let f of files) {
+                if (f.size > MAX_FILE_SIZE) {
+                    document.getElementById('arquivosError').textContent = `Arquivo muito grande: ${f.name}`;
+                    document.getElementById('arquivosError').classList.add('show');
+                    erro = true;
+                }
+            }
+
+            if (erro) return;
+
+            formContent.style.display = 'none';
+            loading.classList.add('show');
+
+            try {
+                const arquivosArray = [];
+                for (let file of files) {
+                    const base64 = await fileToBase64(file);
+                    arquivosArray.push({
+                        filename: file.name,
+                        mimetype: file.type || 'application/octet-stream',
+                        size: file.size,
+                        data: base64.split(',')[1]
+                    });
+                }
+
+                const payload = {
+                    condominio,
+                    categoria,
+                    descricao,           // ← novo campo
+                    arquivos: arquivosArray,
+                    timestamp: new Date().toISOString()
+                };
+
+                const res = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await res.json();
+
+                if (res.ok && result.success) {
+                    loading.classList.remove('show');
+                    successFileList.innerHTML = '';
+                    result.files.forEach(f => {
+                        const div = document.createElement('div');
+                        div.style.padding = '10px 0';
+                        div.innerHTML = `<strong>${f.filename}</strong> (${(f.size/1024/1024).toFixed(1)} MB)<br>
+                                         <a href="${f.url}" target="_blank" style="color:#FF6B35">Abrir / Baixar</a>`;
+                        successFileList.appendChild(div);
+                    });
+                    successMessage.classList.add('show');
+                } else throw new Error(result.error || 'Erro no servidor');
+            } catch (err) {
+                loading.classList.remove('show');
+                document.getElementById('errorText').textContent = err.message || 'Falha na conexão';
+                errorMessage.classList.add('show');
+            }
+        });
+
+        function resetForm() {
+            [loading, successMessage, errorMessage].forEach(el => el.classList.remove('show'));
+            formContent.style.display = 'block';
+            form.reset();
+            updateFileList();
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+    </script>
+</body>
+</html>
