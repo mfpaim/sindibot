@@ -3,525 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sindi - Enviar Documento</title>
+    <title>Sindi - Enviar Arquivos</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: system-ui, -apple-system, sans-serif;
-            background: white;
+            background: #f8f9fa;
             min-height: 100vh;
             padding: 20px;
         }
-        
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        
+        .container { max-width: 760px; margin: 0 auto; }
+
         .header {
             background: white;
             border-radius: 28px;
-            padding: 32px 28px;
+            padding: 36px 28px;
             margin-bottom: 24px;
             box-shadow: 0 15px 45px rgba(0,0,0,0.08);
             text-align: center;
             border: 1px solid #eee;
         }
-        
         .logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 4px solid #FF6B35;
-            margin: 0 auto 16px;
-            box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+            width: 85px; height: 85px; border-radius: 50%; border: 5px solid #FF6B35;
+            margin: 0 auto 18px; box-shadow: 0 6px 16px rgba(255,107,53,0.3);
         }
-        
-        h1 {
-            font-size: 28px;
-            color: #222;
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-        
-        .subtitle {
-            color: #666;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-        
+        h1 { font-size: 30px; color: #222; margin-bottom: 10px; font-weight: 700; }
+        .subtitle { color: #666; font-size: 16.5px; line-height: 1.6; max-width: 600px; margin: 0 auto; }
+
         .form-card {
             background: white;
             border-radius: 24px;
-            padding: 32px 28px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 36px 32px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.09);
             border: 1px solid #eee;
         }
-        
-        .form-group {
-            margin-bottom: 24px;
-        }
-        
+
+        .form-group { margin-bottom: 28px; }
         .form-label {
-            display: block;
-            font-size: 15px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
+            display: block; font-size: 15.5px; font-weight: 600; color: #333;
+            margin-bottom: 10px;
         }
-        
-        .required {
-            color: #FF6B35;
-        }
-        
-        select,
-        input[type="file"] {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 14px;
-            font-size: 15px;
-            background: white;
-            color: #333;
-            transition: all 0.3s;
-            font-family: inherit;
-        }
-        
-        select:focus,
-        input[type="file"]:focus {
-            outline: none;
-            border-color: #FF6B35;
-            box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
-        }
-        
-        .select-wrapper {
-            position: relative;
-        }
-        
+        .required { color: #FF6B35; }
+
         select {
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            padding-right: 45px;
-            cursor: pointer;
+            width: 100%; padding: 16px 18px; border: 2px solid #e0e0e0;
+            border-radius: 16px; font-size: 16px; background: white;
+            appearance: none; cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 18px center;
+            padding-right: 50px; transition: all 0.3s;
         }
-        
+        select:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 4px rgba(255,107,53,0.15); }
+
         input[type="file"] {
-            cursor: pointer;
-            padding: 12px 16px;
+            width: 100%; padding: 16px 18px; border: 2px dashed #ccc;
+            border-radius: 16px; font-size: 16px; background: #fcfcfc;
+            cursor: pointer; transition: all 0.3s;
         }
-        
         input[type="file"]::file-selector-button {
-            padding: 10px 20px;
-            border: none;
+            padding: 12px 28px; border: none;
             background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
-            color: white;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            margin-right: 15px;
+            color: white; border-radius: 12px; cursor: pointer;
+            font-weight: 600; font-size: 15px; margin-right: 16px;
             transition: all 0.3s;
         }
-        
         input[type="file"]::file-selector-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255,107,53,0.35);
         }
-        
+
+        .file-list {
+            margin-top: 16px; padding: 18px; background: #f8f9fa;
+            border-radius: 14px; border: 1px dashed #bbb;
+            max-height: 260px; overflow-y: auto; font-size: 14.5px;
+        }
+        .file-item {
+            padding: 10px 0; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 1px solid #eee;
+            word-break: break-all;
+        }
+        .file-item:last-child { border: none; }
+        .file-size { color: #666; font-size: 13px; }
+
         .error-message {
-            color: #FF6B35;
-            font-size: 13px;
-            margin-top: 6px;
-            display: none;
+            color: #FF6B35; font-size: 14px; margin-top: 8px; display: none;
             font-weight: 500;
         }
-        
-        .error-message.show {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-        
+        .error-message.show { display: block; animation: slideDown 0.3s; }
+
         .btn-submit {
-            width: 100%;
-            background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 16px;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
-            transition: all 0.3s;
-            margin-top: 32px;
+            width: 100%; background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+            color: white; border: none; padding: 18px; border-radius: 18px;
+            font-size: 18px; font-weight: 600; cursor: pointer;
+            box-shadow: 0 6px 18px rgba(255,107,53,0.35); transition: all 0.3s;
+            margin-top: 10px;
         }
-        
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255,107,53,0.45); }
+        .btn-submit:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+
+        .success-message, .error-alert, .loading {
+            background: white; border-radius: 24px; padding: 50px 35px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.09); border: 1px solid #eee;
+            text-align: center; display: none; margin-top: 30px;
         }
-        
-        .btn-submit:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+        .success-message.show, .error-alert.show, .loading.show {
+            display: block; animation: slideDown 0.4s ease;
         }
-        
-        .success-message,
-        .error-alert {
-            background: white;
-            border-radius: 24px;
-            padding: 48px 32px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            border: 1px solid #eee;
-            text-align: center;
-            display: none;
+        .success-message { border-top: 6px solid #4caf50; }
+        .error-alert { border-top: 6px solid #FF6B35; }
+
+        .success-message h2 { font-size: 28px; color: #4caf50; margin-bottom: 16px; }
+        .error-alert h2 { font-size: 28px; color: #FF6B35; margin-bottom: 16px; }
+
+        .file-success-list {
+            text-align: left; background: #f8fff8; padding: 20px;
+            border-radius: 14px; margin: 24px 0; border: 1px solid #d4edda;
+            max-height: 320px; overflow-y: auto;
         }
-        
-        .success-message.show,
-        .error-alert.show {
-            display: block;
-            animation: slideDown 0.3s ease;
+        .file-success-item {
+            padding: 12px 0; display: flex; justify-content: space-between;
+            align-items: center; border-bottom: 1px solid #d4edda;
+            font-size: 15px;
         }
-        
-        .success-message {
-            border-top: 4px solid #4caf50;
+        .file-success-item:last-child { border: none; }
+        .file-success-item a {
+            color: #FF6B35; font-weight: 600; text-decoration: underline;
+            word-break: break-all;
         }
-        
-        .error-alert {
-            border-top: 4px solid #FF6B35;
-        }
-        
-        .success-message h2,
-        .error-alert h2 {
-            font-size: 28px;
-            margin-bottom: 12px;
-            font-weight: 700;
-        }
-        
-        .success-message h2 {
-            color: #4caf50;
-        }
-        
-        .error-alert h2 {
-            color: #FF6B35;
-        }
-        
-        .success-message p,
-        .error-alert p {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 24px;
-            line-height: 1.5;
-        }
-        
+
         .action-button {
             background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
-            color: white;
-            border: none;
-            padding: 14px 32px;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
+            color: white; border: none; padding: 16px 36px;
+            border-radius: 16px; font-size: 17px; font-weight: 600;
+            cursor: pointer; margin-top: 20px; box-shadow: 0 6px 18px rgba(255,107,53,0.35);
             transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
         }
-        
-        .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255,107,53,0.4);
-        }
-        
-        .loading {
-            background: white;
-            border-radius: 24px;
-            padding: 48px 32px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            border: 1px solid #eee;
-            text-align: center;
-            display: none;
-        }
-        
-        .loading.show {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-        
+        .action-button:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255,107,53,0.45); }
+
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #FF6B35;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            border: 5px solid #f3f3f3; border-top: 5px solid #FF6B35;
+            border-radius: 50%; width: 70px; height: 70px;
+            animation: spin 1s linear infinite; margin: 0 auto 25px;
         }
-        
-        .loading p {
-            color: #666;
-            font-size: 16px;
-            font-weight: 500;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
+
         .footer {
-            text-align: center;
-            margin-top: 32px;
-            padding: 20px;
-            color: #888;
-            font-size: 14px;
+            text-align: center; margin-top: 50px; color: #888; font-size: 14.5px;
         }
-        
-        .footer span {
-            color: #FF6B35;
-            font-weight: bold;
-        }
-        
-        @media (max-width: 640px) {
-            h1 {
-                font-size: 24px;
-            }
-            
-            .subtitle {
-                font-size: 15px;
-            }
-            
-            .header {
-                padding: 24px 20px;
-            }
-            
-            .form-card,
-            .success-message,
-            .error-alert,
-            .loading {
-                padding: 24px 20px;
-            }
-            
-            .logo {
-                width: 70px;
-                height: 70px;
-            }
-        }
+        .footer span { color: #FF6B35; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
-            <h1>Enviar Documento</h1>
-            <p class="subtitle">Formulário exclusivo para documentos como: Atas, Convenções, Regimentos e Regulamentos</p>
+            <h1>Enviar Arquivos para o Condomínio</h1>
+            <p class="subtitle">
+                Fotos, vídeos, áudios, PDFs, documentos do Word/Excel/PowerPoint.<br>
+                <strong>Tamanho máximo por arquivo: 50 MB</strong>
+            </p>
         </div>
-        
-        <!-- Success Message -->
-        <div class="success-message" id="successMessage">
-            <h2>✓ Documento enviado com sucesso!</h2>
-            <p>Seu documento foi enviado e salvo com sucesso.</p>
-            <button class="action-button" onclick="resetForm()">Enviar Outro Documento</button>
-        </div>
-        
-        <!-- Error Message -->
-        <div class="error-alert" id="errorMessage">
-            <h2>✗ Erro ao enviar documento</h2>
-            <p id="errorText">Ocorreu um erro ao enviar o documento. Por favor, tente novamente.</p>
-            <button class="action-button" onclick="resetForm()">Tentar Novamente</button>
-        </div>
-        
+
         <!-- Loading -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Enviando documento...</p>
+            <p>Enviando seus arquivos...<br><small>Pode demorar um pouco com vídeos grandes</small></p>
         </div>
-        
-        <!-- Form Content -->
+
+        <!-- Sucesso -->
+        <div class="success-message" id="successMessage">
+            <h2>Arquivos enviados com sucesso!</h2>
+            <p>Todos os arquivos foram salvos com segurança.</p>
+            <div class="file-success-list" id="successFileList"></div>
+            <button class="action-button" onclick="resetForm()">Enviar Mais Arquivos</button>
+        </div>
+
+        <!-- Erro -->
+        <div class="error-alert" id="errorMessage">
+            <h2>Erro no envio</h2>
+            <p id="errorText">Houve um problema ao enviar os arquivos. Tente novamente.</p>
+            <button class="action-button" onclick="resetForm()">Tentar Novamente</button>
+        </div>
+
+        <!-- Formulário -->
         <div class="form-card" id="formContent">
             <form id="documentForm">
                 <div class="form-group">
                     <label class="form-label" for="condominio">
                         Condomínio <span class="required">*</span>
                     </label>
-                    <div class="select-wrapper">
-                        <select id="condominio" name="condominio" required>
-                            <option value="">Selecione o condomínio</option>
-                            <option value="Calton Hill">Calton Hill</option>
-                            <option value="Parque dos Príncipes">Parque dos Príncipes</option>
-                        </select>
-                    </div>
-                    <div class="error-message" id="condominioError">
-                        Este campo é obrigatório
-                    </div>
+                    <select id="condominio" required>
+                        <option value="">Selecione seu condomínio</option>
+                        <option value="Calton Hill">Calton Hill</option>
+                        <option value="Parque dos Príncipes">Parque dos Príncipes</option>
+                        <option value="Residencial Villa Lobos">Residencial Villa Lobos</option>
+                        <!-- Adicione mais condomínios aqui -->
+                    </select>
+                    <div class="error-message" id="condominioError">Selecione o condomínio</div>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="form-label" for="categoria">
-                        Categoria do Documento <span class="required">*</span>
+                        Tipo de Arquivo <span class="required">*</span>
                     </label>
-                    <div class="select-wrapper">
-                        <select id="categoria" name="categoria" required>
-                            <option value="">Selecione a categoria</option>
-                            <option value="Ata">Ata</option>
-                            <option value="Convenção">Convenção</option>
-                            <option value="Regimento">Regimento</option>
-                            <option value="Regulamento">Regulamento</option>
-                        </select>
-                    </div>
-                    <div class="error-message" id="categoriaError">
-                        Este campo é obrigatório
-                    </div>
+                    <select id="categoria" required>
+                        <option value="">Escolha a categoria</option>
+                        <option value="Reclamação">Reclamação / Denúncia</option>
+                        <option value="Sugestão">Sugestão</option>
+                        <option value="Documento Oficial">Documento Oficial (Ata, Convenção, etc)</option>
+                        <option value="Foto de Problema">Foto de Problema / Manutenção</option>
+                        <option value="Vídeo de Assembleia">Vídeo de Assembleia</option>
+                        <option value="Áudio de Reunião">Áudio de Reunião</option>
+                        <option value="Boleto/Pagamento">Boleto ou Comprovante</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                    <div class="error-message" id="categoriaError">Selecione o tipo</div>
                 </div>
-                
+
                 <div class="form-group">
-                    <label class="form-label" for="documento">
-                        Documento (apenas formato PDF) <span class="required">*</span>
+                    <label class="form-label" for="arquivos">
+                        Selecione um ou mais arquivos <span class="required">*</span>
                     </label>
-                    <input type="file" id="documento" name="documento" accept=".pdf" required>
-                    <div class="error-message" id="documentoError">
-                        Por favor, selecione um arquivo PDF
+                    <input type="file" id="arquivos" name="arquivos" multiple>
+                    <div class="file-list" id="fileList">
+                        <em>Clique acima para selecionar arquivos (máx. 50 MB cada)</em>
                     </div>
+                    <div class="error-message" id="arquivosError">Selecione pelo menos um arquivo válido</div>
                 </div>
-                
+
                 <button type="submit" class="btn-submit" id="submitBtn">
-                    Enviar Documento
+                    Enviar Arquivos
                 </button>
             </form>
         </div>
-        
+
         <div class="footer">
-            Sindi - Envio de Documentos <span>Sindibot - Impactar LLC</span>
+            Sindi - Central de Arquivos <span>Sindibot - Impactar LLC</span>
         </div>
     </div>
-    
+
     <script>
-        // CONFIGURE YOUR N8N WEBHOOK URL HERE - N8N Workflow: Upload Docs
-        const WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/c22a8253-a9b0-4572-bd15-81ca39ef6758';
-        
+        // MUDE AQUI PARA O SEU WEBHOOK NOVO DO N8N
+        const WEBHOOK_URL = 'https://n8n.seudominio.com/webhook/enviar-arquivos-s3';
+
+        const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
         const form = document.getElementById('documentForm');
+        const fileInput = document.getElementById('arquivos');
+        const fileList = document.getElementById('fileList');
         const submitBtn = document.getElementById('submitBtn');
         const loading = document.getElementById('loading');
         const successMessage = document.getElementById('successMessage');
         const errorMessage = document.getElementById('errorMessage');
         const formContent = document.getElementById('formContent');
-        
+        const successFileList = document.getElementById('successFileList');
+
+        // Atualiza lista de arquivos selecionados
+        fileInput.addEventListener('change', () => {
+            fileList.innerHTML = '';
+            if (fileInput.files.length === 0) {
+                fileList.innerHTML = '<em>Clique acima para selecionar arquivos (máx. 50 MB cada)</em>';
+                return;
+            }
+
+            Array.from(fileInput.files).forEach(file => {
+                const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+                const isTooBig = file.size > MAX_FILE_SIZE;
+                const icon = isTooBig ? 'Tamanho excedido' : 'Documento';
+
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                div.innerHTML = `
+                    <span>${isTooBig ? 'Tamanho excedido' : 'Documento'} ${file.name}</span>
+                    <span class="file-size">${sizeMB} MB</span>
+                `;
+                if (isTooBig) div.style.color = '#FF6B35';
+                fileList.appendChild(div);
+            });
+        });
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            // Clear previous errors
             document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
-            
-            // Validate form
+
             const condominio = document.getElementById('condominio').value;
             const categoria = document.getElementById('categoria').value;
-            const documento = document.getElementById('documento').files[0];
-            
+            const files = fileInput.files;
+
             let hasError = false;
-            
-            if (!condominio) {
-                document.getElementById('condominioError').classList.add('show');
-                hasError = true;
+
+            if (!condominio) { document.getElementById('condominioError').classList.add('show'); hasError = true; }
+            if (!categoria) { document.getElementById('categoriaError').classList.add('show'); hasError = true; }
+            if (files.length === 0) { document.getElementById('arquivosError').classList.add('show'); hasError = true; }
+
+            // Validação de tamanho
+            for (let file of files) {
+                if (file.size > MAX_FILE_SIZE) {
+                    document.getElementById('arquivosError').textContent = `Arquivo muito grande: ${file.name} (máx. 50 MB)`;
+                    document.getElementById('arquivosError').classList.add('show');
+                    hasError = true;
+                }
             }
-            
-            if (!categoria) {
-                document.getElementById('categoriaError').classList.add('show');
-                hasError = true;
-            }
-            
-            if (!documento) {
-                document.getElementById('documentoError').classList.add('show');
-                hasError = true;
-            } else if (documento.type !== 'application/pdf') {
-                document.getElementById('documentoError').textContent = 'Apenas arquivos PDF são permitidos';
-                document.getElementById('documentoError').classList.add('show');
-                hasError = true;
-            }
-            
+
             if (hasError) return;
-            
-            // Show loading
+
             formContent.style.display = 'none';
             loading.classList.add('show');
             submitBtn.disabled = true;
-            
+
             try {
-                // Convert file to base64
-                const base64File = await fileToBase64(documento);
-                
-                // Prepare data
-                const formData = {
-                    condominio: condominio,
-                    categoria: categoria,
-                    documento: {
-                        filename: documento.name,
-                        mimetype: documento.type,
-                        data: base64File
-                    }
+                const arquivosArray = [];
+
+                for (let file of files) {
+                    const base64 = await fileToBase64(file);
+                    arquivosArray.push({
+                        filename: file.name,
+                        mimetype: file.type || 'application/octet-stream',
+                        size: file.size,
+                        data: base64.split(',')[1]
+                    });
+                }
+
+                const payload = {
+                    condominio,
+                    categoria,
+                    arquivos: arquivosArray,
+                    timestamp: new Date().toISOString()
                 };
-                
-                // Send to n8n webhook
+
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
-                
-                if (response.ok) {
-                    // Show success
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
                     loading.classList.remove('show');
+                    successFileList.innerHTML = '';
+                    result.files.forEach(f => {
+                        const div = document.createElement('div');
+                        div.className = 'file-success-item';
+                        div.innerHTML = `
+                            <span>${f.filename} (${(f.size / 1024 / 1024).toFixed(1)} MB)</span>
+                            <a href="${f.url}" target="_blank">Abrir / Baixar</a>
+                        `;
+                        successFileList.appendChild(div);
+                    });
                     successMessage.classList.add('show');
-                    form.reset();
                 } else {
-                    throw new Error('Erro ao enviar documento');
+                    throw new Error(result.error || 'Erro no servidor');
                 }
-            } catch (error) {
-                console.error('Erro:', error);
+            } catch (err) {
+                console.error(err);
                 loading.classList.remove('show');
+                document.getElementById('errorText').textContent = err.message || 'Falha na conexão. Verifique sua internet e tente novamente.';
                 errorMessage.classList.add('show');
             }
         });
-        
+
         function resetForm() {
-            successMessage.classList.remove('show');
-            errorMessage.classList.remove('show');
+            [successMessage, errorMessage, loading].forEach(el => el.classList.remove('show'));
             formContent.style.display = 'block';
-            submitBtn.disabled = false;
             form.reset();
+            fileList.innerHTML = '<em>Clique acima para selecionar arquivos (máx. 50 MB cada)</em>';
+            submitBtn.disabled = false;
         }
-        
-        // Convert file to base64
+
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
-                reader.onload = () => {
-                    // Remove the data:application/pdf;base64, prefix
-                    const base64 = reader.result.split(',')[1];
-                    resolve(base64);
-                };
-                reader.onerror = error => reject(error);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
             });
         }
     </script>
