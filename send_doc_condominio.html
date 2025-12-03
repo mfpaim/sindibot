@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enviar Documento</title>
+    <title>Sindi - Enviar Documento</title>
     <style>
         * {
             margin: 0;
@@ -12,239 +12,330 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            font-family: system-ui, -apple-system, sans-serif;
+            background: white;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 20px;
         }
         
         .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .header {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 600px;
-            width: 100%;
-            padding: 40px;
+            border-radius: 28px;
+            padding: 32px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid #eee;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid #FF6B35;
+            margin: 0 auto 16px;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.25);
         }
         
         h1 {
-            color: #2d3748;
-            font-size: 24px;
-            margin-bottom: 10px;
-            text-align: center;
+            font-size: 28px;
+            color: #222;
+            margin-bottom: 8px;
+            font-weight: 700;
         }
         
         .subtitle {
-            color: #718096;
-            font-size: 14px;
-            text-align: center;
-            margin-bottom: 30px;
+            color: #666;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
         }
         
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
         
-        label {
+        .form-label {
             display: block;
-            color: #2d3748;
+            font-size: 15px;
             font-weight: 600;
+            color: #333;
             margin-bottom: 8px;
-            font-size: 14px;
         }
         
         .required {
-            color: #e53e3e;
+            color: #FF6B35;
         }
         
-        select, input[type="file"] {
+        select,
+        input[type="file"] {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
             font-size: 15px;
-            color: #2d3748;
-            background-color: white;
-            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+            transition: all 0.3s;
             font-family: inherit;
         }
         
-        select:focus, input[type="file"]:focus {
+        select:focus,
+        input[type="file"]:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #FF6B35;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+        }
+        
+        .select-wrapper {
+            position: relative;
         }
         
         select {
-            cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
-            background-position: right 15px center;
-            background-size: 20px;
+            background-position: right 16px center;
             padding-right: 45px;
-        }
-        
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
+            cursor: pointer;
         }
         
         input[type="file"] {
             cursor: pointer;
+            padding: 12px 16px;
         }
         
         input[type="file"]::file-selector-button {
             padding: 10px 20px;
             border: none;
-            background-color: #667eea;
+            background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
             color: white;
-            border-radius: 6px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 14px;
             margin-right: 15px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s;
         }
         
         input[type="file"]::file-selector-button:hover {
-            background-color: #5568d3;
-        }
-        
-        button[type="submit"] {
-            width: 100%;
-            padding: 15px;
-            background-color: #f56565;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-        
-        button[type="submit"]:hover {
-            background-color: #e53e3e;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(245, 101, 101, 0.3);
-        }
-        
-        button[type="submit"]:active {
-            transform: translateY(0);
-        }
-        
-        button[type="submit"]:disabled {
-            background-color: #cbd5e0;
-            cursor: not-allowed;
-            transform: none;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
         }
         
         .error-message {
-            color: #e53e3e;
+            color: #FF6B35;
             font-size: 13px;
-            margin-top: 5px;
+            margin-top: 6px;
             display: none;
+            font-weight: 500;
         }
         
         .error-message.show {
             display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+            transition: all 0.3s;
+            margin-top: 32px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+        }
+        
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .success-message,
+        .error-alert {
+            background: white;
+            border-radius: 24px;
+            padding: 48px 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message.show,
+        .error-alert.show {
+            display: block;
+            animation: slideDown 0.3s ease;
         }
         
         .success-message {
-            background-color: #48bb78;
-            color: white;
-            padding: 30px;
-            border-radius: 8px;
-            text-align: center;
-            display: none;
-        }
-        
-        .success-message.show {
-            display: block;
-        }
-        
-        .success-message h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        
-        .success-message p {
-            font-size: 16px;
-            margin-bottom: 20px;
+            border-top: 4px solid #4caf50;
         }
         
         .error-alert {
-            background-color: #f56565;
-            color: white;
-            padding: 30px;
-            border-radius: 8px;
-            text-align: center;
-            display: none;
+            border-top: 4px solid #FF6B35;
         }
         
-        .error-alert.show {
-            display: block;
+        .success-message h2,
+        .error-alert h2 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .success-message h2 {
+            color: #4caf50;
         }
         
         .error-alert h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
+            color: #FF6B35;
         }
         
+        .success-message p,
         .error-alert p {
             font-size: 16px;
-            margin-bottom: 20px;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.5;
         }
         
         .action-button {
-            background-color: white;
-            color: #2d3748;
+            background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+            color: white;
             border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
+            padding: 14px 32px;
+            border-radius: 14px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
         }
         
         .action-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 20px rgba(255,107,53,0.4);
         }
         
         .loading {
-            display: none;
+            background: white;
+            border-radius: 24px;
+            padding: 48px 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
             text-align: center;
-            padding: 20px;
+            display: none;
         }
         
         .loading.show {
             display: block;
+            animation: slideDown 0.3s ease;
         }
         
         .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #FF6B35;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 20px;
+        }
+        
+        .loading p {
+            color: #666;
+            font-size: 16px;
+            font-weight: 500;
         }
         
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 32px;
+            padding: 20px;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .footer span {
+            color: #FF6B35;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 24px;
+            }
+            
+            .subtitle {
+                font-size: 15px;
+            }
+            
+            .header {
+                padding: 24px 20px;
+            }
+            
+            .form-card,
+            .success-message,
+            .error-alert,
+            .loading {
+                padding: 24px 20px;
+            }
+            
+            .logo {
+                width: 70px;
+                height: 70px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="header">
+            <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+            <h1>Enviar Documento</h1>
+            <p class="subtitle">Formulário exclusivo para documentos como: Atas, Convenções, Regimentos e Regulamentos</p>
+        </div>
+        
         <!-- Success Message -->
         <div class="success-message" id="successMessage">
             <h2>✓ Documento enviado com sucesso!</h2>
@@ -259,61 +350,67 @@
             <button class="action-button" onclick="resetForm()">Tentar Novamente</button>
         </div>
         
-        <!-- Form Content -->
-        <div id="formContent">
-            <h1>Enviar Documento para a Pasta de um Condomínio</h1>
-            <p class="subtitle">Formulário exclusivo para documentos como: Atas, Convenções, Regimentos e Regulamentos.</p>
-            
-            <form id="documentForm">
-            <div class="form-group">
-                <label for="condominio">
-                    Condomínio <span class="required">*</span>
-                </label>
-                <select id="condominio" name="condominio" required>
-                    <option value="">Selecione uma opção...</option>
-                    <option value="Calton Hill">Calton Hill</option>
-                    <option value="Parque dos Príncipes">Parque dos Príncipes</option>
-                </select>
-                <div class="error-message" id="condominioError">
-                    Este campo é obrigatório
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="categoria">
-                    Categoria do Documento <span class="required">*</span>
-                </label>
-                <select id="categoria" name="categoria" required>
-                    <option value="">Selecione uma opção...</option>
-                    <option value="Ata">Ata</option>
-                    <option value="Convenção">Convenção</option>
-                    <option value="Regimento">Regimento</option>
-                    <option value="Regulamento">Regulamento</option>
-                </select>
-                <div class="error-message" id="categoriaError">
-                    Este campo é obrigatório
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="documento">
-                    Documento (apenas formato PDF) <span class="required">*</span>
-                </label>
-                <div class="file-input-wrapper">
-                    <input type="file" id="documento" name="documento" accept=".pdf" required>
-                </div>
-                <div class="error-message" id="documentoError">
-                    Por favor, selecione um arquivo PDF
-                </div>
-            </div>
-            
-            <button type="submit" id="submitBtn">Enviar Documento</button>
-        </form>
-        
+        <!-- Loading -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p style="margin-top: 15px; color: #718096;">Enviando documento...</p>
+            <p>Enviando documento...</p>
         </div>
+        
+        <!-- Form Content -->
+        <div class="form-card" id="formContent">
+            <form id="documentForm">
+                <div class="form-group">
+                    <label class="form-label" for="condominio">
+                        Condomínio <span class="required">*</span>
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="condominio" name="condominio" required>
+                            <option value="">Selecione o condomínio</option>
+                            <option value="Calton Hill">Calton Hill</option>
+                            <option value="Parque dos Príncipes">Parque dos Príncipes</option>
+                        </select>
+                    </div>
+                    <div class="error-message" id="condominioError">
+                        Este campo é obrigatório
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="categoria">
+                        Categoria do Documento <span class="required">*</span>
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="categoria" name="categoria" required>
+                            <option value="">Selecione a categoria</option>
+                            <option value="Ata">Ata</option>
+                            <option value="Convenção">Convenção</option>
+                            <option value="Regimento">Regimento</option>
+                            <option value="Regulamento">Regulamento</option>
+                        </select>
+                    </div>
+                    <div class="error-message" id="categoriaError">
+                        Este campo é obrigatório
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="documento">
+                        Documento (apenas formato PDF) <span class="required">*</span>
+                    </label>
+                    <input type="file" id="documento" name="documento" accept=".pdf" required>
+                    <div class="error-message" id="documentoError">
+                        Por favor, selecione um arquivo PDF
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    Enviar Documento
+                </button>
+            </form>
+        </div>
+        
+        <div class="footer">
+            Sindi - Envio de Documentos <span>Sindibot - Impactar LLC</span>
         </div>
     </div>
     
@@ -325,6 +422,8 @@
         const submitBtn = document.getElementById('submitBtn');
         const loading = document.getElementById('loading');
         const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const formContent = document.getElementById('formContent');
         
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -361,7 +460,7 @@
             if (hasError) return;
             
             // Show loading
-            form.style.display = 'none';
+            formContent.style.display = 'none';
             loading.classList.add('show');
             submitBtn.disabled = true;
             
@@ -394,23 +493,23 @@
                     loading.classList.remove('show');
                     successMessage.classList.add('show');
                     form.reset();
-                    
-                    // Hide success message and show form again after 3 seconds
-                    setTimeout(() => {
-                        successMessage.classList.remove('show');
-                        form.style.display = 'block';
-                        submitBtn.disabled = false;
-                    }, 3000);
                 } else {
                     throw new Error('Erro ao enviar documento');
                 }
             } catch (error) {
-                alert('Erro ao enviar documento. Por favor, tente novamente.');
+                console.error('Erro:', error);
                 loading.classList.remove('show');
-                form.style.display = 'block';
-                submitBtn.disabled = false;
+                errorMessage.classList.add('show');
             }
         });
+        
+        function resetForm() {
+            successMessage.classList.remove('show');
+            errorMessage.classList.remove('show');
+            formContent.style.display = 'block';
+            submitBtn.disabled = false;
+            form.reset();
+        }
         
         // Convert file to base64
         function fileToBase64(file) {
