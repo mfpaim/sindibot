@@ -83,14 +83,14 @@
             <h1>Enviar Arquivos para o Condomínio</h1>
             <p class="subtitle">
                 Fotos, vídeos, áudios, PDFs, documentos Word/Excel/PowerPoint<br>
-                <strong>Máximo 50 MB por arquivo</strong>
+                <strong>Máximo 50 MB por arquivo • Agora com upload mais rápido!</strong>
             </p>
         </div>
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <p>Enviando arquivos...</p>
-            <p class="progress-text" id="progressText">Isso pode levar até 5 minutos com arquivos grandes</p>
+            <p class="progress-text" id="progressText">Upload direto - muito mais rápido!</p>
         </div>
 
         <div class="success-message" id="successMessage">
@@ -162,10 +162,9 @@
     </div>
 
     <script>
-        // Use production webhook - change to /webhook-test/ for debugging
         const WEBHOOK_URL = 'https://n8n.polenta.chat/webhook/send-condo-sindicloud-s3';
         const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
-        const TIMEOUT_MS = 300000; // 5 minutes
+        const TIMEOUT_MS = 180000; // 3 minutes (should be much faster now!)
 
         const form = document.getElementById('documentForm');
         const fileInput = document.getElementById('arquivos');
@@ -252,47 +251,38 @@
             formContent.style.display = 'none';
             loading.classList.add('show');
 
-            // Create abort controller for timeout
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
             try {
-                console.log('🚀 Iniciando envio...');
-                progressText.textContent = 'Preparando arquivos...';
+                console.log('🚀 Iniciando envio com multipart/form-data (SEM Base64!)');
+                progressText.textContent = 'Preparando envio...';
                 
-                const arquivosArray = [];
-                for (let file of files) {
-                    console.log(`📄 Processando: ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`);
-                    const base64 = await fileToBase64(file);
-                    arquivosArray.push({
-                        filename: file.name,
-                        mimetype: file.type || 'application/octet-stream',
-                        size: file.size,
-                        data: base64.split(',')[1]
-                    });
-                }
+                // Create FormData - NO BASE64 conversion needed!
+                const formData = new FormData();
+                formData.append('condominio', condominio);
+                formData.append('categoria', categoria);
+                formData.append('descricao', descricao);
+                formData.append('timestamp', new Date().toISOString());
+                
+                // Append all files directly
+                Array.from(files).forEach(file => {
+                    formData.append('arquivos', file);
+                    console.log(`📄 Adicionado: ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`);
+                });
 
-                progressText.textContent = 'Enviando para o servidor...';
+                progressText.textContent = 'Enviando arquivos...';
 
-                const payload = {
+                console.log('📤 Enviando FormData:', {
                     condominio,
                     categoria,
-                    descricao,
-                    arquivos: arquivosArray,
-                    timestamp: new Date().toISOString()
-                };
-
-                console.log('📤 Enviando payload:', {
-                    condominio,
-                    categoria,
-                    fileCount: arquivosArray.length,
-                    totalSize: arquivosArray.reduce((sum, f) => sum + f.size, 0)
+                    fileCount: files.length,
+                    totalSize: Array.from(files).reduce((sum, f) => sum + f.size, 0)
                 });
 
                 const res = await fetch(WEBHOOK_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
+                    body: formData, // Send FormData directly, NO JSON!
                     signal: controller.signal
                 });
 
@@ -300,7 +290,7 @@
 
                 console.log('📥 Resposta recebida:', res.status, res.statusText);
 
-                // Handle 204 No Content (workflow executed but returned empty response)
+                // Handle 204 No Content
                 if (res.status === 204) {
                     console.warn('⚠️ Servidor retornou 204 - assumindo sucesso parcial');
                     loading.classList.remove('show');
@@ -332,7 +322,7 @@
                 const result = await res.json();
                 console.log('✅ Resultado:', result);
 
-                // Handle test webhook response (workflow started message)
+                // Handle test webhook response
                 if (result.message && result.message.includes('Workflow was started')) {
                     console.log('⚠️ Test webhook - workflow iniciado mas não finalizado');
                     loading.classList.remove('show');
@@ -381,7 +371,7 @@
                 
                 let errorMsg = 'Falha na conexão com o servidor';
                 if (err.name === 'AbortError') {
-                    errorMsg = 'Tempo esgotado (5 minutos). Tente com arquivos menores ou menos arquivos de uma vez.';
+                    errorMsg = 'Tempo esgotado (3 minutos). Tente com arquivos menores ou menos arquivos de uma vez.';
                 } else if (err.message) {
                     errorMsg = err.message;
                 }
@@ -397,16 +387,7 @@
             form.reset();
             selectedFiles = new DataTransfer();
             updateFileList();
-            progressText.textContent = 'Isso pode levar até 5 minutos com arquivos grandes';
-        }
-
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
+            progressText.textContent = 'Upload direto - muito mais rápido!';
         }
     </script>
 </body>
