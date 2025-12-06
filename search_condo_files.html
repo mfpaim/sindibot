@@ -243,7 +243,23 @@
                 const data = await response.json();
                 console.log('✅ Results:', data);
 
-                allResults = data.files || [];
+                // Handle different response formats
+                let files = [];
+                if (Array.isArray(data)) {
+                    // Response is directly an array
+                    files = data;
+                } else if (data.files && Array.isArray(data.files)) {
+                    // Response has a 'files' property
+                    files = data.files;
+                } else if (data.success !== false) {
+                    // Response might be a single object
+                    files = [data];
+                } else {
+                    throw new Error(data.message || 'No files returned');
+                }
+
+                console.log(`📦 Processing ${files.length} files`);
+                allResults = files;
                 displayResults(allResults);
 
             } catch (error) {
@@ -257,7 +273,10 @@
         function displayResults(results) {
             document.getElementById('loading').style.display = 'none';
             
-            if (results.length === 0) {
+            console.log('📊 Displaying results:', results);
+            
+            if (!results || results.length === 0) {
+                console.log('⚠️ No results to display');
                 document.getElementById('noResults').classList.add('show');
                 return;
             }
@@ -271,6 +290,7 @@
             grid.innerHTML = '';
 
             results.forEach(file => {
+                console.log('Creating card for:', file.filename);
                 const card = createFileCard(file);
                 grid.appendChild(card);
             });
