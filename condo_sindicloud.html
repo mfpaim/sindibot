@@ -294,16 +294,23 @@
                 if (res.status === 204) {
                     console.warn('⚠️ Servidor retornou 204 - assumindo sucesso parcial');
                     loading.classList.remove('show');
+                    
+                    const fileCount = files.length;
+                    const fileWord = fileCount === 1 ? 'arquivo' : 'arquivos';
+                    
                     successFileList.innerHTML = `
-                        <p style="color:#666;">✅ Os arquivos foram recebidos pelo servidor.</p>
-                        <p style="color:#666; margin-top:10px;">
-                            <strong>Arquivos enviados:</strong><br>
-                            ${Array.from(files).map(f => `• ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`).join('<br>')}
+                        <p style="color:#2d5016; font-size:15px; line-height:1.6;">
+                            <strong>Seu${fileCount > 1 ? 's' : ''} ${fileWord} de "${categoria}" ${fileCount > 1 ? 'foram salvos' : 'foi salvo'} com sucesso no condomínio ${condominio}!</strong>
                         </p>
-                        <p style="color:#ff8555; margin-top:15px; font-size:14px;">
-                            ℹ️ O servidor processou sua requisição mas não retornou os links. 
-                            Os arquivos devem estar salvos no sistema.
+                        <p style="color:#666; margin-top:12px; font-size:14px;">
+                            ${fileCount > 1 ? 'Eles estão' : 'Ele está'} disponível${fileCount > 1 ? 'is' : ''} sempre que você precisar.
                         </p>
+                        <div style="margin-top:15px; padding:12px; background:#f8f9fa; border-radius:8px;">
+                            <strong style="color:#333; font-size:13px;">Arquivo${fileCount > 1 ? 's' : ''} salvo${fileCount > 1 ? 's' : ''}:</strong><br>
+                            <span style="color:#666; font-size:13px;">
+                                ${Array.from(files).map(f => `• ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`).join('<br>')}
+                            </span>
+                        </div>
                     `;
                     successMessage.classList.add('show');
                     return;
@@ -326,15 +333,23 @@
                 if (result.message && result.message.includes('Workflow was started')) {
                     console.log('⚠️ Test webhook - workflow iniciado mas não finalizado');
                     loading.classList.remove('show');
+                    
+                    const fileCount = files.length;
+                    const fileWord = fileCount === 1 ? 'arquivo' : 'arquivos';
+                    
                     successFileList.innerHTML = `
-                        <p style="color:#666;">✅ Workflow iniciado com sucesso!</p>
-                        <p style="color:#666; margin-top:10px;">
-                            <strong>Arquivos enviados:</strong><br>
-                            ${Array.from(files).map(f => `• ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`).join('<br>')}
+                        <p style="color:#2d5016; font-size:15px; line-height:1.6;">
+                            <strong>Seu${fileCount > 1 ? 's' : ''} ${fileWord} de "${categoria}" ${fileCount > 1 ? 'foram salvos' : 'foi salvo'} com sucesso no condomínio ${condominio}!</strong>
                         </p>
-                        <p style="color:#ff8555; margin-top:15px; font-size:14px;">
-                            ℹ️ Usando test webhook - verifique n8n para ver o resultado final
+                        <p style="color:#666; margin-top:12px; font-size:14px;">
+                            ${fileCount > 1 ? 'Eles estão' : 'Ele está'} disponível${fileCount > 1 ? 'is' : ''} sempre que você precisar.
                         </p>
+                        <div style="margin-top:15px; padding:12px; background:#f8f9fa; border-radius:8px;">
+                            <strong style="color:#333; font-size:13px;">Arquivo${fileCount > 1 ? 's' : ''} enviado${fileCount > 1 ? 's' : ''}:</strong><br>
+                            <span style="color:#666; font-size:13px;">
+                                ${Array.from(files).map(f => `• ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`).join('<br>')}
+                            </span>
+                        </div>
                     `;
                     successMessage.classList.add('show');
                     return;
@@ -345,19 +360,45 @@
                     successFileList.innerHTML = '';
                     
                     const filesArray = result.files || [];
+                    const fileCount = filesArray.length || files.length;
+                    const fileWord = fileCount === 1 ? 'arquivo' : 'arquivos';
+                    
+                    // Main success message
+                    const messageDiv = document.createElement('div');
+                    messageDiv.style.cssText = 'color:#2d5016; font-size:15px; line-height:1.6; margin-bottom:15px;';
+                    messageDiv.innerHTML = `
+                        <strong>Seu${fileCount > 1 ? 's' : ''} ${fileWord} de "${categoria}" ${fileCount > 1 ? 'foram salvos' : 'foi salvo'} com sucesso no condomínio ${condominio}!</strong>
+                        <br><span style="color:#666; font-size:14px; margin-top:8px; display:block;">
+                            ${fileCount > 1 ? 'Eles estão' : 'Ele está'} disponível${fileCount > 1 ? 'is' : ''} sempre que você precisar.
+                        </span>
+                    `;
+                    successFileList.appendChild(messageDiv);
+                    
+                    // File list with links
                     if (filesArray.length > 0) {
                         filesArray.forEach(f => {
                             const div = document.createElement('div');
-                            div.style.padding = '10px 0';
-                            div.style.borderBottom = '1px solid #e0e0e0';
+                            div.style.cssText = 'padding:10px 0; border-bottom:1px solid #e0e0e0;';
                             div.innerHTML = `
-                                <strong>${f.filename}</strong> (${(f.size/1024/1024).toFixed(1)} MB)<br>
-                                <a href="${f.url}" target="_blank" style="color:#FF6B35; text-decoration:none;">🔗 Abrir / Baixar</a>
+                                <strong style="color:#333;">${f.filename}</strong> 
+                                <span style="color:#999; font-size:13px;">(${(f.size/1024/1024).toFixed(1)} MB)</span><br>
+                                <a href="${f.url}" target="_blank" style="color:#FF6B35; text-decoration:none; font-size:14px;">
+                                    🔗 Abrir ou baixar arquivo
+                                </a>
                             `;
                             successFileList.appendChild(div);
                         });
                     } else {
-                        successFileList.innerHTML = '<p style="color:#666;">Arquivos enviados com sucesso!</p>';
+                        // Fallback if no file URLs returned
+                        const filesDiv = document.createElement('div');
+                        filesDiv.style.cssText = 'margin-top:12px; padding:12px; background:#f8f9fa; border-radius:8px;';
+                        filesDiv.innerHTML = `
+                            <strong style="color:#333; font-size:13px;">Arquivo${fileCount > 1 ? 's' : ''} salvo${fileCount > 1 ? 's' : ''}:</strong><br>
+                            <span style="color:#666; font-size:13px;">
+                                ${Array.from(files).map(f => `• ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`).join('<br>')}
+                            </span>
+                        `;
+                        successFileList.appendChild(filesDiv);
                     }
                     
                     successMessage.classList.add('show');
