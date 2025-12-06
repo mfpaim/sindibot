@@ -90,7 +90,7 @@
         <div class="loading" id="loading">
             <div class="spinner"></div>
             <p>Enviando arquivos...</p>
-            <p class="progress-text" id="progressText">Isso pode levar até 2 minutos com arquivos grandes</p>
+            <p class="progress-text" id="progressText">Isso pode levar até 5 minutos com arquivos grandes</p>
         </div>
 
         <div class="success-message" id="successMessage">
@@ -162,9 +162,10 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/send-condo-sindicloud-s3';
+        // Use production webhook - change to /webhook-test/ for debugging
+        const WEBHOOK_URL = 'https://n8n.polenta.chat/webhook/send-condo-sindicloud-s3';
         const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
-        const TIMEOUT_MS = 120000; // 2 minutes
+        const TIMEOUT_MS = 300000; // 5 minutes
 
         const form = document.getElementById('documentForm');
         const fileInput = document.getElementById('arquivos');
@@ -331,6 +332,24 @@
                 const result = await res.json();
                 console.log('✅ Resultado:', result);
 
+                // Handle test webhook response (workflow started message)
+                if (result.message && result.message.includes('Workflow was started')) {
+                    console.log('⚠️ Test webhook - workflow iniciado mas não finalizado');
+                    loading.classList.remove('show');
+                    successFileList.innerHTML = `
+                        <p style="color:#666;">✅ Workflow iniciado com sucesso!</p>
+                        <p style="color:#666; margin-top:10px;">
+                            <strong>Arquivos enviados:</strong><br>
+                            ${Array.from(files).map(f => `• ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`).join('<br>')}
+                        </p>
+                        <p style="color:#ff8555; margin-top:15px; font-size:14px;">
+                            ℹ️ Usando test webhook - verifique n8n para ver o resultado final
+                        </p>
+                    `;
+                    successMessage.classList.add('show');
+                    return;
+                }
+
                 if (result.success !== false && (result.files || result.success)) {
                     loading.classList.remove('show');
                     successFileList.innerHTML = '';
@@ -362,7 +381,7 @@
                 
                 let errorMsg = 'Falha na conexão com o servidor';
                 if (err.name === 'AbortError') {
-                    errorMsg = 'Tempo esgotado (2 minutos). Tente com arquivos menores ou menos arquivos de uma vez.';
+                    errorMsg = 'Tempo esgotado (5 minutos). Tente com arquivos menores ou menos arquivos de uma vez.';
                 } else if (err.message) {
                     errorMsg = err.message;
                 }
@@ -378,7 +397,7 @@
             form.reset();
             selectedFiles = new DataTransfer();
             updateFileList();
-            progressText.textContent = 'Isso pode levar até 2 minutos com arquivos grandes';
+            progressText.textContent = 'Isso pode levar até 5 minutos com arquivos grandes';
         }
 
         function fileToBase64(file) {
