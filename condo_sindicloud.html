@@ -71,6 +71,7 @@
                          font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 20px; }
         .spinner { border: 5px solid #f3f3f3; border-top: 5px solid #FF6B35; border-radius: 50%;
                    width: 70px; height: 70px; animation: spin 1s linear infinite; margin: 0 auto 25px; }
+        .progress-text { color: #666; margin-top: 10px; font-size: 14px; }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -88,7 +89,8 @@
 
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <p>Enviando arquivos...<br><small>Pode demorar um pouco com arquivos grandes</small></p>
+            <p>Enviando arquivos...</p>
+            <p class="progress-text" id="progressText">Isso pode levar até 2 minutos com arquivos grandes</p>
         </div>
 
         <div class="success-message" id="successMessage">
@@ -99,7 +101,7 @@
         </div>
 
         <div class="error-alert" id="errorMessage">
-            <h2>❌ Erro no envio</h2>
+            <h2>⚠️ Aviso</h2>
             <p id="errorText">Houve um problema. Tente novamente.</p>
             <button class="action-button" onclick="resetForm()">Tentar Novamente</button>
         </div>
@@ -162,6 +164,7 @@
     <script>
         const WEBHOOK_URL = 'https://n8n.polenta.chat/webhook/send-condo-sindicloud-s3';
         const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+        const TIMEOUT_MS = 120000; // 2 minutes
 
         const form = document.getElementById('documentForm');
         const fileInput = document.getElementById('arquivos');
@@ -172,8 +175,8 @@
         const errorMessage = document.getElementById('errorMessage');
         const formContent = document.getElementById('formContent');
         const successFileList = document.getElementById('successFileList');
+        const progressText = document.getElementById('progressText');
 
-        // Store files in a DataTransfer object to allow removal
         let selectedFiles = new DataTransfer();
 
         fileInput.addEventListener('change', (e) => {
@@ -248,9 +251,17 @@
             formContent.style.display = 'none';
             loading.classList.add('show');
 
+            // Create abort controller for timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
             try {
+                console.log('🚀 Iniciando envio...');
+                progressText.textContent = 'Preparando arquivos...';
+                
                 const arquivosArray = [];
                 for (let file of files) {
+                    console.log(`📄 Processando: ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`);
                     const base64 = await fileToBase64(file);
                     arquivosArray.push({
                         filename: file.name,
@@ -260,6 +271,8 @@
                     });
                 }
 
+                progressText.textContent = 'Enviando para o servidor...';
+
                 const payload = {
                     condominio,
                     categoria,
@@ -268,24 +281,60 @@
                     timestamp: new Date().toISOString()
                 };
 
+                console.log('📤 Enviando payload:', {
+                    condominio,
+                    categoria,
+                    fileCount: arquivosArray.length,
+                    totalSize: arquivosArray.reduce((sum, f) => sum + f.size, 0)
+                });
+
                 const res = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
                 });
+
+                clearTimeout(timeoutId);
+
+                console.log('📥 Resposta recebida:', res.status, res.statusText);
+
+                // Handle 204 No Content (workflow executed but returned empty response)
+                if (res.status === 204) {
+                    console.warn('⚠️ Servidor retornou 204 - assumindo sucesso parcial');
+                    loading.classList.remove('show');
+                    successFileList.innerHTML = `
+                        <p style="color:#666;">✅ Os arquivos foram recebidos pelo servidor.</p>
+                        <p style="color:#666; margin-top:10px;">
+                            <strong>Arquivos enviados:</strong><br>
+                            ${Array.from(files).map(f => `• ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`).join('<br>')}
+                        </p>
+                        <p style="color:#ff8555; margin-top:15px; font-size:14px;">
+                            ℹ️ O servidor processou sua requisição mas não retornou os links. 
+                            Os arquivos devem estar salvos no sistema.
+                        </p>
+                    `;
+                    successMessage.classList.add('show');
+                    return;
+                }
 
                 if (!res.ok) {
                     throw new Error(`Erro do servidor: ${res.status} ${res.statusText}`);
                 }
 
-                const result = await res.json();
+                const contentType = res.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    console.warn('⚠️ Resposta não é JSON:', contentType);
+                    throw new Error('Resposta inválida do servidor (não é JSON)');
+                }
 
-                // Check if the response indicates success
-                if (result.success !== false) {
+                const result = await res.json();
+                console.log('✅ Resultado:', result);
+
+                if (result.success !== false && (result.files || result.success)) {
                     loading.classList.remove('show');
                     successFileList.innerHTML = '';
                     
-                    // Handle the files array from the response
                     const filesArray = result.files || [];
                     if (filesArray.length > 0) {
                         filesArray.forEach(f => {
@@ -307,9 +356,18 @@
                     throw new Error(result.error || result.message || 'Erro desconhecido no servidor');
                 }
             } catch (err) {
-                console.error('Erro:', err);
+                clearTimeout(timeoutId);
+                console.error('❌ Erro:', err);
                 loading.classList.remove('show');
-                document.getElementById('errorText').textContent = err.message || 'Falha na conexão com o servidor';
+                
+                let errorMsg = 'Falha na conexão com o servidor';
+                if (err.name === 'AbortError') {
+                    errorMsg = 'Tempo esgotado (2 minutos). Tente com arquivos menores ou menos arquivos de uma vez.';
+                } else if (err.message) {
+                    errorMsg = err.message;
+                }
+                
+                document.getElementById('errorText').textContent = errorMsg;
                 errorMessage.classList.add('show');
             }
         });
@@ -320,6 +378,7 @@
             form.reset();
             selectedFiles = new DataTransfer();
             updateFileList();
+            progressText.textContent = 'Isso pode levar até 2 minutos com arquivos grandes';
         }
 
         function fileToBase64(file) {
