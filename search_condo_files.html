@@ -78,11 +78,17 @@
                    width: 70px; height: 70px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .no-results { display: none; }
+        .no-results { display: none; text-align: center; padding: 60px 20px; }
         .no-results.show { display: block; }
         .no-results-icon { font-size: 64px; margin-bottom: 16px; }
         .no-results-text { font-size: 18px; color: #666; margin-bottom: 8px; }
         .no-results-hint { font-size: 14px; color: #999; }
+
+        .initial-state { display: block; text-align: center; padding: 80px 20px; }
+        .initial-state.hide { display: none; }
+        .initial-owl { font-size: 80px; margin-bottom: 20px; }
+        .initial-text { font-size: 20px; color: #666; font-weight: 500; margin-bottom: 8px; }
+        .initial-hint { font-size: 15px; color: #999; }
 
         .error-message { display: none; background: #fff3f3; border: 2px solid #ffcccc;
                         border-radius: 16px; color: #cc0000; }
@@ -188,23 +194,35 @@
                 <div class="no-results-hint">Tente usar palavras-chave diferentes ou ajustar os filtros</div>
             </div>
 
+            <div class="initial-state" id="initialState">
+                <div class="initial-owl">🦉</div>
+                <div class="initial-text">Sindi está esperando sua busca</div>
+                <div class="initial-hint">Use os filtros acima ou digite algo no campo de busca</div>
+            </div>
+
             <div class="results-grid" id="resultsGrid"></div>
         </div>
     </div>
 
     <script>
-        const SEARCH_WEBHOOK = 'https://n8n.polenta.chat/webhook-test/search-condo-files';
+        const SEARCH_WEBHOOK = 'https://n8n.polenta.chat/webhook/search-condo-files';
         
         let allResults = [];
 
         // Enter key triggers search
         document.getElementById('searchInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') performSearch();
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch();
+            }
         });
 
-        // Auto-search when filters change
+        // Auto-search when filters change (but don't reload page)
         ['filterCondominio', 'filterCategoria', 'filterDateFrom', 'filterDateTo'].forEach(id => {
-            document.getElementById(id).addEventListener('change', performSearch);
+            document.getElementById(id).addEventListener('change', (e) => {
+                e.preventDefault();
+                performSearch();
+            });
         });
 
         async function performSearch() {
@@ -214,6 +232,9 @@
             const dateFrom = document.getElementById('filterDateFrom').value;
             const dateTo = document.getElementById('filterDateTo').value;
 
+            // Hide initial state once user starts searching
+            document.getElementById('initialState').classList.add('hide');
+            
             // Show loading
             document.getElementById('loading').style.display = 'block';
             document.getElementById('resultsHeader').style.display = 'none';
