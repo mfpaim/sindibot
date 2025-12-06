@@ -123,7 +123,7 @@
             <div class="search-box">
                 <input type="text" class="search-input" id="searchInput" 
                        placeholder="Digite para buscar... Ex: vazamento, barulho, ata, boleto">
-                <button class="btn-search" id="btnSearch" onclick="performSearch()">
+                <button class="btn-search" id="btnSearch">
                     🔍 Buscar
                 </button>
             </div>
@@ -221,8 +221,15 @@
         ['filterCondominio', 'filterCategoria', 'filterDateFrom', 'filterDateTo'].forEach(id => {
             document.getElementById(id).addEventListener('change', (e) => {
                 e.preventDefault();
+                // Always search when filter changes, even if search box is empty
                 performSearch();
             });
+        });
+
+        // Also trigger search when clicking the search button
+        document.getElementById('btnSearch').addEventListener('click', (e) => {
+            e.preventDefault();
+            performSearch();
         });
 
         async function performSearch() {
@@ -231,6 +238,15 @@
             const categoria = document.getElementById('filterCategoria').value;
             const dateFrom = document.getElementById('filterDateFrom').value;
             const dateTo = document.getElementById('filterDateTo').value;
+
+            // Check if user has provided any search criteria
+            const hasSearchCriteria = searchTerm || condominio || categoria || dateFrom || dateTo;
+            
+            if (!hasSearchCriteria) {
+                // No criteria provided - show initial state
+                console.log('ℹ️ No search criteria provided');
+                return;
+            }
 
             // Hide initial state once user starts searching
             document.getElementById('initialState').classList.add('hide');
