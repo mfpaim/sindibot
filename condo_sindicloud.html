@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sindi - Enviar Arquivos para Condomínio</title>
     <style>
-        /* Todo o CSS anterior continua igual – só copiei o necessário para não ficar gigante aqui */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; padding: 20px; }
         .container { max-width: 760px; margin: 0 auto; }
@@ -31,7 +30,7 @@
         }
         textarea { min-height: 110px; resize: vertical; font-family: inherit; }
 
-        input[type="file"] { padding: 16px 18px; border: 2px dashed #ccc; background: #fcfcfc; border-radius: 16px; }
+        input[type="file"] { padding: 16px 18px; border: 2px dashed #ccc; background: #fcfcfc; border-radius: 16px; cursor: pointer; }
         input[type="file"]::file-selector-button {
             padding: 12px 28px; background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
             color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer;
@@ -39,18 +38,34 @@
 
         .file-list { margin-top: 16px; padding: 18px; background: #f8f9fa; border-radius: 14px;
                      border: 1px dashed #bbb; max-height: 260px; overflow-y: auto; }
+        .file-item { padding: 12px; background: white; border-radius: 10px; margin-bottom: 10px;
+                     display: flex; justify-content: space-between; align-items: center; border: 1px solid #e0e0e0; }
+        .file-item:last-child { margin-bottom: 0; }
+        .file-info { flex: 1; }
+        .file-name { font-weight: 500; color: #333; margin-bottom: 4px; }
+        .file-size { font-size: 13px; color: #666; }
+        .file-size.error { color: #FF6B35; font-weight: 600; }
+        .remove-file { background: #ff4444; color: white; border: none; width: 28px; height: 28px;
+                       border-radius: 50%; cursor: pointer; font-size: 16px; display: flex;
+                       align-items: center; justify-content: center; transition: all 0.2s;
+                       flex-shrink: 0; margin-left: 12px; }
+        .remove-file:hover { background: #cc0000; transform: scale(1.1); }
+
         .error-message { color: #FF6B35; font-size: 14px; margin-top: 8px; display: none; }
+        .error-message.show { display: block; }
 
         .btn-submit { width: 100%; background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
                       color: white; border: none; padding: 18px; border-radius: 18px; font-size: 18px;
-                      font-weight: 600; cursor: pointer; margin-top: 15px; box-shadow: 0 6px 18px rgba(255,107,53,0.35); }
+                      font-weight: 600; cursor: pointer; margin-top: 15px; box-shadow: 0 6px 18px rgba(255,107,53,0.35);
+                      transition: all 0.3s; }
         .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(255,107,53,0.45); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         .success-message, .error-alert, .loading { display: none; background: white; border-radius: 24px;
             padding: 50px 35px; box-shadow: 0 12px 40px rgba(0,0,0,0.09); text-align: center; margin-top: 30px; }
         .success-message.show, .error-alert.show, .loading.show { display: block; animation: slideDown 0.4s; }
         .file-success-list { background: #f8fff8; padding: 20px; border-radius: 14px; margin: 24px 0;
-                             border: 1px solid #d4edda; max-height: 320px; overflow-y: auto; }
+                             border: 1px solid #d4edda; max-height: 320px; overflow-y: auto; text-align: left; }
         .action-button { background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
                          color: white; padding: 16px 36px; border: none; border-radius: 16px;
                          font-size: 17px; font-weight: 600; cursor: pointer; margin-top: 20px; }
@@ -77,14 +92,14 @@
         </div>
 
         <div class="success-message" id="successMessage">
-            <h2>Arquivos enviados com sucesso!</h2>
+            <h2>✅ Arquivos enviados com sucesso!</h2>
             <p>Tudo foi salvo com segurança.</p>
             <div class="file-success-list" id="successFileList"></div>
             <button class="action-button" onclick="resetForm()">Enviar Mais Arquivos</button>
         </div>
 
         <div class="error-alert" id="errorMessage">
-            <h2>Erro no envio</h2>
+            <h2>❌ Erro no envio</h2>
             <p id="errorText">Houve um problema. Tente novamente.</p>
             <button class="action-button" onclick="resetForm()">Tentar Novamente</button>
         </div>
@@ -97,7 +112,6 @@
                         <option value="">Selecione o condomínio</option>
                         <option value="Calton Hill">Calton Hill</option>
                         <option value="Parque dos Príncipes">Parque dos Príncipes</option>
-                        <!-- adicione mais -->
                     </select>
                     <div class="error-message" id="condominioError">Campo obrigatório</div>
                 </div>
@@ -118,7 +132,6 @@
                     <div class="error-message" id="categoriaError">Campo obrigatório</div>
                 </div>
 
-                <!-- NOVO CAMPO OBRIGATÓRIO -->
                 <div class="form-group">
                     <label class="form-label" for="descricao">
                         Descrição do(s) arquivo(s) <span class="required">*</span>
@@ -130,7 +143,7 @@
                     <div class="error-message" id="descricaoError">A descrição é obrigatória</div>
                 </div>
 
-                <div class="form-group>
+                <div class="form-group">
                     <label class="form-label" for="arquivos">
                         Arquivos <span class="required">*</span> (máx. 50 MB cada)
                     </label>
@@ -147,7 +160,7 @@
     </div>
 
     <script>
-        const WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/send-condo-sindicloud-s3'; // ALTERE AQUI
+        const WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/send-condo-sindicloud-s3';
         const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
 
         const form = document.getElementById('documentForm');
@@ -160,22 +173,50 @@
         const formContent = document.getElementById('formContent');
         const successFileList = document.getElementById('successFileList');
 
-        fileInput.addEventListener('change', updateFileList);
+        // Store files in a DataTransfer object to allow removal
+        let selectedFiles = new DataTransfer();
+
+        fileInput.addEventListener('change', (e) => {
+            const newFiles = Array.from(e.target.files);
+            newFiles.forEach(file => selectedFiles.items.add(file));
+            updateFileList();
+        });
 
         function updateFileList() {
             fileList.innerHTML = '';
-            if (fileInput.files.length === 0) {
+            
+            if (selectedFiles.files.length === 0) {
                 fileList.innerHTML = '<em>Clique para selecionar os arquivos</em>';
                 return;
             }
-            Array.from(fileInput.files).forEach(file => {
+
+            Array.from(selectedFiles.files).forEach((file, index) => {
                 const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+                const isTooBig = file.size > MAX_FILE_SIZE;
+                
                 const item = document.createElement('div');
-                item.style.padding = '8px 0';
-                item.innerHTML = `${file.size > MAX_FILE_SIZE ? 'Tamanho excedido' : 'Documento'} ${file.name} <span style="color:#666">(${sizeMB} MB)</span>`;
-                if (file.size > MAX_FILE_SIZE) item.style.color = '#FF6B35';
+                item.className = 'file-item';
+                item.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size ${isTooBig ? 'error' : ''}">
+                            ${isTooBig ? '⚠️ Tamanho excedido: ' : ''}${sizeMB} MB
+                        </div>
+                    </div>
+                    <button type="button" class="remove-file" onclick="removeFile(${index})" title="Remover arquivo">×</button>
+                `;
                 fileList.appendChild(item);
             });
+        }
+
+        function removeFile(index) {
+            const dt = new DataTransfer();
+            Array.from(selectedFiles.files).forEach((file, i) => {
+                if (i !== index) dt.items.add(file);
+            });
+            selectedFiles = dt;
+            fileInput.files = selectedFiles.files;
+            updateFileList();
         }
 
         form.addEventListener('submit', async e => {
@@ -185,7 +226,7 @@
             const condominio = document.getElementById('condominio').value.trim();
             const categoria = document.getElementById('categoria').value.trim();
             const descricao = document.getElementById('descricao').value.trim();
-            const files = fileInput.files;
+            const files = selectedFiles.files;
 
             let erro = false;
 
@@ -222,7 +263,7 @@
                 const payload = {
                     condominio,
                     categoria,
-                    descricao,           // ← novo campo
+                    descricao,
                     arquivos: arquivosArray,
                     timestamp: new Date().toISOString()
                 };
@@ -233,23 +274,42 @@
                     body: JSON.stringify(payload)
                 });
 
+                if (!res.ok) {
+                    throw new Error(`Erro do servidor: ${res.status} ${res.statusText}`);
+                }
+
                 const result = await res.json();
 
-                if (res.ok && result.success) {
+                // Check if the response indicates success
+                if (result.success !== false) {
                     loading.classList.remove('show');
                     successFileList.innerHTML = '';
-                    result.files.forEach(f => {
-                        const div = document.createElement('div');
-                        div.style.padding = '10px 0';
-                        div.innerHTML = `<strong>${f.filename}</strong> (${(f.size/1024/1024).toFixed(1)} MB)<br>
-                                         <a href="${f.url}" target="_blank" style="color:#FF6B35">Abrir / Baixar</a>`;
-                        successFileList.appendChild(div);
-                    });
+                    
+                    // Handle the files array from the response
+                    const filesArray = result.files || [];
+                    if (filesArray.length > 0) {
+                        filesArray.forEach(f => {
+                            const div = document.createElement('div');
+                            div.style.padding = '10px 0';
+                            div.style.borderBottom = '1px solid #e0e0e0';
+                            div.innerHTML = `
+                                <strong>${f.filename}</strong> (${(f.size/1024/1024).toFixed(1)} MB)<br>
+                                <a href="${f.url}" target="_blank" style="color:#FF6B35; text-decoration:none;">🔗 Abrir / Baixar</a>
+                            `;
+                            successFileList.appendChild(div);
+                        });
+                    } else {
+                        successFileList.innerHTML = '<p style="color:#666;">Arquivos enviados com sucesso!</p>';
+                    }
+                    
                     successMessage.classList.add('show');
-                } else throw new Error(result.error || 'Erro no servidor');
+                } else {
+                    throw new Error(result.error || result.message || 'Erro desconhecido no servidor');
+                }
             } catch (err) {
+                console.error('Erro:', err);
                 loading.classList.remove('show');
-                document.getElementById('errorText').textContent = err.message || 'Falha na conexão';
+                document.getElementById('errorText').textContent = err.message || 'Falha na conexão com o servidor';
                 errorMessage.classList.add('show');
             }
         });
@@ -258,6 +318,7 @@
             [loading, successMessage, errorMessage].forEach(el => el.classList.remove('show'));
             formContent.style.display = 'block';
             form.reset();
+            selectedFiles = new DataTransfer();
             updateFileList();
         }
 
