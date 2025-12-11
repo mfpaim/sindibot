@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sindi - Menu Prédio</title>
+<title>Sindi - Prédio 3D</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f5f5f5;
+    background: #f0f0f0;
     display: flex;
     justify-content: center;
-    padding: 40px 20px;
+    align-items: center;
     min-height: 100vh;
+    perspective: 1200px;
   }
 
   .app {
@@ -21,10 +22,9 @@
     background: white;
     border-radius: 40px;
     overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.25);
   }
 
-  /* Header */
   .header {
     background: #FF6B35;
     height: 90px;
@@ -36,54 +36,70 @@
     font-size: 28px;
   }
 
-  .home-icon {
-    font-size: 32px;
-  }
-
-  /* Building Container */
   .building-wrapper {
-    padding: 60px 40px 80px;
+    padding: 80px 40px 100px;
     background: white;
+    display: flex;
+    justify-content: center;
   }
 
   .building {
-    position: relative;
-    margin: 0 auto;
+    transform-style: preserve-3d;
+    transform: rotateX(28deg) rotateZ(-6deg) scale(0.95);
   }
 
-  /* Each Floor */
+  /* 3D Floor (the "slab") */
   .floor {
     position: relative;
+    width: 300px;
     height: 86px;
-    margin-bottom: 20px;
-    border-radius: 16px;
-    padding-left: 80px;
-    padding-right: 20px;
-    display: flex;
-    align-items: center;
-    color: white;
-    font-weight: 600;
-    font-size: 20px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    margin-bottom: 36px;
+    transform-style: preserve-3d;
     cursor: pointer;
-    transition: all 0.3s ease;
-    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   .floor:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    transform: translateZ(30px) translateY(-10px);
   }
 
-  /* Floor Number Label (F5, F2, G) */
-  .floor::before {
+  /* Top face */
+  .top {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--color);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    padding-left: 80px;
+    padding-right: 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  }
+
+  /* Side face (depth) */
+  .side {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: var(--side);
+    transform: rotateX(-90deg);
+    transform-origin: top center;
+    border-radius: 0 0 16px 16px;
+  }
+
+  /* Floor number label */
+  .top::before {
     content: attr(data-floor);
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 70px;
-    height: 100%;
-    background: rgba(255,255,255,0.25);
+    left: 0; top: 0;
+    width: 70px; height: 100%;
+    background: rgba(255,255,255,0.28);
     border-radius: 16px 0 0 16px;
     display: flex;
     align-items: center;
@@ -100,32 +116,43 @@
     display: flex;
     gap: 10px;
   }
-
   .window {
     width: 18px;
     height: 28px;
-    background: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.35);
+    border: 2px solid rgba(255,255,255,0.5);
     border-radius: 4px;
-    border: 2px solid rgba(255,255,255,0.4);
   }
 
-  /* Specific Floor Colors - EXACT MATCH */
-  #f5  { background: linear-gradient(135deg, #FFB366, #FF8C42); }
-  #f2-minha { background: linear-gradient(135deg, #FF8C42, #FF6B35); }
-  #f2-sindi { background: linear-gradient(135deg, #FF6B35, #FF5252); }
-  #ground { background: linear-gradient(135deg, #FF5252, #E04040); }
+  /* Colors per floor */
+  #f5  { --color: linear-gradient(135deg, #FFB366, #FF8C42); --side: #e69538; }
+  #f2m { --color: linear-gradient(135deg, #FF8C42, #FF6B35); --side: #e65c30; }
+  #f2s { --color: linear-gradient(135deg, #FF6B35, #FF5252); --side: #e53e3e; }
+  #g   { --color: linear-gradient(135deg, #FF5252, #E04040); --side: #c62828; }
 
-  /* Ground Floor Base */
+  /* Black base */
   .base {
+    position: relative;
+    width: 340px;
     height: 70px;
     background: #1A1A1A;
     border-radius: 20px;
     margin: 40px auto 0;
-    width: 90%;
-    position: relative;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transform-style: preserve-3d;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
   }
-
+  .base::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: #0a0a0a;
+    transform: rotateX(-90deg);
+    transform-origin: top center;
+    border-radius: 0 0 20px 20px;
+  }
   .door {
     position: absolute;
     bottom: 0;
@@ -133,16 +160,15 @@
     transform: translateX(-50%);
     width: 50px;
     height: 50px;
-    background: #0F0F0F;
+    background: #000;
     border-radius: 10px 10px 0 0;
   }
 
-  /* Responsive */
   @media (max-width: 480px) {
     .app { border-radius: 30px; }
-    .building-wrapper { padding: 40px 20px 60px; }
-    .floor { font-size: 18px; height: 80px; padding-left: 70px; }
-    .floor::before { width: 60px; font-size: 24px; }
+    .building { transform: rotateX(25deg) rotateZ(-6deg) scale(0.9); }
+    .floor { width: 270px; }
+    .base { width: 300px; }
   }
 </style>
 </head>
@@ -151,30 +177,42 @@
 <div class="app">
   <div class="header">
     <div>Menu</div>
-    <div class="home-icon">Home</div>
+    <div>Home</div>
   </div>
 
   <div class="building-wrapper">
     <div class="building">
 
       <div class="floor" id="f5" data-floor="F5" onclick="alert('Clube Sindi')">
-        <div>Clube<br><strong>Sindi</strong></div>
-        <div class="windows"><div class="window"></div><div class="window"></div></div>
+        <div class="top">
+          <div>Clube<br><strong>Sindi</strong></div>
+          <div class="windows"><div class="window"></div><div class="window"></div></div>
+        </div>
+        <div class="side"></div>
       </div>
 
-      <div class="floor" id="f2-minha" data-floor="F2" onclick="alert('Minha Agenda')">
-        <div>Minha<br><strong>Agenda</strong></div>
-        <div class="windows"><div class="window"></div><div class="window"></div></div>
+      <div class="floor" id="f2m" data-floor="F2" onclick="alert('Minha Agenda')">
+        <div class="top">
+          <div>Minha<br><strong>Agenda</strong></div>
+          <div class="windows"><div class="window"></div><div class="window"></div></div>
+        </div>
+        <div class="side"></div>
       </div>
 
-      <div class="floor" id="f2-sindi" data-floor="F2" onclick="alert('Sindi Agenda')">
-        <div>Sindi<br><strong>Agenda</strong></div>
-        <div class="windows"><div class="window"></div><div class="window"></div></div>
+      <div class="floor" id="f2s" data-floor="F2" onclick="alert('Sindi Agenda')">
+        <div class="top">
+          <div>Sindi<br><strong>Agenda</strong></div>
+          <div class="windows"><div class="window"></div><div class="window"></div></div>
+        </div>
+        <div class="side"></div>
       </div>
 
-      <div class="floor" id="ground" data-floor="G" onclick="alert('Sindi Resolve')">
-        <div>Sindi<br><strong>Resolve</strong></div>
-        <div class="windows"><div class="window"></div><div class="window"></div></div>
+      <div class="floor" id="g" data-floor="G" onclick="alert('Sindi Resolve')">
+        <div class="top">
+          <div>Sindi<br><strong>Resolve</strong></div>
+          <div class="windows"><div class="window"></div><div class="window"></div></div>
+        </div>
+        <div class="side"></div>
       </div>
 
       <div class="base">
