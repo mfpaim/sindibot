@@ -1,364 +1,189 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sindi Portal - Rebuilt Stacked Menu</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <style>
-        /* --- 1. GLOBAL VARIABLES & RESET --- */
-        :root {
-            --color-orange-dark: #f07b0e;
-            --color-orange-light: #f7a659;
-            --color-red: #d84315;
-            --color-dark-grey: #4c4c4c;
-            --color-light-grey: #f4f4f4;
-            --color-white: #fff;
-            --menu-width: 300px;
-            --item-height: 80px; /* Standard block height */
-            --offset-step: 40px; /* How far each block is offset horizontally/vertically */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sindi - Menu Prédio</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Arial', sans-serif;
-        }
+  .app {
+    width: 380px;
+    max-width: 100%;
+    background: white;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  }
 
-        body {
-            background-color: var(--color-light-grey);
-        }
+  /* Header */
+  .header {
+    background: #FF6B35;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    color: white;
+    font-size: 28px;
+  }
 
-        /* --- 2. LAYOUT (CSS GRID) --- */
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: var(--menu-width) 1fr;
-            grid-template-rows: auto 1fr;
-            grid-template-areas: 
-                "header header"
-                "sidebar main";
-            max-width: 1400px;
-            margin: 20px auto;
-            background-color: var(--color-white);
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            min-height: 80vh;
-        }
+  .home-icon {
+    font-size: 32px;
+  }
 
-        /* --- 3. HEADER STYLING --- */
-        .header {
-            grid-area: header;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 30px;
-            border-bottom: 1px solid var(--color-light-grey);
-        }
+  /* Building Container */
+  .building-wrapper {
+    padding: 60px 40px 80px;
+    background: white;
+  }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--color-dark-grey);
-        }
+  .building {
+    position: relative;
+    margin: 0 auto;
+  }
 
-        .menu-toggle {
-            margin-right: 15px;
-            cursor: pointer;
-            color: var(--color-orange-dark);
-        }
+  /* Each Floor */
+  .floor {
+    position: relative;
+    height: 86px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    padding-left: 80px;
+    padding-right: 20px;
+    display: flex;
+    align-items: center;
+    color: white;
+    font-weight: 600;
+    font-size: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
 
-        .top-nav {
-            display: flex;
-            align-items: center;
-        }
+  .floor:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  }
 
-        .top-nav ul {
-            list-style: none;
-            display: flex;
-            gap: 30px;
-        }
-        
-        /* Home Icon (Top right button) */
-        .header .home-icon {
-            font-size: 1.5rem;
-            color: var(--color-white);
-            background-color: var(--color-orange-dark);
-            border-radius: 50%;
-            padding: 8px;
-            margin-left: 20px;
-        }
+  /* Floor Number Label (F5, F2, G) */
+  .floor::before {
+    content: attr(data-floor);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 70px;
+    height: 100%;
+    background: rgba(255,255,255,0.25);
+    border-radius: 16px 0 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    backdrop-filter: blur(4px);
+  }
 
-        /* --- 4. SIDEBAR & STACKED MENU CORE --- */
-        .sidebar {
-            grid-area: sidebar;
-            padding: 30px;
-            border-right: 1px solid var(--color-light-grey);
-        }
+  /* Windows */
+  .windows {
+    position: absolute;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+  }
 
-        .menu-stack-wrapper {
-            position: relative;
-            /* Defined height to contain the stacked blocks */
-            height: 450px; 
-            padding-top: 10px; 
-        }
+  .window {
+    width: 18px;
+    height: 28px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+    border: 2px solid rgba(255,255,255,0.4);
+  }
 
-        .stacked-item {
-            display: block;
-            position: absolute;
-            width: 250px;
-            height: var(--item-height);
-            text-decoration: none;
-            color: var(--color-white);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s, z-index 0s;
-            border-radius: 5px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-            /* Grid for easy placement of F5 and Menu Text */
-            display: grid;
-            grid-template-columns: 80px 1fr; 
-            align-items: center;
-            padding-right: 10px;
-        }
+  /* Specific Floor Colors - EXACT MATCH */
+  #f5  { background: linear-gradient(135deg, #FFB366, #FF8C42); }
+  #f2-minha { background: linear-gradient(135deg, #FF8C42, #FF6B35); }
+  #f2-sindi { background: linear-gradient(135deg, #FF6B35, #FF5252); }
+  #ground { background: linear-gradient(135deg, #FF5252, #E04040); }
 
-        /* The left section (F5, F2, G) */
-        .label-left {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            font-size: 2.5rem;
-            font-weight: bold;
-            /* Create a subtle line effect, like a divider */
-            border-right: 1px solid rgba(255, 255, 255, 0.5); 
-        }
+  /* Ground Floor Base */
+  .base {
+    height: 70px;
+    background: #1A1A1A;
+    border-radius: 20px;
+    margin: 40px auto 0;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  }
 
-        /* The right section (Menu Name) */
-        .label-side {
-            font-size: 1.2rem;
-            font-weight: 500;
-            padding-left: 10px;
-            line-height: 1.1;
-        }
+  .door {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    background: #0F0F0F;
+    border-radius: 10px 10px 0 0;
+  }
 
-        /* Pseudo-elements for the subtle 3D edges (like windows) */
-        .stacked-item::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 30px;
-            height: 100%;
-            /* Semi-transparent dark overlay for side shadow */
-            background-color: rgba(0, 0, 0, 0.1); 
-            z-index: 1;
-        }
-
-        /* Specific stacking and coloring */
-        /* Item 1 (Top, Z-index 40) - F5 Clube Sindi */
-        .item-1 {
-            z-index: 40;
-            background-color: var(--color-orange-dark);
-            top: 0px;
-            left: 0px;
-        }
-
-        /* Item 2 (Z-index 30) - F2 Minha Agenda */
-        .item-2 {
-            z-index: 30;
-            background-color: var(--color-orange-light);
-            top: var(--offset-step); 
-            left: var(--offset-step);
-        }
-        .item-2 .label-left {
-            /* Keep F2 text color white/bold for contrast */
-            color: var(--color-white); 
-        }
-
-
-        /* Item 3 (Active, Z-index 20) - F2 Sindi Agenda */
-        .item-3 {
-            z-index: 20;
-            background-color: var(--color-red);
-            top: calc(var(--offset-step) * 2);
-            left: calc(var(--offset-step) * 2);
-        }
-
-        /* Item 4 (Bottom, Z-index 10) - G Sindi Resolve */
-        .item-4 {
-            z-index: 10;
-            /* Use a dark color for the base/foundation block */
-            background-color: var(--color-dark-grey);
-            top: calc(var(--offset-step) * 3);
-            left: calc(var(--offset-step) * 3);
-            height: 90px; /* Slightly taller to represent the base */
-        }
-
-
-        /* HOVER EFFECT: Lift and highlight */
-        .stacked-item:hover {
-            transform: translateY(-5px); 
-            z-index: 50; /* Bring to front */
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
-        }
-
-        /* --- 5. MAIN CONTENT STYLING --- */
-        .main-content {
-            grid-area: main;
-            padding: 30px;
-        }
-
-        .main-content h1 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            color: var(--color-dark-grey);
-        }
-
-        .content-tabs {
-            border-bottom: 2px solid var(--color-light-grey);
-            margin-bottom: 30px;
-        }
-
-        .tab-btn {
-            padding: 10px 20px;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-size: 1rem;
-            color: var(--color-dark-grey);
-            border-bottom: 3px solid transparent;
-            transition: border-color 0.3s, color 0.3s;
-            margin-right: 10px;
-            font-weight: 500;
-        }
-
-        .tab-btn.active {
-            color: var(--color-orange-dark);
-            border-bottom-color: var(--color-orange-dark);
-            font-weight: bold;
-        }
-
-        /* Content Cards */
-        .content-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background-color: var(--color-white);
-            padding: 20px;
-            border: 1px solid var(--color-light-grey);
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-
-        .card h3 {
-            font-size: 0.8rem;
-            color: var(--color-orange-dark);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            font-weight: normal;
-        }
-
-        .card h4 {
-            font-size: 1.2rem;
-            color: var(--color-dark-grey);
-            margin-bottom: 10px;
-        }
-
-        .card p {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        .card-link {
-            text-decoration: none;
-            color: var(--color-orange-dark);
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-    </style>
+  /* Responsive */
+  @media (max-width: 480px) {
+    .app { border-radius: 30px; }
+    .building-wrapper { padding: 40px 20px 60px; }
+    .floor { font-size: 18px; height: 80px; padding-left: 70px; }
+    .floor::before { width: 60px; font-size: 24px; }
+  }
+</style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <header class="header">
-            <div class="logo">
-                <i class="fas fa-bars menu-toggle"></i>
-                <span class="logo-text">Sindi</span>
-            </div>
-            <nav class="top-nav">
-                <i class="fas fa-search search-icon"></i>
-                <i class="fas fa-home home-icon"></i>
-            </nav>
-        </header>
 
-        <aside class="sidebar">
-            <div class="menu-stack-wrapper">
-                
-                <a href="#" class="stacked-item item-1">
-                    <span class="label-left">F5</span>
-                    <span class="label-side">Clube Sindi</span>
-                </a>
+<div class="app">
+  <div class="header">
+    <div>Menu</div>
+    <div class="home-icon">Home</div>
+  </div>
 
-                <a href="#" class="stacked-item item-2">
-                    <span class="label-left">F2</span>
-                    <span class="label-side">Minha Agenda</span>
-                </a>
+  <div class="building-wrapper">
+    <div class="building">
 
-                <a href="#" class="stacked-item item-3 active">
-                    <span class="label-left">F2</span>
-                    <span class="label-side">Sindi Agenda</span>
-                </a>
+      <div class="floor" id="f5" data-floor="F5" onclick="alert('Clube Sindi')">
+        <div>Clube<br><strong>Sindi</strong></div>
+        <div class="windows"><div class="window"></div><div class="window"></div></div>
+      </div>
 
-                <a href="#" class="stacked-item item-4">
-                    <span class="label-left">G</span>
-                    <span class="label-side">Sindi Resolve</span>
-                </a>
-            </div>
-        </aside>
+      <div class="floor" id="f2-minha" data-floor="F2" onclick="alert('Minha Agenda')">
+        <div>Minha<br><strong>Agenda</strong></div>
+        <div class="windows"><div class="window"></div><div class="window"></div></div>
+      </div>
 
-        <main class="main-content">
-            <h1>Welcome to the Sindi Portal</h1>
-            <div class="content-tabs">
-                <button class="tab-btn active">Overview</button>
-                <button class="tab-btn">Editorial</button>
-            </div>
+      <div class="floor" id="f2-sindi" data-floor="F2" onclick="alert('Sindi Agenda')">
+        <div>Sindi<br><strong>Agenda</strong></div>
+        <div class="windows"><div class="window"></div><div class="window"></div></div>
+      </div>
 
-            <div class="content-cards">
-                <div class="card">
-                    <h3>FEATURES</h3>
-                    <h4>Lorem Ipsum Ben Sedi</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    <a href="#" class="card-link">Saiba mais</a>
-                </div>
+      <div class="floor" id="ground" data-floor="G" onclick="alert('Sindi Resolve')">
+        <div>Sindi<br><strong>Resolve</strong></div>
+        <div class="windows"><div class="window"></div><div class="window"></div></div>
+      </div>
 
-                <div class="card">
-                    <h3>OUTRAS NOTAS</h3>
-                    <h4>Lorem Ipsum Ben Sedi</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    <a href="#" class="card-link">Saiba mais</a>
-                </div>
+      <div class="base">
+        <div class="door"></div>
+      </div>
 
-                <div class="card">
-                    <h3>COMO USAR</h3>
-                    <h4>Lorem Ipsum Ben Sedi</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    <a href="#" class="card-link">Saiba mais</a>
-                </div>
-
-                <div class="card">
-                    <h3>NOTAS</h3>
-                    <h4>Lorem Ipsum Ben Sedi</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                    <a href="#" class="card-link">Saiba mais</a>
-                </div>
-            </div>
-        </main>
     </div>
+  </div>
+</div>
+
 </body>
 </html>
