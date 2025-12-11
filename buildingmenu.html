@@ -1,218 +1,305 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Condomínio Sindical - Menu Prédio</title>
-<style>
-  body {
+:root {
+    --color-orange-dark: #f07b0e;
+    --color-orange-light: #f7a659;
+    --color-red: #d84315;
+    --color-grey-dark: #333;
+    --color-grey-light: #f4f4f4;
+    --color-white: #fff;
+    --menu-width: 300px;
+}
+
+/* GENERAL STYLES & RESET */
+* {
+    box-sizing: border-box;
     margin: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: linear-gradient(to bottom, #f0f0f0, #d0d0d0);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
 
-  .phone {
-    width: 380px;
-    max-width: 100%;
-    background: #fff;
-    border-radius: 40px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    overflow: hidden;
-    position: relative;
-  }
+body {
+    background-color: var(--color-grey-light);
+}
 
-  .header {
-    background: #ff8c42;
-    padding: 20px 20px;
+/* DASHBOARD LAYOUT (CSS GRID) */
+.dashboard-container {
+    display: grid;
+    grid-template-columns: var(--menu-width) 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: 
+        "header header"
+        "sidebar main";
+    max-width: 1400px; /* Constrain max width for better appearance */
+    margin: 20px auto;
+    background-color: var(--color-white);
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    min-height: 80vh;
+}
+
+/* HEADER STYLING */
+.header {
+    grid-area: header;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: white;
-    font-size: 18px;
-  }
+    padding: 20px 30px;
+    border-bottom: 1px solid var(--color-grey-light);
+}
 
-  .menu-icon {
-    font-size: 28px;
-    cursor: pointer;
-  }
-
-  .home-icon {
-    font-size: 26px;
-  }
-
-  .building-container {
-    padding: 40px 20px 60px;
-    perspective: 800px;
-    display: flex;
-    justify-content: center;
-  }
-
-  .building {
-    transform: rotateX(15deg);
-    transform-style: preserve-3d;
-    position: relative;
-  }
-
-  .floor {
-    width: 280px;
-    height: 90px;
-    margin-bottom: -12px;
-    position: relative;
-    background: linear-gradient(to bottom, #fff, #eee);
-    box-shadow: 
-      0 8px 15px rgba(0,0,0,0.2),
-      inset 0 2px 4px rgba(255,255,255,0.6);
-    border-radius: 8px;
+.logo {
     display: flex;
     align-items: center;
-    justify-content: center;
+    font-size: 1.5rem;
     font-weight: bold;
-    font-size: 22px;
-    color: white;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    color: var(--color-grey-dark);
+}
+
+.menu-toggle {
+    margin-right: 15px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
-    line-height: 1.2;
-  }
+}
 
-  .floor:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 30px rgba(0,0,0,0.3);
-    z-index: 10;
-  }
-
-  /* Individual floor colors */
-  .floor-g { background: linear-gradient(135deg, #ee5a52, #d9443a); }
-  .floor-f2-agenda { background: linear-gradient(135deg, #ff6b6b, #ee5a52); }
-  .floor-f2-minha { background: linear-gradient(135deg, #ff8c42, #ff6b35); }
-  .floor-f5 { background: linear-gradient(135deg, #ffb366, #ff8c42); }
-
-  .floor-label {
-    position: absolute;
-    left: -60px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 32px;
-    font-weight: bold;
-    color: white;
-    text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
-  }
-
-  .windows {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
+.top-nav ul {
+    list-style: none;
     display: flex;
-    gap: 12px;
-  }
+    gap: 30px;
+}
 
-  .window {
-    width: 20px;
-    height: 30px;
-    background: #fff3;
-    border: 2px solid #fff6;
-    border-radius: 4px;
-  }
-
-  .ground {
-    width: 340px;
-    height: 80px;
-    background: #444;
-    margin-top: -20px;
-    border-radius: 10px;
+.top-nav a {
+    text-decoration: none;
+    color: var(--color-grey-dark);
+    font-size: 0.9rem;
+    padding: 5px 0;
     position: relative;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-  }
+    transition: color 0.3s;
+}
 
-  .door {
+.top-nav a:hover {
+    color: var(--color-orange-dark);
+}
+
+.search-icon {
+    margin-left: 30px;
+    cursor: pointer;
+    color: var(--color-grey-dark);
+}
+
+
+/* SIDEBAR STYLING */
+.sidebar {
+    grid-area: sidebar;
+    padding: 30px;
+    border-right: 1px solid var(--color-grey-light);
+}
+
+.menu-stack-wrapper {
+    position: relative;
+    height: 400px; /* Define space for the stack */
+    padding-top: 10px; /* Space from the top of the sidebar */
+}
+
+/* 🧱 STACKED MENU STYLING 🧱 */
+.stacked-item {
+    display: block;
     position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 60px;
-    background: #333;
-    border-radius: 8px 8px 0 0;
-  }
+    width: 250px;
+    height: 100px;
+    text-decoration: none;
+    color: var(--color-white);
+    padding: 0;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s, z-index 0s;
+    border-radius: 5px;
+}
 
-  @media (max-width: 480px) {
-    .phone { width: 100%; border-radius: 0; }
-    .floor { width: 260px; font-size: 20px; }
-    .floor-label { left: -50px; font-size: 28px; }
-  }
-</style>
-</head>
-<body>
+/* Default state for all items */
+.stacked-item::before,
+.stacked-item::after {
+    content: '';
+    position: absolute;
+    transition: background-color 0.3s;
+}
 
-<div class="phone">
-  <div class="header">
-    <div class="menu-icon">☰</div>
-    <div class="home-icon">🏠</div>
-  </div>
+/* ::before creates the TOP surface (the one with F5/F2/G) */
+.stacked-item::before {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.3); /* Lighter shade for the top */
+    transform: perspective(100px) rotateX(20deg) translateZ(5px);
+    transform-origin: top;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    z-index: 2;
+    padding: 0 15px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
 
-  <div class="building-container">
-    <div class="building">
+/* ::after creates the RIGHT surface (the subtle 3D edge) */
+.stacked-item::after {
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.15); /* Darker shade for the right edge */
+    transform: perspective(100px) rotateY(-5deg);
+    transform-origin: right;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    z-index: 1;
+}
 
-      <!-- F5 - Clube Sindi -->
-      <div class="floor floor-f5" onclick="alert('Clube Sindi')">
-        <span class="floor-label">F5</span>
-        <div>
-          Clube<br>Sindi
-        </div>
-        <div class="windows">
-          <div class="window"></div>
-          <div class="window"></div>
-        </div>
-      </div>
+/* Common Label Styles */
+.label-top {
+    position: absolute;
+    top: 0px;
+    left: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding-top: 2px;
+    z-index: 3;
+}
 
-      <!-- F2 - Minha Agenda -->
-      <div class="floor floor-f2-minha" onclick="alert('Minha Agenda')">
-        <span class="floor-label">F2</span>
-        <div>
-          Minha<br>Agenda
-        </div>
-        <div class="windows">
-          <div class="window"></div>
-          <div class="window"></div>
-        </div>
-      </div>
+.label-side {
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    z-index: 3;
+    line-height: 1.1;
+}
 
-      <!-- F2 - Sindi Agenda -->
-      <div class="floor floor-f2-agenda" onclick="alert('Sindi Agenda')">
-        <span class="floor-label">F2</span>
-        <div>
-          Sindi<br>Agenda
-        </div>
-        <div class="windows">
-          <div class="window"></div>
-          <div class="window"></div>
-        </div>
-      </div>
+/* Specific item colors and stacking/offset */
 
-      <!-- Térreo - Sindi Resolve -->
-      <div class="floor floor-g" onclick="alert('Sindi Resolve')">
-        <span class="floor-label">G</span>
-        <div>
-          Sindi<br>Resolve
-        </div>
-        <div class="windows">
-          <div class="window"></div>
-          <div class="window"></div>
-        </div>
-      </div>
+/* Item 1 (Highest, Orange) */
+.item-1 {
+    z-index: 40;
+    background-color: var(--color-orange-dark);
+    top: 0px;
+    left: 0px;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
 
-      <div class="ground">
-        <div class="door"></div>
-      </div>
-    </div>
-  </div>
-</div>
+/* Item 2 (Orange-Red) */
+.item-2 {
+    z-index: 30;
+    background-color: var(--color-orange-light);
+    top: 60px; /* Offset from previous */
+    left: 20px;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
 
-</body>
-</html>
+/* Item 3 (Active, Red) */
+.item-3 {
+    z-index: 20;
+    background-color: var(--color-red);
+    top: 120px;
+    left: 40px;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+.item-3.active {
+    /* Slightly less intense shadow for the currently selected item */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+}
+
+/* Item 4 (Bottommost, Darker/Grey) */
+.item-4 {
+    z-index: 10;
+    background-color: var(--color-grey-dark);
+    top: 180px;
+    left: 60px;
+    height: 80px; /* Smaller height for the bottom item */
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+.item-4 .label-side {
+    font-size: 1.2rem;
+}
+
+/* HOVER EFFECT: Lift and bring to front */
+.stacked-item:hover {
+    transform: translateY(-5px); /* Lift */
+    z-index: 50; /* Bring to front */
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* MAIN CONTENT STYLING */
+.main-content {
+    grid-area: main;
+    padding: 30px;
+}
+
+.main-content h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: var(--color-grey-dark);
+}
+
+.content-tabs {
+    border-bottom: 2px solid var(--color-grey-light);
+    margin-bottom: 30px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--color-grey-dark);
+    border-bottom: 3px solid transparent;
+    transition: border-color 0.3s;
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    color: var(--color-orange-dark);
+    border-bottom-color: var(--color-orange-dark);
+    font-weight: bold;
+}
+
+/* Content Cards */
+.content-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background-color: var(--color-white);
+    padding: 20px;
+    border: 1px solid var(--color-grey-light);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.card h3 {
+    font-size: 0.8rem;
+    color: var(--color-orange-dark);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    font-weight: normal;
+}
+
+.card h4 {
+    font-size: 1.2rem;
+    color: var(--color-grey-dark);
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.card-link {
+    text-decoration: none;
+    color: var(--color-orange-dark);
+    font-weight: bold;
+    font-size: 0.9rem;
+}
