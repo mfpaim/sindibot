@@ -1,224 +1,215 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sindi - Prédio 3D</title>
+<title>Condomínio Sindical - Menu Prédio</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(to bottom, #f0f0f0, #d0d0d0);
     min-height: 100vh;
-    perspective: 1200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .app {
+  .phone {
     width: 380px;
     max-width: 100%;
-    background: white;
+    background: #fff;
     border-radius: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     overflow: hidden;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+    position: relative;
   }
 
   .header {
-    background: #FF6B35;
-    height: 90px;
+    background: #ff8c42;
+    padding: 20px 20px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 0 30px;
+    align-items: center;
     color: white;
-    font-size: 28px;
+    font-size: 18px;
   }
 
-  .building-wrapper {
-    padding: 80px 40px 100px;
-    background: white;
+  .menu-icon {
+    font-size: 28px;
+    cursor: pointer;
+  }
+
+  .home-icon {
+    font-size: 26px;
+  }
+
+  .building-container {
+    padding: 40px 20px 60px;
+    perspective: 800px;
     display: flex;
     justify-content: center;
   }
 
   .building {
+    transform: rotateX(15deg);
     transform-style: preserve-3d;
-    transform: rotateX(28deg) rotateZ(-6deg) scale(0.95);
-  }
-
-  /* 3D Floor (the "slab") */
-  .floor {
     position: relative;
-    width: 300px;
-    height: 86px;
-    margin-bottom: 36px;
-    transform-style: preserve-3d;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  .floor:hover {
-    transform: translateZ(30px) translateY(-10px);
-  }
-
-  /* Top face */
-  .top {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: var(--color);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    padding-left: 80px;
-    padding-right: 20px;
-    color: white;
-    font-weight: 600;
-    font-size: 20px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-  }
-
-  /* Side face (depth) */
-  .side {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    height: 50px;
-    background: var(--side);
-    transform: rotateX(-90deg);
-    transform-origin: top center;
-    border-radius: 0 0 16px 16px;
-  }
-
-  /* Floor number label */
-  .top::before {
-    content: attr(data-floor);
-    position: absolute;
-    left: 0; top: 0;
-    width: 70px; height: 100%;
-    background: rgba(255,255,255,0.28);
-    border-radius: 16px 0 0 16px;
+  .floor {
+    width: 280px;
+    height: 90px;
+    margin-bottom: -12px;
+    position: relative;
+    background: linear-gradient(to bottom, #fff, #eee);
+    box-shadow: 
+      0 8px 15px rgba(0,0,0,0.2),
+      inset 0 2px 4px rgba(255,255,255,0.6);
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 28px;
     font-weight: bold;
-    backdrop-filter: blur(4px);
+    font-size: 22px;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    line-height: 1.2;
   }
 
-  /* Windows */
+  .floor:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+    z-index: 10;
+  }
+
+  /* Individual floor colors */
+  .floor-g { background: linear-gradient(135deg, #ee5a52, #d9443a); }
+  .floor-f2-agenda { background: linear-gradient(135deg, #ff6b6b, #ee5a52); }
+  .floor-f2-minha { background: linear-gradient(135deg, #ff8c42, #ff6b35); }
+  .floor-f5 { background: linear-gradient(135deg, #ffb366, #ff8c42); }
+
+  .floor-label {
+    position: absolute;
+    left: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+  }
+
   .windows {
     position: absolute;
     right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     display: flex;
-    gap: 10px;
+    gap: 12px;
   }
+
   .window {
-    width: 18px;
-    height: 28px;
-    background: rgba(255,255,255,0.35);
-    border: 2px solid rgba(255,255,255,0.5);
+    width: 20px;
+    height: 30px;
+    background: #fff3;
+    border: 2px solid #fff6;
     border-radius: 4px;
   }
 
-  /* Colors per floor */
-  #f5  { --color: linear-gradient(135deg, #FFB366, #FF8C42); --side: #e69538; }
-  #f2m { --color: linear-gradient(135deg, #FF8C42, #FF6B35); --side: #e65c30; }
-  #f2s { --color: linear-gradient(135deg, #FF6B35, #FF5252); --side: #e53e3e; }
-  #g   { --color: linear-gradient(135deg, #FF5252, #E04040); --side: #c62828; }
-
-  /* Black base */
-  .base {
-    position: relative;
+  .ground {
     width: 340px;
-    height: 70px;
-    background: #1A1A1A;
-    border-radius: 20px;
-    margin: 40px auto 0;
-    transform-style: preserve-3d;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+    height: 80px;
+    background: #444;
+    margin-top: -20px;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
   }
-  .base::before {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background: #0a0a0a;
-    transform: rotateX(-90deg);
-    transform-origin: top center;
-    border-radius: 0 0 20px 20px;
-  }
+
   .door {
     position: absolute;
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
     width: 50px;
-    height: 50px;
-    background: #000;
-    border-radius: 10px 10px 0 0;
+    height: 60px;
+    background: #333;
+    border-radius: 8px 8px 0 0;
   }
 
   @media (max-width: 480px) {
-    .app { border-radius: 30px; }
-    .building { transform: rotateX(25deg) rotateZ(-6deg) scale(0.9); }
-    .floor { width: 270px; }
-    .base { width: 300px; }
+    .phone { width: 100%; border-radius: 0; }
+    .floor { width: 260px; font-size: 20px; }
+    .floor-label { left: -50px; font-size: 28px; }
   }
 </style>
 </head>
 <body>
 
-<div class="app">
+<div class="phone">
   <div class="header">
-    <div>Menu</div>
-    <div>Home</div>
+    <div class="menu-icon">☰</div>
+    <div class="home-icon">🏠</div>
   </div>
 
-  <div class="building-wrapper">
+  <div class="building-container">
     <div class="building">
 
-      <div class="floor" id="f5" data-floor="F5" onclick="alert('Clube Sindi')">
-        <div class="top">
-          <div>Clube<br><strong>Sindi</strong></div>
-          <div class="windows"><div class="window"></div><div class="window"></div></div>
+      <!-- F5 - Clube Sindi -->
+      <div class="floor floor-f5" onclick="alert('Clube Sindi')">
+        <span class="floor-label">F5</span>
+        <div>
+          Clube<br>Sindi
         </div>
-        <div class="side"></div>
+        <div class="windows">
+          <div class="window"></div>
+          <div class="window"></div>
+        </div>
       </div>
 
-      <div class="floor" id="f2m" data-floor="F2" onclick="alert('Minha Agenda')">
-        <div class="top">
-          <div>Minha<br><strong>Agenda</strong></div>
-          <div class="windows"><div class="window"></div><div class="window"></div></div>
+      <!-- F2 - Minha Agenda -->
+      <div class="floor floor-f2-minha" onclick="alert('Minha Agenda')">
+        <span class="floor-label">F2</span>
+        <div>
+          Minha<br>Agenda
         </div>
-        <div class="side"></div>
+        <div class="windows">
+          <div class="window"></div>
+          <div class="window"></div>
+        </div>
       </div>
 
-      <div class="floor" id="f2s" data-floor="F2" onclick="alert('Sindi Agenda')">
-        <div class="top">
-          <div>Sindi<br><strong>Agenda</strong></div>
-          <div class="windows"><div class="window"></div><div class="window"></div></div>
+      <!-- F2 - Sindi Agenda -->
+      <div class="floor floor-f2-agenda" onclick="alert('Sindi Agenda')">
+        <span class="floor-label">F2</span>
+        <div>
+          Sindi<br>Agenda
         </div>
-        <div class="side"></div>
+        <div class="windows">
+          <div class="window"></div>
+          <div class="window"></div>
+        </div>
       </div>
 
-      <div class="floor" id="g" data-floor="G" onclick="alert('Sindi Resolve')">
-        <div class="top">
-          <div>Sindi<br><strong>Resolve</strong></div>
-          <div class="windows"><div class="window"></div><div class="window"></div></div>
+      <!-- Térreo - Sindi Resolve -->
+      <div class="floor floor-g" onclick="alert('Sindi Resolve')">
+        <span class="floor-label">G</span>
+        <div>
+          Sindi<br>Resolve
         </div>
-        <div class="side"></div>
+        <div class="windows">
+          <div class="window"></div>
+          <div class="window"></div>
+        </div>
       </div>
 
-      <div class="base">
+      <div class="ground">
         <div class="door"></div>
       </div>
-
     </div>
   </div>
 </div>
