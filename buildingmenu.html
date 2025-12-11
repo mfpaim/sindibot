@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Typebot Building Menu Mockup</title>
+
+<style>
+
+/* ------------------------- */
+/* Base Typebot-like button  */
+/* ------------------------- */
+.typebot-button {
+  align-items: center;
+  appearance: none;
+  background-color: #inherit;
+  border-radius: 6px;
+  border: 1px solid #E0E0E0;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px,
+              rgba(0, 0, 0, 0.06) 0px 1px 2px;
+  box-sizing: border-box;
+  color: #3C3C3C;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  height: 55px;
+  justify-content: center;
+  padding: 0 16px;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease,
+              box-shadow 0.2s ease,
+              transform 0.2s ease;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* ------------------------- */
+/* Building Floor Styling    */
+/* ------------------------- */
+.building-floor {
+  display: block;
+  width: 100%;
+  margin: 18px 0;
+  padding: 22px 20px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  position: relative;
+  overflow: visible;
+  text-align: left;
+  box-shadow: 0 6px 10px rgba(0,0,0,0.18);
+}
+
+/* 3D right side wall */
+.building-floor::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -12px;
+  width: 12px;
+  background: rgba(0, 0, 0, 0.15);
+  transform: skewY(-8deg);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Floor tag (F5, F2, G...) */
+.floor-tag {
+  font-size: 36px;
+  font-weight: 700;
+  margin-right: 16px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ------------------------- */
+/* Custom Floor Colors       */
+/* ------------------------- */
+.floor-orange     { background: #F18B20; }
+.floor-light-orange { background: #F7A24C; }
+.floor-red        { background: #E96B5D; }
+.floor-dark-orange { background: #D8632E; }
+
+body {
+  background: #f4f4f4;
+  font-family: Inter, sans-serif;
+  padding: 40px;
+}
+
+.container {
+  max-width: 420px;
+  margin: auto;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h2>Building Menu Mockup</h2>
+  <p>This mockup simulates how your Typebot buttons will look when styled as a stacked building.</p>
+
+  <!-- Floor 1 -->
+  <button class="typebot-button building-floor floor-orange">
+    <span class="floor-tag">F5</span> Clube Sindi
+  </button>
+
+  <!-- Floor 2 -->
+  <button class="typebot-button building-floor floor-light-orange">
+    <span class="floor-tag">F2</span> Minha Agenda
+  </button>
+
+  <!-- Floor 3 -->
+  <button class="typebot-button building-floor floor-red">
+    <span class="floor-tag">F2</span> Sindi Agenda
+  </button>
+
+  <!-- Floor 4 -->
+  <button class="typebot-button building-floor floor-dark-orange">
+    <span class="floor-tag">G</span> Sindi Resolve
+  </button>
+
+</div>
+
+</body>
+</html>
