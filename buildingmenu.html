@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Sindi – 3D Building Menu</title>
+<title>Sindi Building Menu – Box Floors</title>
 
 <style>
-/* Global layout */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -18,345 +17,324 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f6f5f1; /* light neutral, similar to your mock */
+  background: #f6f4ef;
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Wrapper just to center the building */
-.scene {
+/* Container for the whole building */
+.building {
   position: relative;
+  width: 420px;
+  height: 640px;
 }
 
-/* ------------------------------------------------------ */
-/* SHARED ISOMETRIC BLOCK GEOMETRY                       */
-/* ------------------------------------------------------ */
-/* This is the same technique as the CSS you sent:
-   main face rotated & skewed, with ::before and ::after
-   forming left wall + bottom face.                       */
-
-.iso-block {
-  position: relative;
-  width: 260px;              /* “depth” along X */
-  height: 80px;              /* front face height */
-  transform: rotate(-30deg) skew(25deg);
-  transform-origin: top left;
-  box-shadow: -20px 20px 15px rgba(0, 0, 0, 0.25);
-}
-
-/* left wall */
-.iso-block::before {
-  content: "";
-  position: absolute;
-  top: 10px;
-  left: -20px;
-  width: 20px;
-  height: 100%;
-  transform: skewY(-45deg);
-  transform-origin: top left;
-  border-radius: 4px 0 0 4px;
-}
-
-/* bottom face */
-.iso-block::after {
-  content: "";
-  position: absolute;
-  bottom: -20px;
-  left: -10px;
-  width: 100%;
-  height: 20px;
-  transform: skewX(-45deg);
-  transform-origin: left bottom;
-  border-radius: 0 0 4px 4px;
-}
-
-/* small inverse transform to keep the content readable */
-.iso-content {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 22px;
-  transform: skew(-25deg) rotate(30deg); /* inverse of parent transform */
-  transform-origin: center;
-}
-
-/* ------------------------------------------------------ */
-/* ROOF                                                   */
-/* ------------------------------------------------------ */
-
-.roof {
-  height: 60px;
-  border-radius: 6px 6px 2px 2px;
-  background: linear-gradient(135deg, #f7a733, #f18b20);
-}
-
-.roof::before {
-  background: #d97b1f; /* left wall, darker */
-}
-
-.roof::after {
-  background: #fbc164; /* bottom face, lighter */
-}
-
-/* Little “front edge” line on roof to match illustration */
-.roof-line {
-  position: absolute;
-  left: 14px;
-  right: 24px;
-  top: 30px;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 999px;
-  transform: skew(-25deg) rotate(30deg);
-}
-
-/* Home icon (simplified outline) */
-.roof-icon {
-  width: 20px;
-  height: 20px;
-  border: 2px solid #fff;
-  border-radius: 3px 3px 0 0;
-  border-bottom: none;
-  position: absolute;
-  top: 14px;
-  right: 22px;
-  transform: skew(-25deg) rotate(30deg);
-}
-
-/* ------------------------------------------------------ */
-/* FLOORS                                                 */
-/* ------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* FLOOR WRAPPER                                                      */
+/* ------------------------------------------------------------------ */
+/* each .floor slot holds front, top and side faces                   */
 
 .floor {
-  margin-top: -32px; /* overlap floors so they stack as one building */
+  position: absolute;
+  left: 70px;  /* adjust horizontal position of the tower */
+  width: 320px;
+  height: 130px; /* enough to hold top + front */
+}
+
+/* manual vertical positions, from top to bottom */
+.floor-1 { top: 40px; }
+.floor-2 { top: 160px; }
+.floor-3 { top: 280px; }
+.floor-4 { top: 400px; }
+
+/* geometric constants */
+:root {
+  --front-width: 240px;
+  --front-height: 95px;
+  --side-width: 70px;
+  --top-height: 32px;
+}
+
+/* ------------------------------------------------------------------ */
+/* FRONT FACE                                                         */
+/* ------------------------------------------------------------------ */
+
+.floor-front {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: var(--front-width);
+  height: var(--front-height);
   border-radius: 4px;
-}
-
-/* text + code block */
-.floor-label {
   display: flex;
-  align-items: baseline;
-  gap: 16px;
+  align-items: center;
+  padding: 18px 20px;
   color: #fff;
-}
-
-.floor-tag {
-  font-size: 38px;
-  font-weight: 900;
-}
-
-.floor-text {
-  font-size: 19px;
   font-weight: 700;
 }
 
-/* “side” windows on the right, simplified */
-.floor-windows {
+/* Text styling */
+.floor-label {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+}
+
+.floor-code {
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.floor-text {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+/* ------------------------------------------------------------------ */
+/* TOP FACE (parallelogram)                                           */
+/* ------------------------------------------------------------------ */
+
+.floor-top {
+  position: absolute;
+  bottom: var(--front-height);
+  left: 18px;               /* slight inset like your art */
+  width: var(--front-width);
+  height: var(--top-height);
+  transform-origin: bottom left;
+  transform: skewX(-55deg);
+  border-radius: 4px 4px 0 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* RIGHT FACE (parallelogram)                                         */
+/* ------------------------------------------------------------------ */
+
+.floor-side {
+  position: absolute;
+  bottom: 0;
+  left: var(--front-width);
+  width: var(--side-width);
+  height: var(--front-height);
+  transform-origin: bottom left;
+  transform: skewX(-24deg);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Windows on the right side */
+.floor-windows {
+  position: absolute;
+  bottom: 18px;
+  left: var(--front-width);
+  width: var(--side-width);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  transform-origin: bottom left;
+  transform: skewX(-24deg);
 }
 
 .floor-window {
-  width: 18px;
-  height: 18px;
+  width: 26px;
+  height: 32px;
   border-radius: 3px;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(244, 245, 243, 0.9);
 }
 
-/* floor color themes approximated from illustration */
+/* ------------------------------------------------------------------ */
+/* COLOR THEMES                                                       */
+/* 4 floors: colors approximating your illustration                    */
+/* ------------------------------------------------------------------ */
 
-.floor-1 {
-  background: #f39b28; /* main front */
-}
-.floor-1::before {
-  background: #d88321; /* left wall */
-}
-.floor-1::after {
-  background: #f9bd57; /* bottom face */
-}
+.floor-1 .floor-front { background: #f3a02a; }
+.floor-1 .floor-top   { background: #f9bc5b; }
+.floor-1 .floor-side  { background: #de8a22; }
 
-.floor-2 {
-  background: #f8a956;
-}
-.floor-2::before {
-  background: #de8f43;
-}
-.floor-2::after {
-  background: #fcc67c;
-}
+.floor-2 .floor-front { background: #f6a754; }
+.floor-2 .floor-top   { background: #fbbe78; }
+.floor-2 .floor-side  { background: #df9144; }
 
-.floor-3 {
-  background: #f06a54;
-}
-.floor-3::before {
-  background: #d6523c;
-}
-.floor-3::after {
-  background: #f58c77;
-}
+.floor-3 .floor-front { background: #f06b55; }
+.floor-3 .floor-top   { background: #f58d77; }
+.floor-3 .floor-side  { background: #d85441; }
 
-.floor-4 {
-  background: #e05b40;
-}
-.floor-4::before {
-  background: #c24632;
-}
-.floor-4::after {
-  background: #eb7c63;
-}
+.floor-4 .floor-front { background: #e35f46; }
+.floor-4 .floor-top   { background: #eb8068; }
+.floor-4 .floor-side  { background: #c75037; }
 
-/* ------------------------------------------------------ */
-/* BASE / FOUNDATION                                      */
-/* ------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* FOUNDATION / GROUND FLOOR                                          */
+/* ------------------------------------------------------------------ */
 
-.base {
-  height: 110px;
-  border-radius: 4px;
-  margin-top: -26px;
-  background: #bdb7a5;
-}
-
-.base::before {
-  background: #a79f91;
-}
-.base::after {
-  background: #d2ccbd;
-}
-
-.base-content {
+.foundation {
   position: absolute;
-  inset: 0;
-  transform: skew(-25deg) rotate(30deg);
-  transform-origin: center;
-  padding: 26px 28px;
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
+  left: 70px;
+  bottom: 50px;
+  width: 320px;
+  height: 140px;
 }
 
-/* Foundation windows & door */
+/* building base uses same 3-face structure but taller front */
+.foundation-front {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: var(--front-width);
+  height: 110px;
+  background: #cbc6b8;
+  border-radius: 4px;
+}
+
+.foundation-side {
+  position: absolute;
+  bottom: 0;
+  left: var(--front-width);
+  width: var(--side-width);
+  height: 110px;
+  background: #b4ae9f;
+  transform-origin: bottom left;
+  transform: skewX(-24deg);
+  border-radius: 0 4px 4px 0;
+}
+
+/* base top */
+.foundation-top {
+  position: absolute;
+  bottom: 110px;
+  left: 18px;
+  width: var(--front-width);
+  height: 30px;
+  background: #d8d2c3;
+  transform-origin: bottom left;
+  transform: skewX(-55deg);
+  border-radius: 4px 4px 0 0;
+}
+
+/* windows and door */
+.base-elements {
+  position: absolute;
+  bottom: 20px;
+  left: 26px;
+  display: flex;
+  gap: 16px;
+}
+
 .base-window {
-  width: 42px;
-  height: 46px;
-  background: #e6e3dd;
+  width: 46px;
+  height: 52px;
+  background: #e7e3dc;
   border-radius: 3px;
 }
 
 .base-door {
-  width: 30px;
-  height: 52px;
-  background: #a59f92;
+  width: 32px;
+  height: 60px;
+  background: #afa896;
   border-radius: 2px;
 }
 
-/* ------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
+/* OPTIONAL: top banner hint (not exactly your phone frame)           */
+/* ------------------------------------------------------------------ */
 
-.title {
+.top-bar {
   position: absolute;
-  top: -110px;
-  left: -40px;
-  font-size: 22px;
-  font-weight: 700;
-  color: #303030;
-  transform: none; /* no skew on title */
+  left: 40px;
+  right: 40px;
+  top: 12px;
+  height: 56px;
+  border-radius: 16px;
+  background: #f3a02a;
 }
-
-.subtitle {
+.top-bar-inner {
   position: absolute;
-  top: -80px;
-  left: -40px;
-  font-size: 13px;
-  color: #666;
-  max-width: 260px;
-}
-
-/* Optional hover: small lift for floors */
-.floor.iso-block:hover {
-  transform: rotate(-30deg) skew(25deg) translate(8px, -8px);
-  box-shadow: -32px 30px 25px rgba(0, 0, 0, 0.35);
-  transition: 0.25s ease;
+  inset: 8px 16px;
+  border-radius: 12px;
+  border: 3px solid rgba(255,255,255,0.6);
 }
 </style>
 </head>
 <body>
 
-<div class="scene">
-
-  <div class="title">Sindi Building Menu</div>
-  <div class="subtitle">
-    Each floor represents one feature, styled as a 3D building just like your illustration.
+<div class="building">
+  <!-- Decorative top bar hinting at app header (optional) -->
+  <div class="top-bar">
+    <div class="top-bar-inner"></div>
   </div>
 
-  <!-- ROOF -->
-  <div class="iso-block roof">
-    <div class="roof-line"></div>
-    <div class="roof-icon"></div>
-  </div>
-
-  <!-- FLOORS -->
-  <div class="iso-block floor floor-1">
-    <div class="iso-content">
+  <!-- Floors -->
+  <div class="floor floor-1">
+    <div class="floor-top"></div>
+    <div class="floor-front">
       <div class="floor-label">
-        <span class="floor-tag">F5</span>
+        <span class="floor-code">F5</span>
         <span class="floor-text">Clube Sindi</span>
       </div>
-      <div class="floor-windows">
-        <div class="floor-window"></div>
-        <div class="floor-window"></div>
-      </div>
+    </div>
+    <div class="floor-side"></div>
+    <div class="floor-windows">
+      <div class="floor-window"></div>
+      <div class="floor-window"></div>
     </div>
   </div>
 
-  <div class="iso-block floor floor-2">
-    <div class="iso-content">
+  <div class="floor floor-2">
+    <div class="floor-top"></div>
+    <div class="floor-front">
       <div class="floor-label">
-        <span class="floor-tag">F2</span>
+        <span class="floor-code">F2</span>
         <span class="floor-text">Minha Agenda</span>
       </div>
-      <div class="floor-windows">
-        <div class="floor-window"></div>
-        <div class="floor-window"></div>
-      </div>
+    </div>
+    <div class="floor-side"></div>
+    <div class="floor-windows">
+      <div class="floor-window"></div>
+      <div class="floor-window"></div>
     </div>
   </div>
 
-  <div class="iso-block floor floor-3">
-    <div class="iso-content">
+  <div class="floor floor-3">
+    <div class="floor-top"></div>
+    <div class="floor-front">
       <div class="floor-label">
-        <span class="floor-tag">F2</span>
+        <span class="floor-code">F2</span>
         <span class="floor-text">Sindi Agenda</span>
       </div>
-      <div class="floor-windows">
-        <div class="floor-window"></div>
-        <div class="floor-window"></div>
-      </div>
+    </div>
+    <div class="floor-side"></div>
+    <div class="floor-windows">
+      <div class="floor-window"></div>
+      <div class="floor-window"></div>
     </div>
   </div>
 
-  <div class="iso-block floor floor-4">
-    <div class="iso-content">
+  <div class="floor floor-4">
+    <div class="floor-top"></div>
+    <div class="floor-front">
       <div class="floor-label">
-        <span class="floor-tag">G</span>
+        <span class="floor-code">G</span>
         <span class="floor-text">Sindi Resolve</span>
       </div>
-      <div class="floor-windows">
-        <div class="floor-window"></div>
-        <div class="floor-window"></div>
-      </div>
+    </div>
+    <div class="floor-side"></div>
+    <div class="floor-windows">
+      <div class="floor-window"></div>
+      <div class="floor-window"></div>
     </div>
   </div>
 
-  <!-- FOUNDATION / GROUND FLOOR -->
-  <div class="iso-block base">
-    <div class="base-content">
+  <!-- Foundation -->
+  <div class="foundation">
+    <div class="foundation-top"></div>
+    <div class="foundation-front"></div>
+    <div class="foundation-side"></div>
+
+    <div class="base-elements">
       <div class="base-window"></div>
       <div class="base-door"></div>
       <div class="base-window"></div>
     </div>
   </div>
-
 </div>
 
 </body>
