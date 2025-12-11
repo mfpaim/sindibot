@@ -4,8 +4,327 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sindi Portal - Stacked Menu</title>
-    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-orange-dark: #f07b0e;
+            --color-orange-light: #f7a659;
+            --color-red: #d84315;
+            --color-grey-dark: #333;
+            --color-grey-medium: #555;
+            --color-grey-light: #f4f4f4;
+            --color-white: #fff;
+            --menu-width: 300px;
+        }
+
+        /* GENERAL STYLES & RESET */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--color-grey-light);
+        }
+
+        /* DASHBOARD LAYOUT (CSS GRID) */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: var(--menu-width) 1fr;
+            grid-template-rows: auto 1fr;
+            grid-template-areas: 
+                "header header"
+                "sidebar main";
+            max-width: 1400px; /* Constrain max width for better appearance */
+            margin: 20px auto;
+            background-color: var(--color-white);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            min-height: 80vh;
+        }
+
+        /* HEADER STYLING */
+        .header {
+            grid-area: header;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--color-grey-light);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-grey-dark);
+        }
+
+        .menu-toggle {
+            margin-right: 15px;
+            cursor: pointer;
+            color: var(--color-orange-dark);
+        }
+
+        .top-nav {
+            display: flex;
+            align-items: center;
+        }
+
+        .top-nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .top-nav a {
+            text-decoration: none;
+            color: var(--color-grey-dark);
+            font-size: 0.9rem;
+            padding: 5px 0;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .top-nav a:hover {
+            color: var(--color-orange-dark);
+        }
+
+        .search-icon {
+            margin-left: 30px;
+            cursor: pointer;
+            color: var(--color-grey-dark);
+        }
+        
+        .header .home-icon {
+            font-size: 1.5rem;
+            color: var(--color-white);
+            background-color: var(--color-orange-dark);
+            border-radius: 50%;
+            padding: 8px;
+            margin-left: 20px;
+        }
+
+
+        /* SIDEBAR STYLING */
+        .sidebar {
+            grid-area: sidebar;
+            padding: 30px;
+            border-right: 1px solid var(--color-grey-light);
+        }
+
+        .menu-stack-wrapper {
+            position: relative;
+            height: 400px; /* Define space for the stack */
+            padding-top: 10px; /* Space from the top of the sidebar */
+        }
+
+        /* 🧱 STACKED MENU STYLING 🧱 */
+        .stacked-item {
+            display: block;
+            position: absolute;
+            width: 250px;
+            height: 100px;
+            text-decoration: none;
+            color: var(--color-white);
+            padding: 0;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s, z-index 0s;
+            border-radius: 5px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Default state for all items */
+        .stacked-item::before,
+        .stacked-item::after {
+            content: '';
+            position: absolute;
+            transition: background-color 0.3s;
+        }
+
+        /* ::before creates the TOP surface (the one with F5/F2/G) */
+        .stacked-item::before {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            /* A semi-transparent overlay to simulate lighting on the top surface */
+            background-color: rgba(255, 255, 255, 0.2); 
+            transform: perspective(100px) rotateX(20deg) translateZ(5px);
+            transform-origin: top;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            z-index: 2;
+        }
+
+        /* ::after creates the RIGHT surface (the subtle 3D edge) */
+        .stacked-item::after {
+            top: 0;
+            right: 0;
+            width: 15px; /* Slightly wider edge */
+            height: 100%;
+            /* A darker overlay to simulate shadow on the right edge */
+            background-color: rgba(0, 0, 0, 0.2); 
+            transform: perspective(100px) rotateY(-5deg);
+            transform-origin: right;
+            border-bottom-right-radius: 5px;
+            border-top-right-radius: 5px;
+            z-index: 1;
+        }
+
+        /* Common Label Styles */
+        .label-top {
+            position: absolute;
+            top: 0px;
+            left: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding-top: 2px;
+            z-index: 3;
+        }
+
+        .label-side {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 3;
+            line-height: 1.1;
+        }
+
+        /* Specific item colors and stacking/offset */
+
+        /* Item 1 (Highest, Orange) - F5 Clube Sindi */
+        .item-1 {
+            z-index: 40;
+            background-color: var(--color-orange-dark);
+            top: 0px;
+            left: 0px;
+        }
+
+        /* Item 2 (Orange-Red) - F2 Minha Agenda */
+        .item-2 {
+            z-index: 30;
+            background-color: var(--color-orange-light);
+            top: 60px; /* Offset from previous */
+            left: 20px;
+        }
+
+        /* Item 3 (Active, Red) - F2 Sindi Agenda */
+        .item-3 {
+            z-index: 20;
+            background-color: var(--color-red);
+            top: 120px;
+            left: 40px;
+        }
+        .item-3.active {
+            /* Highlight active item */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 0 0 0 3px var(--color-red);
+        }
+
+        /* Item 4 (Bottommost, Darker/Grey) - G Sindi Resolve */
+        .item-4 {
+            z-index: 10;
+            background-color: var(--color-grey-medium);
+            top: 180px;
+            left: 60px;
+            height: 80px; /* Smaller height for the bottom item */
+        }
+        .item-4 .label-side {
+            font-size: 1.2rem;
+        }
+
+        /* HOVER EFFECT: Lift and bring to front */
+        .stacked-item:hover {
+            transform: translateY(-5px); /* Lift */
+            z-index: 50; /* Bring to front */
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        /* MAIN CONTENT STYLING */
+        .main-content {
+            grid-area: main;
+            padding: 30px;
+        }
+
+        .main-content h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--color-grey-dark);
+        }
+
+        .content-tabs {
+            border-bottom: 2px solid var(--color-grey-light);
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--color-grey-dark);
+            border-bottom: 3px solid transparent;
+            transition: border-color 0.3s, color 0.3s;
+            margin-right: 10px;
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            color: var(--color-orange-dark);
+            border-bottom-color: var(--color-orange-dark);
+            font-weight: bold;
+        }
+
+        /* Content Cards */
+        .content-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--color-white);
+            padding: 20px;
+            border: 1px solid var(--color-grey-light);
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h3 {
+            font-size: 0.8rem;
+            color: var(--color-orange-dark);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+
+        .card h4 {
+            font-size: 1.2rem;
+            color: var(--color-grey-dark);
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .card-link {
+            text-decoration: none;
+            color: var(--color-orange-dark);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
@@ -22,6 +341,7 @@
                     <li><a href="#">Topo</a></li>
                 </ul>
                 <i class="fas fa-search search-icon"></i>
+                <i class="fas fa-home home-icon"></i>
             </nav>
         </header>
 
