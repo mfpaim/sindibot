@@ -3,97 +3,125 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Typebot Building Menu Mockup</title>
+<title>Improved Building Menu Mockup</title>
 
 <style>
 
-/* ------------------------- */
-/* Base Typebot-like button  */
-/* ------------------------- */
-.typebot-button {
-  align-items: center;
-  appearance: none;
-  background-color: #inherit;
-  border-radius: 6px;
-  border: 1px solid #E0E0E0;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px,
-              rgba(0, 0, 0, 0.06) 0px 1px 2px;
-  box-sizing: border-box;
-  color: #3C3C3C;
-  cursor: pointer;
-  display: inline-flex;
-  font-family: "Inter", sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  height: 55px;
-  justify-content: center;
-  padding: 0 16px;
-  text-align: center;
-  text-decoration: none;
-  transition: background-color 0.2s ease,
-              box-shadow 0.2s ease,
-              transform 0.2s ease;
-  user-select: none;
-  white-space: nowrap;
-}
-
-/* ------------------------- */
-/* Building Floor Styling    */
-/* ------------------------- */
-.building-floor {
-  display: block;
-  width: 100%;
-  margin: 18px 0;
-  padding: 22px 20px;
-  border-radius: 4px;
-  color: #fff;
-  font-size: 20px;
-  font-weight: 600;
-  position: relative;
-  overflow: visible;
-  text-align: left;
-  box-shadow: 0 6px 10px rgba(0,0,0,0.18);
-}
-
-/* 3D right side wall */
-.building-floor::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: -12px;
-  width: 12px;
-  background: rgba(0, 0, 0, 0.15);
-  transform: skewY(-8deg);
-  border-radius: 0 4px 4px 0;
-}
-
-/* Floor tag (F5, F2, G...) */
-.floor-tag {
-  font-size: 36px;
-  font-weight: 700;
-  margin-right: 16px;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-/* ------------------------- */
-/* Custom Floor Colors       */
-/* ------------------------- */
-.floor-orange     { background: #F18B20; }
-.floor-light-orange { background: #F7A24C; }
-.floor-red        { background: #E96B5D; }
-.floor-dark-orange { background: #D8632E; }
-
 body {
-  background: #f4f4f4;
+  background: #f2f2f2;
   font-family: Inter, sans-serif;
   padding: 40px;
+  display: flex;
+  justify-content: center;
 }
 
 .container {
-  max-width: 420px;
-  margin: auto;
+  width: 420px;
+}
+
+/* --------------------------------------------------------
+   GLOBAL IMPROVEMENTS
+--------------------------------------------------------- */
+
+.building-floor {
+  display: flex;
+  align-items: center;
+  padding: 22px 24px;
+  margin: 28px 0;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 22px;
+  position: relative;
+  box-shadow:
+      0 6px 12px rgba(0,0,0,0.18),
+      0 2px 4px rgba(0,0,0,0.1);
+  transform: translateX(-6px); /* creates stronger 3D perspective */
+}
+
+/* IMPROVED 3D wall */
+.building-floor::after {
+  content: "";
+  position: absolute;
+  right: -16px; /* moved further out to add realism */
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  border-radius: 0 6px 6px 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.25),
+    rgba(0,0,0,0.12)
+  );
+  transform-origin: left;
+  transform: skewY(-8deg);
+}
+
+/* LARGE FLOOR LABEL */
+.floor-tag {
+  font-size: 40px;
+  font-weight: 800;
+  margin-right: 16px;
+}
+
+/* COLORS — refined to look more like your branding */
+.floor-orange        { background: #F28A20; }
+.floor-light-orange  { background: #F7A655; }
+.floor-red           { background: #E35D4E; }
+.floor-dark-orange   { background: #C9512D; }
+
+/* ADD A SHADOW UNDER EACH FLOOR to resemble building stacking */
+.floor-shadow {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 12px;
+  background: rgba(0,0,0,0.10);
+  filter: blur(6px);
+  border-radius: 8px;
+}
+
+/* FOUNDATION BLOCK */
+.foundation {
+  height: 90px;
+  background: #b8b8b0;
+  border-radius: 4px;
+  margin-top: 20px;
+  box-shadow:
+      0 8px 14px rgba(0,0,0,0.2),
+      0 3px 6px rgba(0,0,0,0.15);
+  position: relative;
+}
+
+.foundation::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: -16px;
+  top: 0;
+  bottom: 0;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.25),
+    rgba(0,0,0,0.12)
+  );
+  transform: skewY(-8deg);
+}
+
+.window-row {
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+}
+
+.window {
+  width: 40px;
+  height: 45px;
+  background: #e4e4e4;
+  border-radius: 4px;
 }
 
 </style>
@@ -102,28 +130,47 @@ body {
 
 <div class="container">
 
-  <h2>Building Menu Mockup</h2>
-  <p>This mockup simulates how your Typebot buttons will look when styled as a stacked building.</p>
+  <h2 style="margin-bottom:6px;">Building Menu Mockup</h2>
+  <p style="margin-bottom:30px;">
+    Redesigned version with improved 3D floors, shadows, and proportions.
+  </p>
 
-  <!-- Floor 1 -->
-  <button class="typebot-button building-floor floor-orange">
-    <span class="floor-tag">F5</span> Clube Sindi
-  </button>
+  <!-- FLOOR 1 -->
+  <div class="building-floor floor-orange">
+    <span class="floor-tag">F5</span>
+    Clube Sindi
+    <div class="floor-shadow"></div>
+  </div>
 
-  <!-- Floor 2 -->
-  <button class="typebot-button building-floor floor-light-orange">
-    <span class="floor-tag">F2</span> Minha Agenda
-  </button>
+  <!-- FLOOR 2 -->
+  <div class="building-floor floor-light-orange">
+    <span class="floor-tag">F2</span>
+    Minha Agenda
+    <div class="floor-shadow"></div>
+  </div>
 
-  <!-- Floor 3 -->
-  <button class="typebot-button building-floor floor-red">
-    <span class="floor-tag">F2</span> Sindi Agenda
-  </button>
+  <!-- FLOOR 3 -->
+  <div class="building-floor floor-red">
+    <span class="floor-tag">F2</span>
+    Sindi Agenda
+    <div class="floor-shadow"></div>
+  </div>
 
-  <!-- Floor 4 -->
-  <button class="typebot-button building-floor floor-dark-orange">
-    <span class="floor-tag">G</span> Sindi Resolve
-  </button>
+  <!-- FLOOR 4 -->
+  <div class="building-floor floor-dark-orange">
+    <span class="floor-tag">G</span>
+    Sindi Resolve
+    <div class="floor-shadow"></div>
+  </div>
+
+  <!-- FOUNDATION -->
+  <div class="foundation">
+    <div class="window-row">
+      <div class="window"></div>
+      <div class="window"></div>
+      <div class="window"></div>
+    </div>
+  </div>
 
 </div>
 
