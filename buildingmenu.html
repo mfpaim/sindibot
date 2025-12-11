@@ -3,32 +3,30 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>3D Building Menu – Enhanced Version</title>
+<title>3D Building Menu – Stacked Floors Version</title>
 
 <style>
 body {
-  background: #e9e9e9;
+  background: #e6e6e6;
   font-family: "Inter", sans-serif;
   display: flex;
   justify-content: center;
-  padding: 60px;
+  padding-top: 80px;
 }
 
-/* Center container */
-.container {
+/* Wrap all floors into a building */
+.building {
   transform: rotate(30deg) skew(-25deg);
-  /* Apply inverse transform to keep text readable later */
+  /* Inverse transform applied inside to keep text readable */
 }
 
 /* --------------------------------------------- */
-/* 3D Block (floor)                              */
+/* FLOOR SHAPE (main face + walls)               */
 /* --------------------------------------------- */
-
 .floor {
   position: relative;
   width: 260px;
   height: 90px;
-  margin: 45px 0;
   padding: 22px 26px;
   border-radius: 6px;
   color: #fff;
@@ -36,8 +34,18 @@ body {
   font-weight: 700;
   display: flex;
   align-items: center;
-  box-shadow: -20px 20px 12px rgba(0,0,0,0.35);
+
+  /* 3D transform */
   transform: rotate(-30deg) skew(25deg);
+  transform-origin: center left;
+
+  /* Shadow */
+  box-shadow: -20px 20px 12px rgba(0,0,0,0.35);
+}
+
+/* Make the floors stack tightly into a building */
+.floor + .floor {
+  margin-top: -40px; /* Overlap to stack like real building floors */
 }
 
 /* Left wall */
@@ -48,7 +56,7 @@ body {
   left: -20px;
   width: 20px;
   height: 100%;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.28);
   transform: skewY(-45deg);
   border-radius: 4px 0 0 4px;
 }
@@ -61,35 +69,84 @@ body {
   left: -10px;
   width: 100%;
   height: 20px;
-  background: rgba(0,0,0,0.22);
+  background: rgba(0,0,0,0.25);
   transform: skewX(-45deg);
   border-radius: 0 0 4px 4px;
 }
 
+/* Large “F5”, “F2”, “G” code */
 .floor-tag {
   font-size: 42px;
   font-weight: 900;
   margin-right: 14px;
 }
 
-/* Colors */
+/* Colors for each floor */
 .c1 { background: #F28A20; }
 .c2 { background: #F7A655; }
 .c3 { background: #E35D4E; }
 .c4 { background: #C9512D; }
 
-/* Optional: create extra realism */
-.floor:hover {
-  transform: rotate(-30deg) skew(25deg) translate(10px, -10px);
-  box-shadow: -40px 35px 25px rgba(0,0,0,0.45);
-  transition: 0.3s ease;
+/* --------------------------------------------- */
+/* FOUNDATION (building base)                     */
+/* --------------------------------------------- */
+.foundation {
+  position: relative;
+  width: 260px;
+  height: 110px;
+  background: #b6b6ae;
+  border-radius: 6px;
+  margin-top: -20px;
+
+  transform: rotate(-30deg) skew(25deg);
+  transform-origin: center left;
+  box-shadow: -20px 20px 12px rgba(0,0,0,0.35);
+}
+
+/* Foundation left wall */
+.foundation::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: -20px;
+  width: 20px;
+  height: 100%;
+  background: rgba(0,0,0,0.25);
+  transform: skewY(-45deg);
+  border-radius: 4px 0 0 4px;
+}
+
+/* Foundation bottom face */
+.foundation::after {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: -10px;
+  width: 100%;
+  height: 20px;
+  background: rgba(0,0,0,0.23);
+  transform: skewX(-45deg);
+}
+
+/* Windows */
+.window-row {
+  display: flex;
+  gap: 10px;
+  padding: 22px;
+}
+
+.window {
+  width: 40px;
+  height: 54px;
+  background: #e8e8e8;
+  border-radius: 4px;
 }
 
 </style>
 </head>
 <body>
 
-<div class="container">
+<div class="building">
 
   <div class="floor c1">
     <span class="floor-tag">F5</span> Clube Sindi
@@ -105,6 +162,14 @@ body {
 
   <div class="floor c4">
     <span class="floor-tag">G</span> Sindi Resolve
+  </div>
+
+  <div class="foundation">
+    <div class="window-row">
+      <div class="window"></div>
+      <div class="window"></div>
+      <div class="window"></div>
+    </div>
   </div>
 
 </div>
