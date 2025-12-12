@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sindi - Menu Prédio</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  .app {
+    width: 380px;
+    max-width: 100%;
+    background: white;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  }
+
+  /* Header */
+  .header {
+    background: #FF6B35;
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    color: white;
+    font-size: 28px;
+    border-radius: 40px 40px 0 0;
+  }
+
+  /* Building */
+  .building-wrapper {
+    padding: 60px 40px 80px;
+    background: white;
+  }
+
+  .floor {
+    position: relative;
+    height: 86px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    padding-left: 80px;
+    padding-right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    font-weight: 600;
+    font-size: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .floor:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  }
+
+  /* Floor label */
+  .floor__label {
+    position: absolute;
+    left: 0; top: 0;
+    width: 70px; height: 100%;
+    background: rgba(255,255,255,0.25);
+    border-radius: 16px 0 0 16px;
+    border-right: 1px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    backdrop-filter: blur(4px);
+  }
+
+  .floor__text {
+    line-height: 1.3;
+  }
+
+  .floor__text strong {
+    font-weight: 700;
+  }
+
+  /* Elevator indicators - circular outline only */
+  .elevator {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .elevator-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: transparent; /* No background fill */
+    border: 2px solid rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: rgba(255,255,255,0.4);
+    opacity: 0.6;
+    transition: all 0.3s ease;
+  }
+
+  /* When floor is clicked → only down arrow and its border light up */
+  .floor.calling .elevator-btn.down {
+    border-color: white;
+    color: white;
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(255,255,255,0.6);
+  }
+
+  /* Up arrow stays subtle */
+  .floor.calling .elevator-btn.up {
+    border-color: rgba(255,255,255,0.35);
+    color: rgba(255,255,255,0.4);
+    opacity: 0.6;
+  }
+
+  /* Ground floor styling (grey) */
+  .floor--g {
+    background: #E0E0E0;
+    color: #1E222A;
+  }
+
+  .floor--g .floor__label {
+    background: rgba(30,34,42,0.06);
+    color: #1E222A;
+    border-right: 1px solid rgba(30,34,42,0.15);
+  }
+
+  .floor--g .elevator-btn {
+    background: transparent;
+    border-color: rgba(30,34,42,0.25);
+    color: rgba(30,34,42,0.4);
+    opacity: 0.55;
+  }
+
+  .floor--g.calling .elevator-btn.down {
+    border-color: #1E222A;
+    color: #1E222A;
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(0,0,0,0.3);
+  }
+
+  .floor--g.calling .elevator-btn.up {
+    border-color: rgba(30,34,42,0.25);
+    color: rgba(30,34,42,0.4);
+    opacity: 0.55;
+  }
+
+  /* Floor colors */
+  .floor--f5  { background: linear-gradient(135deg, #FFB366, #FF8C42); }
+  .floor--f2m { background: linear-gradient(135deg, #FF8C42, #FF6B35); }
+  .floor--f2s { background: linear-gradient(135deg, #FF6B35, #FF5252); }
+  .floor--f1  { background: linear-gradient(135deg, #FF7A50, #FF5C35); }
+
+  @media (max-width: 480px) {
+    .app { border-radius: 30px; }
+    .building-wrapper { padding: 40px 20px 60px; }
+    .floor { height: 80px; font-size: 18px; padding-left: 70px; }
+    .floor__label { width: 60px; font-size: 24px; }
+    .elevator-btn { width: 28px; height: 28px; font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div>Menu</div>
+    <div>Home</div>
+  </div>
+
+  <div class="building-wrapper">
+
+    <!-- F5 - Clube Sindi -->
+    <div class="floor floor--f5" onclick="this.classList.add('calling'); setTimeout(() => this.classList.remove('calling'), 3000);">
+      <div class="floor__label">F5</div>
+      <div class="floor__text">Clube<br><strong>Sindi</strong></div>
+      <div class="elevator">
+        <div class="elevator-btn up">↑</div>
+        <div class="elevator-btn down">↓</div>
+      </div>
+    </div>
+
+    <!-- F2 - Minha Agenda -->
+    <div class="floor floor--f2m" onclick="this.classList.add('calling'); setTimeout(() => this.classList.remove('calling'), 3000);">
+      <div class="floor__label">F2</div>
+      <div class="floor__text">Minha<br><strong>Agenda</strong></div>
+      <div class="elevator">
+        <div class="elevator-btn up">↑</div>
+        <div class="elevator-btn down">↓</div>
+      </div>
+    </div>
+
+    <!-- F2 - Sindi Agenda -->
+    <div class="floor floor--f2s" onclick="this.classList.add('calling'); setTimeout(() => this.classList.remove('calling'), 3000);">
+      <div class="floor__label">F2</div>
+      <div class="floor__text">Sindi<br><strong>Agenda</strong></div>
+      <div class="elevator">
+        <div class="elevator-btn up">↑</div>
+        <div class="elevator-btn down">↓</div>
+      </div>
+    </div>
+
+    <!-- F1 - Meus Condomínios -->
+    <div class="floor floor--f1" onclick="this.classList.add('calling'); setTimeout(() => this.classList.remove('calling'), 3000);">
+      <div class="floor__label">F1</div>
+      <div class="floor__text">Meus<br><strong>Condomínios</strong></div>
+      <div class="elevator">
+        <div class="elevator-btn up">↑</div>
+        <div class="elevator-btn down">↓</div>
+      </div>
+    </div>
+
+    <!-- G - Sindi Resolve -->
+    <div class="floor floor--g" onclick="this.classList.add('calling'); setTimeout(() => this.classList.remove('calling'), 3000);">
+      <div class="floor__label">G</div>
+      <div class="floor__text">Sindi<br><strong>Resolve</strong></div>
+      <div class="elevator">
+        <div class="elevator-btn up">↑</div>
+        <div class="elevator-btn down">↓</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
