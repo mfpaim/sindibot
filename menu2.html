@@ -1,227 +1,290 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sindi - Prédio 3D</title>
-<style>
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    perspective: 1200px;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Menu Edifício — Sindi</title>
+  <style>
+    :root{
+      /* Palette */
+      --orange-600: #FF6A00;
+      --orange-500: #FF7F2D;
+      --orange-400: #FFA164;
+      --coral-500:  #FF6F52;
+      --grey-200:   #EDEFF2;
+      --grey-400:   #C9CDD3;
+      --grey-700:   #4C4F57;
+      --white:      #FFFFFF;
 
-  .app {
-    width: 380px;
-    max-width: 100%;
-    background: white;
-    border-radius: 40px;
-    overflow: hidden;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.25);
-  }
+      /* Elevation & radius */
+      --radius: 16px;
+      --shadow-1: 0 6px 14px rgba(0,0,0,0.08);
+      --shadow-2: 0 12px 24px rgba(0,0,0,0.10);
 
-  .header {
-    background: #FF6B35;
-    height: 90px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    color: white;
-    font-size: 28px;
-  }
+      /* Typography */
+      --font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+      --size-label: clamp(0.9rem, 1.5vw, 1rem);
+      --size-title: clamp(1rem, 2.2vw, 1.15rem);
+    }
 
-  .building-wrapper {
-    padding: 80px 40px 100px;
-    background: white;
-    display: flex;
-    justify-content: center;
-  }
+    /* Page scaffold */
+    body{
+      margin:0;
+      background: linear-gradient(180deg, var(--grey-200), #f9fafb);
+      font-family: var(--font-ui);
+      color: var(--grey-700);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      padding: 24px;
+    }
 
-  .building {
-    transform-style: preserve-3d;
-    transform: rotateX(28deg) rotateZ(-6deg) scale(0.95);
-  }
+    .phone{
+      width: min(420px, 92vw);
+      background: var(--white);
+      border-radius: 32px;
+      box-shadow: var(--shadow-2);
+      overflow:hidden;
+      border: 1px solid #f1f1f4;
+    }
 
-  /* 3D Floor (the "slab") */
-  .floor {
-    position: relative;
-    width: 300px;
-    height: 86px;
-    margin-bottom: 36px;
-    transform-style: preserve-3d;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
+    /* Header (Airbnb-inspired simplicity) */
+    .phone__header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 14px 16px;
+      background: var(--orange-600);
+      color: var(--white);
+    }
+    .icon{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.14);
+    }
+    .icon svg{ width:20px; height:20px; stroke: var(--white); }
 
-  .floor:hover {
-    transform: translateZ(30px) translateY(-10px);
-  }
+    .title{
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.2px;
+    }
 
-  /* Top face */
-  .top {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: var(--color);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    padding-left: 80px;
-    padding-right: 20px;
-    color: white;
-    font-weight: 600;
-    font-size: 20px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-  }
+    /* Building container with subtle isometric tilt */
+    .building{
+      position: relative;
+      padding: 24px 14px 28px;
+      background: var(--grey-200);
+      /* almost front view, very gentle 3D */
+      perspective: 900px;
+      transform-style: preserve-3d;
+    }
 
-  /* Side face (depth) */
-  .side {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    height: 50px;
-    background: var(--side);
-    transform: rotateX(-90deg);
-    transform-origin: top center;
-    border-radius: 0 0 16px 16px;
-  }
+    /* Vertical spine (like elevator shaft) */
+    .spine{
+      position: absolute;
+      inset: 0;
+      margin: 0 24px;
+      border-left: 2px dashed rgba(76,79,87,0.12);
+      transform: translateZ(-1px);
+      pointer-events:none;
+    }
 
-  /* Floor number label */
-  .top::before {
-    content: attr(data-floor);
-    position: absolute;
-    left: 0; top: 0;
-    width: 70px; height: 100%;
-    background: rgba(255,255,255,0.28);
-    border-radius: 16px 0 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    font-weight: bold;
-    backdrop-filter: blur(4px);
-  }
+    /* Floor stack */
+    .floors{
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-  /* Windows */
-  .windows {
-    position: absolute;
-    right: 20px;
-    display: flex;
-    gap: 10px;
-  }
-  .window {
-    width: 18px;
-    height: 28px;
-    background: rgba(255,255,255,0.35);
-    border: 2px solid rgba(255,255,255,0.5);
-    border-radius: 4px;
-  }
+    /* Floor button base */
+    .floor{
+      --bg: var(--orange-600);
+      --accent: rgba(0,0,0,0.08);
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 16px 16px;
+      border-radius: var(--radius);
+      color: var(--white);
+      text-decoration: none;
+      box-shadow: var(--shadow-1);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0)) top,
+        var(--bg);
+      border: 1px solid rgba(0,0,0,0.04);
 
-  /* Colors per floor */
-  #f5  { --color: linear-gradient(135deg, #FFB366, #FF8C42); --side: #e69538; }
-  #f2m { --color: linear-gradient(135deg, #FF8C42, #FF6B35); --side: #e65c30; }
-  #f2s { --color: linear-gradient(135deg, #FF6B35, #FF5252); --side: #e53e3e; }
-  #g   { --color: linear-gradient(135deg, #FF5252, #E04040); --side: #c62828; }
+      /* subtle isometric: tiny rotateY + skewX for depth */
+      transform: perspective(900px) rotateY(-6deg) skewX(-2deg) translateZ(1px);
+      transform-origin: left center;
+      transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+    }
 
-  /* Black base */
-  .base {
-    position: relative;
-    width: 340px;
-    height: 70px;
-    background: #1A1A1A;
-    border-radius: 20px;
-    margin: 40px auto 0;
-    transform-style: preserve-3d;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-  }
-  .base::before {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background: #0a0a0a;
-    transform: rotateX(-90deg);
-    transform-origin: top center;
-    border-radius: 0 0 20px 20px;
-  }
-  .door {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 50px;
-    background: #000;
-    border-radius: 10px 10px 0 0;
-  }
+    .floor:hover,
+    .floor:focus-visible{
+      transform: perspective(900px) rotateY(-3deg) skewX(-1deg) translateZ(8px);
+      box-shadow: 0 14px 26px rgba(0,0,0,0.14);
+      outline: none;
+      filter: saturate(1.06) brightness(1.02);
+    }
 
-  @media (max-width: 480px) {
-    .app { border-radius: 30px; }
-    .building { transform: rotateX(25deg) rotateZ(-6deg) scale(0.9); }
-    .floor { width: 270px; }
-    .base { width: 300px; }
-  }
-</style>
+    /* Floor label (G, F1, F2...) */
+    .floor__label{
+      font-weight: 800;
+      font-size: var(--size-label);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.18);
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    /* Floor title (section name) */
+    .floor__title{
+      font-weight: 700;
+      font-size: var(--size-title);
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Windows metaphor (right-side detail) */
+    .floor__windows{
+      display: flex;
+      gap: 6px;
+      opacity: 0.85;
+    }
+    .floor__window{
+      width: 14px; height: 14px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.35);
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    /* Variants by floor (palette tuned to orange + light grey) */
+    .floor--f5 { --bg: var(--orange-600); }
+    .floor--f4 { --bg: var(--orange-500); }
+    .floor--f3 { --bg: var(--coral-500); }
+    .floor--f2 { --bg: var(--orange-400); }
+    .floor--f1 { --bg: #FF7A62; } /* soft coral-variant */
+    .floor--g  { --bg: var(--grey-400); color: #1E222A; }
+    .floor--g .floor__label{
+      background: rgba(30,34,42,0.06);
+      color: #1E222A;
+      border-color: rgba(30,34,42,0.15);
+    }
+    .floor--g .floor__windows{
+      opacity: 0.55;
+    }
+    .floor--g .floor__window{
+      background: rgba(30,34,42,0.10);
+      border-color: rgba(30,34,42,0.18);
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 360px){
+      .floor{
+        padding: 14px 12px;
+      }
+      .floor__label{ padding: 6px 8px; }
+      .floor__windows .floor__window{
+        width: 12px; height: 12px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="phone" role="application" aria-label="Menu principal estilo edifício">
+    <header class="phone__header">
+      <div class="icon" aria-hidden="true">
+        <!-- hamburger -->
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M3 6h18M3 12h18M3 18h18" />
+        </svg>
+      </div>
+      <div class="title">Sindi</div>
+      <div class="icon" aria-hidden="true">
+        <!-- home -->
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+          <path d="M3 10.5l9-7 9 7" />
+          <path d="M6 10v9h12v-9" />
+        </svg>
+      </div>
+    </header>
 
-<div class="app">
-  <div class="header">
-    <div>Menu</div>
-    <div>Home</div>
+    <main class="building">
+      <span class="spine" aria-hidden="true"></span>
+      <nav class="floors" aria-label="Navegação por andares">
+        <!-- F5 -->
+        <a class="floor floor--f5" href="#clube-sindi" role="button" aria-label="F5 Clube Sindi">
+          <span class="floor__label">F5</span>
+          <span class="floor__title">Clube Sindi</span>
+          <span class="floor__windows" aria-hidden="true">
+            <span class="floor__window"></span>
+            <span class="floor__window"></span>
+          </span>
+        </a>
+
+        <!-- F4 -->
+        <a class="floor floor--f4" href="#lista-de-compras" role="button" aria-label="F4 Lista de Compras">
+          <span class="floor__label">F4</span>
+          <span class="floor__title">Lista de Compras</span>
+          <span class="floor__windows" aria-hidden="true">
+            <span class="floor__window"></span>
+            <span class="floor__window"></span>
+          </span>
+        </a>
+
+        <!-- F3 -->
+        <a class="floor floor--f3" href="#sindicluod-docs" role="button" aria-label="F3 Sindi Cloud Docs">
+          <span class="floor__label">F3</span>
+          <span class="floor__title">Sindi Cloud Docs</span>
+          <span class="floor__windows" aria-hidden="true">
+            <span class="floor__window"></span>
+            <span class="floor__window"></span>
+          </span>
+        </a>
+
+        <!-- F2 -->
+        <a class="floor floor--f2" href="#minha-agenda" role="button" aria-label="F2 Minha Agenda">
+          <span class="floor__label">F2</span>
+          <span class="floor__title">Minha Agenda</span>
+          <span class="floor__windows" aria-hidden="true">
+            <span class="floor__window"></span>
+            <span class="floor__window"></span>
+          </span>
+        </a>
+
+        <!-- F1 -->
+        <a class="floor floor--f1" href="#meus-condominios" role="button" aria-label="F1 Meus Condomínios">
+          <span class="floor__label">F1</span>
+          <span class="floor__title">Meus Condomínios</span>
+          <span class="floor__windows" aria-hidden="true">
+            <span class="floor__window"></span>
+            <span class="floor__window"></span>
+          </span>
+        </a>
+
+        <!-- G -->
+        <a class="floor floor--g" href="#sindi-resolve" role="button" aria-label="G Sindi Resolve">
+          <span class="floor__label">G</span>
+          <span class="floor__title">Sindi Resolve</span>
+          <span class="floor__windows" aria-hidden="true">
+            <span class="floor__window"></span>
+            <span class="floor__window"></span>
+          </span>
+        </a>
+      </nav>
+    </main>
   </div>
-
-  <div class="building-wrapper">
-    <div class="building">
-
-      <div class="floor" id="f5" data-floor="F5" onclick="alert('Clube Sindi')">
-        <div class="top">
-          <div>Clube<br><strong>Sindi</strong></div>
-          <div class="windows"><div class="window"></div><div class="window"></div></div>
-        </div>
-        <div class="side"></div>
-      </div>
-
-      <div class="floor" id="f2m" data-floor="F2" onclick="alert('Minha Agenda')">
-        <div class="top">
-          <div>Minha<br><strong>Agenda</strong></div>
-          <div class="windows"><div class="window"></div><div class="window"></div></div>
-        </div>
-        <div class="side"></div>
-      </div>
-
-      <div class="floor" id="f2s" data-floor="F2" onclick="alert('Sindi Agenda')">
-        <div class="top">
-          <div>Sindi<br><strong>Agenda</strong></div>
-          <div class="windows"><div class="window"></div><div class="window"></div></div>
-        </div>
-        <div class="side"></div>
-      </div>
-
-      <div class="floor" id="g" data-floor="G" onclick="alert('Sindi Resolve')">
-        <div class="top">
-          <div>Sindi<br><strong>Resolve</strong></div>
-          <div class="windows"><div class="window"></div><div class="window"></div></div>
-        </div>
-        <div class="side"></div>
-      </div>
-
-      <div class="base">
-        <div class="door"></div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
