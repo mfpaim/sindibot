@@ -88,46 +88,63 @@
     font-weight: 700;
   }
 
-  /* Elevator (windows) → now animated arrows */
+  /* Elevator shaft with two arrows */
   .elevator {
+    position: relative;
+    width: 28px;
+    height: 56px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    width: 28px;
-    align-items: center;
+    justify-content: space-between;
   }
 
   .arrow {
-    font-size: 24px;
-    line-height: 1;
-    animation: bounce 2s infinite;
+    font-size: 26px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
   }
 
-  .arrow-up { animation-delay: 0s; }
-  .arrow-down { animation-delay: 1s; }
+  /* Random flashing animation for each elevator */
+  .elevator--1 .arrow-up    { animation: flash 4s infinite 0.2s; }
+  .elevator--1 .arrow-down  { animation: flash 5s infinite 1.8s; }
 
-  @keyframes bounce {
-    0%, 100% { transform: translateY(0); opacity: 0.6; }
-    50% { transform: translateY(-6px); opacity: 1; }
+  .elevator--2 .arrow-up    { animation: flash 4.5s infinite 0.7s; }
+  .elevator--2 .arrow-down  { animation: flash 6s infinite 2.3s; }
+
+  .elevator--3 .arrow-up    { animation: flash 5.5s infinite 1.2s; }
+  .elevator--3 .arrow-down  { animation: flash 4.2s infinite 3.1s; }
+
+  .elevator--4 .arrow-up    { animation: flash 6s infinite 0.5s; }
+  .elevator--4 .arrow-down  { animation: flash 4.8s infinite 2.7s; }
+
+  .elevator--5 .arrow-up    { animation: flash 5s infinite 1.5s; }
+  .elevator--5 .arrow-down  { animation: flash 5.5s infinite 0.9s; }
+
+  @keyframes flash {
+    0%, 100% { opacity: 0; }
+    10%, 90% { opacity: 0.9; }
   }
 
-  /* Exact color order from your latest image */
-  .floor--f5 { background: linear-gradient(135deg, #FFB366, #FF8C42); }
-  .floor--f2-minha { background: linear-gradient(135deg, #FF8C42, #FF6B35); }
-  .floor--f2-sindi { background: linear-gradient(135deg, #FF5252, #E91E63); }
+  /* Exact color sequence from your image (4 colored floors) */
+  .floor--f5  { background: linear-gradient(135deg, #FFB366, #FF8C42); }
+  .floor--f2m { background: linear-gradient(135deg, #FF8C42, #FF6B35); }
+  .floor--f2s { background: linear-gradient(135deg, #FF5252, #E91E63); }
+  .floor--f1  { background: linear-gradient(135deg, #F06292, #E91E63); } /* Former G color → now F1 */
+
+  /* Ground floor - grey as in the single image */
   .floor--g {
-    background: linear-gradient(135deg, #F06292, #E91E63);
-    /* Keep original vibrant red-pink gradient for G as in the image */
+    background: #E5E5E5;
+    color: #333333;
   }
 
-  /* Ground floor special styling (kept as requested) */
   .floor--g .floor__label {
-    background: rgba(255,255,255,0.25);
-    border-right: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.08);
+    color: #333333;
+    border-right: 1px solid rgba(0,0,0,0.15);
   }
 
   .floor--g .arrow {
-    color: rgba(255,255,255,0.9);
+    color: #666666;
   }
 
   @media (max-width: 480px) {
@@ -135,7 +152,7 @@
     .building-wrapper { padding: 40px 20px 60px; }
     .floor { height: 80px; font-size: 18px; padding-left: 70px; }
     .floor__label { width: 60px; font-size: 24px; }
-    .arrow { font-size: 20px; }
+    .arrow { font-size: 22px; }
   }
 </style>
 </head>
@@ -153,37 +170,47 @@
     <div class="floor floor--f5" onclick="alert('Clube Sindi')">
       <div class="floor__label">F5</div>
       <div class="floor__text">Clube<br><strong>Sindi</strong></div>
-      <div class="elevator">
+      <div class="elevator elevator--1">
         <div class="arrow arrow-up">↑</div>
         <div class="arrow arrow-down">↓</div>
       </div>
     </div>
 
     <!-- F2 - Minha Agenda -->
-    <div class="floor floor--f2-minha" onclick="alert('Minha Agenda')">
+    <div class="floor floor--f2m" onclick="alert('Minha Agenda')">
       <div class="floor__label">F2</div>
       <div class="floor__text">Minha<br><strong>Agenda</strong></div>
-      <div class="elevator">
+      <div class="elevator elevator--2">
         <div class="arrow arrow-up">↑</div>
         <div class="arrow arrow-down">↓</div>
       </div>
     </div>
 
     <!-- F2 - Sindi Agenda -->
-    <div class="floor floor--f2-sindi" onclick="alert('Sindi Agenda')">
+    <div class="floor floor--f2s" onclick="alert('Sindi Agenda')">
       <div class="floor__label">F2</div>
       <div class="floor__text">Sindi<br><strong>Agenda</strong></div>
-      <div class="elevator">
+      <div class="elevator elevator--3">
         <div class="arrow arrow-up">↑</div>
         <div class="arrow arrow-down">↓</div>
       </div>
     </div>
 
-    <!-- G - Sindi Resolve -->
+    <!-- F1 - Meus Condomínios (uses the former vibrant G color) -->
+    <div class="floor floor--f1" onclick="alert('Meus Condomínios')">
+      <div class="floor__label">F1</div>
+      <div class="floor__text">Meus<br><strong>Condomínios</strong></div>
+      <div class="elevator elevator--4">
+        <div class="arrow arrow-up">↑</div>
+        <div class="arrow arrow-down">↓</div>
+      </div>
+    </div>
+
+    <!-- G - Sindi Resolve (now grey) -->
     <div class="floor floor--g" onclick="alert('Sindi Resolve')">
       <div class="floor__label">G</div>
       <div class="floor__text">Sindi<br><strong>Resolve</strong></div>
-      <div class="elevator">
+      <div class="elevator elevator--5">
         <div class="arrow arrow-up">↑</div>
         <div class="arrow arrow-down">↓</div>
       </div>
