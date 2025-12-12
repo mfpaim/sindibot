@@ -24,6 +24,7 @@
     box-shadow: 0 20px 50px rgba(0,0,0,0.15);
   }
 
+  /* Header */
   .header {
     background: #FF6B35;
     height: 90px;
@@ -36,6 +37,7 @@
     border-radius: 40px 40px 0 0;
   }
 
+  /* Building */
   .building-wrapper {
     padding: 60px 40px 80px;
     background: white;
@@ -65,6 +67,7 @@
     box-shadow: 0 15px 30px rgba(0,0,0,0.2);
   }
 
+  /* Floor label */
   .floor__label {
     position: absolute;
     left: 0; top: 0;
@@ -88,71 +91,75 @@
     font-weight: 700;
   }
 
-  /* Elevator shaft with two arrows */
+  /* Elevator indicators - circular with arrows */
   .elevator {
-    position: relative;
-    width: 28px;
-    height: 56px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 8px;
+    position: relative;
   }
 
-  .arrow {
-    font-size: 26px;
-    opacity: 0;
-    transition: opacity 0.4s ease;
+  .elevator-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    opacity: 0.4;
+    transition: all 0.3s ease;
   }
 
-  /* Random flashing animation for each elevator */
-  .elevator--1 .arrow-up    { animation: flash 4s infinite 0.2s; }
-  .elevator--1 .arrow-down  { animation: flash 5s infinite 1.8s; }
-
-  .elevator--2 .arrow-up    { animation: flash 4.5s infinite 0.7s; }
-  .elevator--2 .arrow-down  { animation: flash 6s infinite 2.3s; }
-
-  .elevator--3 .arrow-up    { animation: flash 5.5s infinite 1.2s; }
-  .elevator--3 .arrow-down  { animation: flash 4.2s infinite 3.1s; }
-
-  .elevator--4 .arrow-up    { animation: flash 6s infinite 0.5s; }
-  .elevator--4 .arrow-down  { animation: flash 4.8s infinite 2.7s; }
-
-  .elevator--5 .arrow-up    { animation: flash 5s infinite 1.5s; }
-  .elevator--5 .arrow-down  { animation: flash 5.5s infinite 0.9s; }
-
-  @keyframes flash {
-    0%, 100% { opacity: 0; }
-    10%, 90% { opacity: 0.9; }
+  /* When floor is clicked → down arrow lights up */
+  .floor.calling .elevator-btn.down {
+    background: rgba(255,255,255,0.9);
+    border-color: white;
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(255,255,255,0.6);
   }
 
-  /* Exact color sequence from your image (4 colored floors) */
-  .floor--f5  { background: linear-gradient(135deg, #FFB366, #FF8C42); }
-  .floor--f2m { background: linear-gradient(135deg, #FF8C42, #FF6B35); }
-  .floor--f2s { background: linear-gradient(135deg, #FF5252, #E91E63); }
-  .floor--f1  { background: linear-gradient(135deg, #F06292, #E91E63); } /* Former G color → now F1 */
-
-  /* Ground floor - grey as in the single image */
+  /* Ground floor styling (grey) */
   .floor--g {
-    background: #E5E5E5;
-    color: #333333;
+    background: #E0E0E0;
+    color: #1E222A;
   }
 
   .floor--g .floor__label {
-    background: rgba(0,0,0,0.08);
-    color: #333333;
-    border-right: 1px solid rgba(0,0,0,0.15);
+    background: rgba(30,34,42,0.06);
+    color: #1E222A;
+    border-right: 1px solid rgba(30,34,42,0.15);
   }
 
-  .floor--g .arrow {
-    color: #666666;
+  .floor--g .elevator-btn {
+    background: rgba(30,34,42,0.10);
+    border-color: rgba(30,34,42,0.25);
+    color: #1E222A;
+    opacity: 0.55;
   }
+
+  .floor--g.calling .elevator-btn.down {
+    background: #1E222A;
+    color: white;
+    border-color: #1E222A;
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(0,0,0,0.3);
+  }
+
+  /* Floor colors (keeping your preferred sequence) */
+  .floor--f5  { background: linear-gradient(135deg, #FFB366, #FF8C42); }
+  .floor--f2m { background: linear-gradient(135deg, #FF8C42, #FF6B35); }
+  .floor--f2s { background: linear-gradient(135deg, #FF6B35, #FF5252); }
+  .floor--f1  { background: linear-gradient(135deg, #FF7A50, #FF5C35); }
 
   @media (max-width: 480px) {
     .app { border-radius: 30px; }
     .building-wrapper { padding: 40px 20px 60px; }
     .floor { height: 80px; font-size: 18px; padding-left: 70px; }
     .floor__label { width: 60px; font-size: 24px; }
-    .arrow { font-size: 22px; }
+    .elevator-btn { width: 28px; height: 28px; font-size: 16px; }
   }
 </style>
 </head>
@@ -167,57 +174,71 @@
   <div class="building-wrapper">
 
     <!-- F5 - Clube Sindi -->
-    <div class="floor floor--f5" onclick="alert('Clube Sindi')">
+    <div class="floor floor--f5" onclick="this.classList.toggle('calling'); setTimeout(() => this.classList.remove('calling'), 3000);">
       <div class="floor__label">F5</div>
       <div class="floor__text">Clube<br><strong>Sindi</strong></div>
-      <div class="elevator elevator--1">
-        <div class="arrow arrow-up">↑</div>
-        <div class="arrow arrow-down">↓</div>
+      <div class="elevator">
+        <div class="elevator-btn up">↑</div>
+        <div class="elevator-btn down">↓</div>
       </div>
     </div>
 
     <!-- F2 - Minha Agenda -->
-    <div class="floor floor--f2m" onclick="alert('Minha Agenda')">
+    <div class="floor floor--f2m" onclick="this.classList.toggle('calling'); setTimeout(() => this.classList.remove('calling'), 3000);">
       <div class="floor__label">F2</div>
       <div class="floor__text">Minha<br><strong>Agenda</strong></div>
-      <div class="elevator elevator--2">
-        <div class="arrow arrow-up">↑</div>
-        <div class="arrow arrow-down">↓</div>
+      <div class="elevator">
+        <div class="elevator-btn up">↑</div>
+        <div class="elevator-btn down">↓</div>
       </div>
     </div>
 
     <!-- F2 - Sindi Agenda -->
-    <div class="floor floor--f2s" onclick="alert('Sindi Agenda')">
+    <div class="floor floor--f2s" onclick="this.classList.toggle('calling'); setTimeout(() => this.classList.remove('calling'), 3000);">
       <div class="floor__label">F2</div>
       <div class="floor__text">Sindi<br><strong>Agenda</strong></div>
-      <div class="elevator elevator--3">
-        <div class="arrow arrow-up">↑</div>
-        <div class="arrow arrow-down">↓</div>
+      <div class="elevator">
+        <div class="elevator-btn up">↑</div>
+        <div class="elevator-btn down">↓</div>
       </div>
     </div>
 
-    <!-- F1 - Meus Condomínios (uses the former vibrant G color) -->
-    <div class="floor floor--f1" onclick="alert('Meus Condomínios')">
+    <!-- F1 - Meus Condomínios -->
+    <div class="floor floor--f1" onclick="this.classList.toggle('calling'); setTimeout(() => this.classList.remove('calling'), 3000);">
       <div class="floor__label">F1</div>
       <div class="floor__text">Meus<br><strong>Condomínios</strong></div>
-      <div class="elevator elevator--4">
-        <div class="arrow arrow-up">↑</div>
-        <div class="arrow arrow-down">↓</div>
+      <div class="elevator">
+        <div class="elevator-btn up">↑</div>
+        <div class="elevator-btn down">↓</div>
       </div>
     </div>
 
-    <!-- G - Sindi Resolve (now grey) -->
-    <div class="floor floor--g" onclick="alert('Sindi Resolve')">
+    <!-- G - Sindi Resolve -->
+    <div class="floor floor--g" onclick="this.classList.toggle('calling'); setTimeout(() => this.classList.remove('calling'), 3000);">
       <div class="floor__label">G</div>
       <div class="floor__text">Sindi<br><strong>Resolve</strong></div>
-      <div class="elevator elevator--5">
-        <div class="arrow arrow-up">↑</div>
-        <div class="arrow arrow-down">↓</div>
+      <div class="elevator">
+        <div class="elevator-btn up">↑</div>
+        <div class="elevator-btn down">↓</div>
       </div>
     </div>
 
   </div>
 </div>
+
+<script>
+  // Optional: Replace alert with real navigation later
+  document.querySelectorAll('.floor').forEach(floor => {
+    floor.addEventListener('click', function(e) {
+      // Prevent alert if you want only the visual feedback
+      // alert(this.querySelector('.floor__text').innerText.trim().replace('\n', ' '));
+      
+      // Visual call feedback
+      this.classList.add('calling');
+      setTimeout(() => this.classList.remove('calling'), 3000);
+    });
+  });
+</script>
 
 </body>
 </html>
