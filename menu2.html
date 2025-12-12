@@ -67,13 +67,11 @@
     box-shadow: 0 15px 30px rgba(0,0,0,0.2);
   }
 
-  /* Floor label (F5, F2, G) */
+  /* Floor label */
   .floor__label {
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 70px;
-    height: 100%;
+    left: 0; top: 0;
+    width: 70px; height: 100%;
     background: rgba(255,255,255,0.25);
     border-radius: 16px 0 0 16px;
     border-right: 1px solid rgba(255,255,255,0.3);
@@ -85,7 +83,6 @@
     backdrop-filter: blur(4px);
   }
 
-  /* Text content */
   .floor__text {
     line-height: 1.3;
   }
@@ -108,14 +105,15 @@
     border-radius: 4px;
   }
 
-  /* Individual floor colors */
+  /* Floor colors */
   .floor--f5  { background: linear-gradient(135deg, #FFB366, #FF8C42); }
   .floor--f2m { background: linear-gradient(135deg, #FF8C42, #FF6B35); }
   .floor--f2s { background: linear-gradient(135deg, #FF6B35, #FF5252); }
-
-  /* Ground floor - special grey style as requested */
+  .floor--f1  { background: linear-gradient(135deg, #FF7A50, #FF5C35); } /* New F1 color */
+  
+  /* Ground floor - grey style */
   .floor--g {
-    background: #E0E0E0; /* --grey-400 equivalent */
+    background: #E0E0E0;
     color: #1E222A;
   }
 
@@ -132,28 +130,6 @@
   .floor--g .floor__window {
     background: rgba(30,34,42,0.10);
     border-color: rgba(30,34,42,0.18);
-  }
-
-  /* Base */
-  .base {
-    height: 70px;
-    background: #1A1A1A;
-    border-radius: 20px;
-    margin: 40px auto 0;
-    width: 90%;
-    position: relative;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-  }
-
-  .door {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50px;
-    height: 50px;
-    background: #0F0F0F;
-    border-radius: 10px 10px 0 0;
   }
 
   @media (max-width: 480px) {
@@ -174,7 +150,8 @@
 
   <div class="building-wrapper">
 
-    <div class="floor floor--f5">
+    <!-- F5 -->
+    <div class="floor floor--f5" onclick="alert('Clube Sindi')">
       <div class="floor__label">F5</div>
       <div class="floor__text">Clube<br><strong>Sindi</strong></div>
       <div class="floor__windows">
@@ -183,7 +160,8 @@
       </div>
     </div>
 
-    <div class="floor floor--f2m">
+    <!-- F2 Minha Agenda -->
+    <div class="floor floor--f2m" onclick="alert('Minha Agenda')">
       <div class="floor__label">F2</div>
       <div class="floor__text">Minha<br><strong>Agenda</strong></div>
       <div class="floor__windows">
@@ -192,7 +170,8 @@
       </div>
     </div>
 
-    <div class="floor floor--f2s">
+    <!-- F2 Sindi Agenda -->
+    <div class="floor floor--f2s" onclick="alert('Sindi Agenda')">
       <div class="floor__label">F2</div>
       <div class="floor__text">Sindi<br><strong>Agenda</strong></div>
       <div class="floor__windows">
@@ -201,17 +180,24 @@
       </div>
     </div>
 
-    <div class="floor floor--g">
-      <div class="floor__label">G</div>
-      <div class="floor__text">Sindi<br><strong>Resolve</strong></div>
+    <!-- NEW F1 -->
+    <div class="floor floor--f1" onclick="alert('Meus Condomínios')">
+      <div class="floor__label">F1</div>
+      <div class="floor__text">Meus<br><strong>Condomínios</strong></div>
       <div class="floor__windows">
         <div class="floor__window"></div>
         <div class="floor__window"></div>
       </div>
     </div>
 
-    <div class="base">
-      <div class="door"></div>
+    <!-- G -->
+    <div class="floor floor--g" onclick="alert('Sindi Resolve')">
+      <div class="floor__label">G</div>
+      <div class="floor__text">Sindi<br><strong>Resolve</strong></div>
+      <div class="floor__windows">
+        <div class="floor__window"></div>
+        <div class="floor__window"></div>
+      </div>
     </div>
 
   </div>
