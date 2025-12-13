@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gerar Advertência</title>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --card: #121a27;
+      --text: #e7eefc;
+      --muted: #a8b3c7;
+      --border: rgba(231, 238, 252, 0.12);
+      --accent: #2f7cff;
+      --danger: #ff4d4d;
+      --ok: #38d39f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 20% 0%, rgba(47,124,255,.18), transparent 60%),
+                  radial-gradient(900px 500px at 90% 20%, rgba(56,211,159,.12), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+      padding: 28px 16px;
+    }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    header { margin-bottom: 16px; }
+    h1 { margin: 0 0 6px; font-size: 22px; }
+    p { margin: 0; color: var(--muted); font-size: 14px; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 30%), var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 10px 35px rgba(0,0,0,.25);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 860px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+      .span-2 { grid-column: span 2; }
+    }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    input, textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.02);
+      color: var(--text);
+      outline: none;
+    }
+    input:focus, textarea:focus { border-color: rgba(47,124,255,.65); box-shadow: 0 0 0 3px rgba(47,124,255,.15); }
+    textarea { min-height: 84px; resize: vertical; }
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    button {
+      appearance: none;
+      border: 1px solid rgba(47,124,255,.35);
+      background: rgba(47,124,255,.18);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { background: rgba(47,124,255,.26); }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .secondary {
+      border-color: rgba(231,238,252,.18);
+      background: rgba(231,238,252,.06);
+      font-weight: 600;
+    }
+    .status {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      font-size: 13px;
+      color: var(--muted);
+      flex: 1;
+      min-width: 220px;
+    }
+    .status.ok { border-color: rgba(56,211,159,.35); color: rgba(56,211,159,.95); }
+    .status.err { border-color: rgba(255,77,77,.35); color: rgba(255,77,77,.95); }
+    .hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    code { color: #d6e3ff; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Formulário — Gerar Advertência</h1>
+      <p>Preencha os dados e envie para o webhook do n8n. O n8n deve retornar um link (ex.: PDF) para aparecer aqui.</p>
+    </header>
+
+    <div class="card">
+      <form id="advForm">
+        <div class="grid">
+          <div class="span-2">
+            <label for="webhookUrl">Webhook do n8n (URL)</label>
+            <input id="webhookUrl" name="webhookUrl" type="url" required
+                   placeholder="https://SEU-N8N.DOMINIO/webhook/gerar-advertencia"
+                   value="N8N_WEBHOOK_URL_HERE" />
+          </div>
+
+          <div>
+            <label for="nomeCondominio">{{nomeCondominio}}</label>
+            <input id="nomeCondominio" name="nomeCondominio" type="text" required placeholder="Ex.: Condomínio Calton Hill" />
+          </div>
+
+          <div>
+            <label for="enderecoCondominio">{{enderecoCondominio}}</label>
+            <input id="enderecoCondominio" name="enderecoCondominio" type="text" required placeholder="Rua, número, bairro, cidade/UF" />
+          </div>
+
+          <div>
+            <label for="cnpjCondominio">CNPJ: {{cnpjCondominio}}</label>
+            <input id="cnpjCondominio" name="cnpjCondominio" type="text" required placeholder="00.000.000/0000-00" />
+          </div>
+
+          <div>
+            <label for="dataEmissao">Data: {{dataEmissao}}</label>
+            <input id="dataEmissao" name="dataEmissao" type="date" required />
+          </div>
+
+          <div>
+            <label for="numeroAdvertencia">Advertência Nº: {{numeroAdvertencia}}</label>
+            <input id="numeroAdvertencia" name="numeroAdvertencia" type="text" required placeholder="Ex.: 2025-001" />
+          </div>
+
+          <div class="span-2" style="margin-top:6px; border-top:1px solid var(--border); padding-top:14px;">
+            <p style="margin:0; color:var(--muted); font-size:12px; letter-spacing:.02em;">AO MORADOR</p>
+          </div>
+
+          <div>
+            <label for="nomeCondomino">Nome: {{nomeCondomino}}</label>
+            <input id="nomeCondomino" name="nomeCondomino" type="text" required placeholder="Nome completo" />
+          </div>
+
+          <div>
+            <label for="numeroUnidade">Unidade: {{numeroUnidade}}</label>
+            <input id="numeroUnidade" name="numeroUnidade" type="text" required placeholder="Ex.: 1203" />
+          </div>
+
+          <div>
+            <label for="blocoUnidade">Bloco: {{blocoUnidade}}</label>
+            <input id="blocoUnidade" name="blocoUnidade" type="text" required placeholder="Ex.: B" />
+          </div>
+
+          <div class="span-2">
+            <label for="observacoes">Observações (opcional)</label>
+            <textarea id="observacoes" name="observacoes" placeholder="Se quiser, inclua detalhes adicionais aqui (não faz parte dos campos obrigatórios)."></textarea>
+          </div>
+        </div>
+
+        <div class="row">
+          <button id="btnSend" type="submit">Enviar para n8n</button>
+          <button class="secondary" type="button" id="btnReset">Limpar</button>
+          <div id="status" class="status">Pronto para enviar.</div>
+        </div>
+
+        <div class="hint">
+          Recomendação: se você hospedar isso no GitHub Pages e seu n8n estiver em outro domínio, habilite <code>CORS</code>
+          no endpoint (ou use um proxy/reverse-proxy) para permitir o <code>fetch()</code> do navegador.
+        </div>
+
+        <div class="hint" id="resultHint" style="display:none;">
+          Resultado: <a id="resultLink" href="#" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">Abrir link retornado</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Auto-fill today's date for convenience
+    (function setDefaultDate(){
+      const el = document.getElementById('dataEmissao');
+      if (!el.value) {
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        el.value = `${yyyy}-${mm}-${dd}`;
+      }
+    })();
+
+    const form = document.getElementById('advForm');
+    const statusEl = document.getElementById('status');
+    const btnSend = document.getElementById('btnSend');
+    const btnReset = document.getElementById('btnReset');
+    const resultHint = document.getElementById('resultHint');
+    const resultLink = document.getElementById('resultLink');
+
+    function setStatus(msg, kind) {
+      statusEl.textContent = msg;
+      statusEl.classList.remove('ok', 'err');
+      if (kind) statusEl.classList.add(kind);
+    }
+
+    function showResultLink(url) {
+      if (!url) {
+        resultHint.style.display = 'none';
+        return;
+      }
+      resultLink.href = url;
+      resultHint.style.display = 'block';
+    }
+
+    btnReset.addEventListener('click', () => {
+      form.reset();
+      showResultLink(null);
+      setStatus('Formulário limpo. Pronto para enviar.', null);
+      // restore default date after reset
+      const el = document.getElementById('dataEmissao');
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      el.value = `${yyyy}-${mm}-${dd}`;
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      showResultLink(null);
+
+      const webhookUrl = document.getElementById('webhookUrl').value.trim();
+      if (!webhookUrl || webhookUrl === 'N8N_WEBHOOK_URL_HERE') {
+        setStatus('Defina a URL do webhook do n8n antes de enviar.', 'err');
+        return;
+      }
+
+      const payload = {
+        nomeCondominio: document.getElementById('nomeCondominio').value.trim(),
+        enderecoCondominio: document.getElementById('enderecoCondominio').value.trim(),
+        cnpjCondominio: document.getElementById('cnpjCondominio').value.trim(),
+        dataEmissao: document.getElementById('dataEmissao').value, // YYYY-MM-DD
+        numeroAdvertencia: document.getElementById('numeroAdvertencia').value.trim(),
+        nomeCondomino: document.getElementById('nomeCondomino').value.trim(),
+        numeroUnidade: document.getElementById('numeroUnidade').value.trim(),
+        blocoUnidade: document.getElementById('blocoUnidade').value.trim(),
+        observacoes: document.getElementById('observacoes').value.trim()
+      };
+
+      btnSend.disabled = true;
+      setStatus('Enviando para o n8n...', null);
+
+      try {
+        const res = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        // Try to parse JSON; if not JSON, fallback to text
+        const contentType = res.headers.get('content-type') || '';
+        let data;
+        if (contentType.includes('application/json')) {
+          data = await res.json();
+        } else {
+          const txt = await res.text();
+          data = { raw: txt };
+        }
+
+        if (!res.ok) {
+          setStatus(`Erro do n8n (${res.status}): ${JSON.stringify(data).slice(0, 220)}`, 'err');
+          return;
+        }
+
+        // Accept common response patterns:
+        // 1) n8n returns a plain string (raw) as the URL
+        // 2) n8n returns { link: "https://..." }
+        // 3) n8n returns { url: "https://..." }
+        // 4) n8n returns { pdfUrl: "https://..." }
+        let url =
+          (typeof data === 'string' ? data : null) ||
+          data.link ||
+          data.url ||
+          data.pdfUrl ||
+          (data.raw && data.raw.startsWith('http') ? data.raw.trim() : null);
+
+        if (url) {
+          setStatus('Sucesso. Link retornado pelo n8n disponível abaixo.', 'ok');
+          showResultLink(url);
+        } else {
+          setStatus('Sucesso, mas o n8n não retornou um link reconhecível. Verifique a resposta no n8n.', 'ok');
+        }
+
+      } catch (err) {
+        setStatus(`Falha ao enviar. Possível CORS ou URL incorreta. Detalhe: ${err.message}`, 'err');
+      } finally {
+        btnSend.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
