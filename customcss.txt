@@ -1,0 +1,100 @@
+.typebot-host-bubble {
+  font-family: "Inter", sans-serif; /* Consistent font */
+  border: 1px solid #F18B20 !important;
+  border-radius: 10px !important;
+  overflow: hidden; /* Forces inner corners to also round */
+}
+
+.typebot-button {
+  align-items: center;
+  appearance: none;
+  background-color: #inherit; /* get the default color */
+  border-radius: 6px;
+  border: 1px solid #E0E0E0;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px, rgba(0, 0, 0, 0.06) 0px 1px 2px;
+  box-sizing: border-box;
+  color: #3C3C3C;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: "Inter", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  height: 55px;
+  justify-content: center;
+  padding: 0 16px;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+}
+
+.typebot-button:focus {
+  outline: none; /* Remove default focus outline */
+  border-color: #0073E6;
+}
+
+.typebot-button:hover {
+background: rgba(255, 236, 47, 0.07); /* your tone (#F3EFE0) with transparency */
+border: 2px solid #F18B20 !important;
+  border-radius: 10px !important;
+  overflow: hidden; /* Forces inner corners to also round */
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px, rgba(0, 0, 0, 0.1) 0px 8px 16px; /* Stronger shadow for hover */
+  transform: translateY(-2px); /* Slight upward movement */
+}
+
+.typebot-button:active {
+  background: radial-gradient(848px at 10% 20%, rgba(174, 231, 165, 0.9) 0%, rgb(181, 205, 154) 90%); /*  Aspargus Green like Home Page */
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 6px inset, rgba(0, 0, 0, 0.1) 0px 4px 8px; /* Pressed effect */
+  transform: translateY(1px); /* Subtle downward movement */
+}
+.typebot-button[type="submit"] {
+  background-color: #F18B20 !important;
+}
+
+/* Green "Pronto" button (top button with rounded-t-host-bubble) */
+.secondary-button.bg-host-bubble-bg.rounded-t-host-bubble {
+  background: radial-gradient(848px at 10% 20%, rgba(174, 231, 165, 0.9) 0%, rgb(181, 205, 154) 90%) !important;
+  color: #2C5F2D !important; /* Dark green text */
+  border-color: #96BE8C !important;
+  font-weight: 500;
+}
+
+/* Green button hover state */
+.secondary-button.bg-host-bubble-bg.rounded-t-host-bubble:hover {
+  background: radial-gradient(848px at 10% 20%, rgba(174, 231, 165, 1) 0%, rgb(165, 195, 145) 100%) !important;
+  border-color: #7BA872 !important;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px, rgba(0, 0, 0, 0.1) 0px 8px 16px;
+  transform: translateY(-2px);
+}
+
+/* Green button active state */
+.secondary-button.bg-host-bubble-bg.rounded-t-host-bubble:active {
+  background: radial-gradient(848px at 10% 20%, rgba(160, 210, 150, 1) 0%, rgb(170, 190, 140) 100%) !important;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 6px inset;
+  transform: translateY(0px);
+}
+
+/* Grey "Detalhes" button (bottom button with rounded-b-host-bubble) */
+.secondary-button.bg-host-bubble-bg.rounded-b-host-bubble {
+  background: #E8E8E8 !important;
+  color: #5A5A5A !important;
+  border-color: #D0D0D0 !important;
+  font-weight: 500;
+}
+
+/* Grey button hover state */
+.secondary-button.bg-host-bubble-bg.rounded-b-host-bubble:hover {
+  background: #D8D8D8 !important;
+  border-color: #B0B0B0 !important;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px, rgba(0, 0, 0, 0.06) 0px 4px 8px;
+  transform: translateY(-1px);
+}
+
+/* Grey button active state */
+.secondary-button.bg-host-bubble-bg.rounded-b-host-bubble:active {
+  background: #C8C8C8 !important;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 4px inset;
+  transform: translateY(0px);
+}
