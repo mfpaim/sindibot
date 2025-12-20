@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Cadastro de Fornecedores</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 28px;
+      padding: 32px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #FF6B35;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+    }
+    
+    h1 {
+      font-size: 28px;
+      color: #222;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .form-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .required {
+      color: #FF6B35;
+    }
+    
+    input[type="text"],
+    input[type="tel"],
+    select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      font-size: 15px;
+      background: white;
+      color: #333;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #FF6B35;
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    
+    @media (min-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .form-hint {
+      font-size: 13px;
+      color: #999;
+      margin-top: 6px;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+      transition: all 0.3s;
+      margin-top: 32px;
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    }
+    
+    .btn-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .success-message {
+      background: #e8f5e9;
+      border: 2px solid #4caf50;
+      color: #2e7d32;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .success-message.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .error-message {
+      background: #ffebee;
+      border: 2px solid #f44336;
+      color: #c62828;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      padding: 20px;
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .footer span {
+      color: #FF6B35;
+      font-weight: bold;
+    }
+    
+    .select-wrapper {
+      position: relative;
+    }
+    
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 45px;
+    }
+    
+    .input-error {
+      border-color: #f44336 !important;
+    }
+    
+    .error-hint {
+      color: #f44336;
+      font-size: 13px;
+      margin-top: 6px;
+      display: none;
+    }
+    
+    .error-hint.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Cadastro de Fornecedores</h1>
+      <p class="subtitle">Registre fornecedores de produtos e serviços</p>
+    </div>
+    
+    <div id="successMessage" class="success-message">
+      Fornecedor cadastrado com sucesso!
+    </div>
+    
+    <div id="errorMessage" class="error-message">
+      Erro ao cadastrar fornecedor. Por favor, tente novamente.
+    </div>
+    
+    <div class="form-card">
+      <form id="fornecedorForm">
+        <div class="form-group">
+          <label class="form-label">Categoria <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="categoria" required>
+              <option value="">Selecione a categoria</option>
+              <option value="Produto">Produto</option>
+              <option value="Serviço">Serviço</option>
+              <option value="Produto e Serviço">Produto e Serviço</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Produto ou Serviço Fornecedor <span class="required">*</span></label>
+          <input type="text" id="produtoServico" placeholder="Ex: Manutenção de elevadores, Material de limpeza" required>
+          <div class="form-hint">Descreva o produto ou serviço oferecido</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">CNPJ ou CPF <span class="required">*</span></label>
+          <input type="text" id="cnpjCpf" placeholder="00.000.000/0000-00 ou 000.000.000-00" required>
+          <div class="form-hint">Digite apenas números</div>
+          <div id="cnpjCpfError" class="error-hint">CNPJ ou CPF inválido</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Endereço <span class="required">*</span></label>
+          <input type="text" id="endereco" placeholder="Rua, número, complemento" required>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Cidade <span class="required">*</span></label>
+            <input type="text" id="cidade" placeholder="Ex: São Paulo" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Estado <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="estado" required>
+                <option value="">Selecione</option>
+                <option value="AC">AC</option>
+                <option value="AL">AL</option>
+                <option value="AP">AP</option>
+                <option value="AM">AM</option>
+                <option value="BA">BA</option>
+                <option value="CE">CE</option>
+                <option value="DF">DF</option>
+                <option value="ES">ES</option>
+                <option value="GO">GO</option>
+                <option value="MA">MA</option>
+                <option value="MT">MT</option>
+                <option value="MS">MS</option>
+                <option value="MG">MG</option>
+                <option value="PA">PA</option>
+                <option value="PB">PB</option>
+                <option value="PR">PR</option>
+                <option value="PE">PE</option>
+                <option value="PI">PI</option>
+                <option value="RJ">RJ</option>
+                <option value="RN">RN</option>
+                <option value="RS">RS</option>
+                <option value="RO">RO</option>
+                <option value="RR">RR</option>
+                <option value="SC">SC</option>
+                <option value="SP">SP</option>
+                <option value="SE">SE</option>
+                <option value="TO">TO</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nome do Contato <span class="required">*</span></label>
+            <input type="text" id="nomeContato" placeholder="Nome completo" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Telefone <span class="required">*</span></label>
+            <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+            <div id="telefoneError" class="error-hint">Telefone inválido</div>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn-submit" id="submitBtn">
+          Cadastrar Fornecedor
+        </button>
+      </form>
+    </div>
+    
+    <div class="footer">
+      Sindi - Cadastro de Fornecedores <span>Sindibot - Impactar LLC</span>
+    </div>
+  </div>
+  
+  <script>
+    // WEBHOOK: Cadastro de fornecedor (POST)
+    var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/cadastro-fornecedor';
+    
+    var form = document.getElementById('fornecedorForm');
+    var submitBtn = document.getElementById('submitBtn');
+    var successMessage = document.getElementById('successMessage');
+    var errorMessage = document.getElementById('errorMessage');
+    
+    var cnpjCpfInput = document.getElementById('cnpjCpf');
+    var cnpjCpfError = document.getElementById('cnpjCpfError');
+    var telefoneInput = document.getElementById('telefone');
+    var telefoneError = document.getElementById('telefoneError');
+    
+    // Máscara para CNPJ/CPF
+    cnpjCpfInput.addEventListener('input', function(e) {
+      var value = e.target.value.replace(/\D/g, '');
+      
+      if (value.length <= 11) {
+        // CPF: 000.000.000-00
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      } else {
+        // CNPJ: 00.000.000/0000-00
+        value = value.replace(/^(\d{2})(\d)/, '$1.$2');
+        value = value.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3');
+        value = value.replace(/\.(\d{3})(\d)/, '.$1/$2');
+        value = value.replace(/(\d{4})(\d)/, '$1-$2');
+      }
+      
+      e.target.value = value;
+      validateCnpjCpf();
+    });
+    
+    // Máscara para telefone
+    telefoneInput.addEventListener('input', function(e) {
+      var value = e.target.value.replace(/\D/g, '');
+      
+      if (value.length <= 10) {
+        // (00) 0000-0000
+        value = value.replace(/^(\d{2})(\d)/, '($1) $2');
+        value = value.replace(/(\d{4})(\d)/, '$1-$2');
+      } else {
+        // (00) 00000-0000
+        value = value.replace(/^(\d{2})(\d)/, '($1) $2');
+        value = value.replace(/(\d{5})(\d)/, '$1-$2');
+      }
+      
+      e.target.value = value;
+      validateTelefone();
+    });
+    
+    function validateCnpjCpf() {
+      var value = cnpjCpfInput.value.replace(/\D/g, '');
+      var isValid = false;
+      
+      if (value.length === 11) {
+        // Validação básica de CPF
+        isValid = value.length === 11;
+      } else if (value.length === 14) {
+        // Validação básica de CNPJ
+        isValid = value.length === 14;
+      }
+      
+      if (value.length > 0 && !isValid) {
+        cnpjCpfInput.classList.add('input-error');
+        cnpjCpfError.classList.add('show');
+      } else {
+        cnpjCpfInput.classList.remove('input-error');
+        cnpjCpfError.classList.remove('show');
+      }
+      
+      return isValid || value.length === 0;
+    }
+    
+    function validateTelefone() {
+      var value = telefoneInput.value.replace(/\D/g, '');
+      var isValid = value.length === 10 || value.length === 11;
+      
+      if (value.length > 0 && !isValid) {
+        telefoneInput.classList.add('input-error');
+        telefoneError.classList.add('show');
+      } else {
+        telefoneInput.classList.remove('input-error');
+        telefoneError.classList.remove('show');
+      }
+      
+      return isValid || value.length === 0;
+    }
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Validações finais
+      if (!validateCnpjCpf() || !validateTelefone()) {
+        errorMessage.textContent = 'Por favor, corrija os campos inválidos';
+        errorMessage.classList.add('show');
+        setTimeout(function() {
+          errorMessage.classList.remove('show');
+        }, 5000);
+        return;
+      }
+      
+      successMessage.classList.remove('show');
+      errorMessage.classList.remove('show');
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Cadastrando...';
+      
+      var formData = {
+        categoria: document.getElementById('categoria').value,
+        produtoServico: document.getElementById('produtoServico').value,
+        cnpjCpf: document.getElementById('cnpjCpf').value,
+        endereco: document.getElementById('endereco').value,
+        cidade: document.getElementById('cidade').value,
+        estado: document.getElementById('estado').value,
+        nomeContato: document.getElementById('nomeContato').value,
+        telefone: document.getElementById('telefone').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Erro na requisição');
+      })
+      .then(function(data) {
+        successMessage.classList.add('show');
+        form.reset();
+        
+        setTimeout(function() {
+          successMessage.classList.remove('show');
+        }, 5000);
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        errorMessage.textContent = 'Erro ao cadastrar fornecedor. Por favor, tente novamente.';
+        errorMessage.classList.add('show');
+        
+        setTimeout(function() {
+          errorMessage.classList.remove('show');
+        }, 5000);
+      })
+      .finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Cadastrar Fornecedor';
+      });
+    });
+  </script>
+</body>
+</html>
