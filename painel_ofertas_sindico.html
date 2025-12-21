@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Ofertas Exclusivas</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8f9fa;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container { max-width: 1200px; margin: 0 auto; }
+    
+    .header {
+      background: white;
+      border-radius: 28px;
+      padding: 32px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #FF6B35;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+    }
+    
+    h1 { font-size: 28px; color: #222; margin-bottom: 8px; font-weight: 700; }
+    .subtitle { color: #666; font-size: 16px; }
+    
+    .filters-bar {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+    }
+    
+    .filters-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+    
+    .filter-chip {
+      padding: 10px 18px;
+      border: 2px solid #e0e0e0;
+      border-radius: 24px;
+      font-size: 14px;
+      background: white;
+      color: #666;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+    }
+    
+    .filter-chip:hover { border-color: #FF6B35; color: #FF6B35; }
+    .filter-chip.active { background: #FF6B35; color: white; border-color: #FF6B35; }
+    
+    .context-banner {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border-left: 4px solid #1565c0;
+      padding: 16px 20px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: #0d47a1;
+    }
+    
+    .context-icon { font-size: 24px; flex-shrink: 0; }
+    .section { margin-bottom: 32px; }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .section-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #222;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section-badge {
+      background: #FF6B35;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .section-link {
+      color: #FF6B35;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    
+    .section-link:hover { text-decoration: underline; }
+    
+    .highlight-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    
+    .highlight-card {
+      background: white;
+      border: 3px solid #FF6B35;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(255,107,53,0.2);
+      transition: all 0.3s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .highlight-card::before {
+      content: '⭐';
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      font-size: 80px;
+      opacity: 0.1;
+    }
+    
+    .highlight-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(255,107,53,0.3);
+    }
+    
+    .highlight-badge {
+      display: inline-block;
+      background: #FF6B35;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    
+    .highlight-title { font-size: 24px; font-weight: 700; color: #222; margin-bottom: 8px; }
+    .highlight-description { color: #666; font-size: 15px; line-height: 1.6; margin-bottom: 16px; }
+    .highlight-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+    .meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #666; }
+    
+    .highlight-cta {
+      width: 100%;
+      padding: 14px;
+      background: #FF6B35;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .highlight-cta:hover { background: #ff8555; transform: translateY(-2px); }
+    
+    .offers-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    
+    .offer-card {
+      background: white;
+      border: 2px solid #f0f0f0;
+      border-radius: 16px;
+      padding: 20px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    
+    .offer-card:hover {
+      border-color: #FF6B35;
+      box-shadow: 0 4px 16px rgba(255,107,53,0.15);
+      transform: translateY(-2px);
+    }
+    
+    .offer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+    
+    .offer-title-section { flex: 1; }
+    
+    .offer-category {
+      display: inline-block;
+      padding: 4px 12px;
+      background: #e3f2fd;
+      color: #1565c0;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    
+    .offer-title { font-size: 18px; font-weight: 700; color: #222; }
+    
+    .offer-validity {
+      padding: 6px 12px;
+      background: #ffebee;
+      color: #c62828;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    
+    .offer-validity.extended { background: #e8f5e9; color: #2e7d32; }
+    .offer-description { color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 12px; }
+    
+    .offer-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid #f0f0f0;
+    }
+    
+    .offer-region { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #666; }
+    
+    .offer-cta {
+      padding: 10px 20px;
+      background: #FF6B35;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .offer-cta:hover { background: #ff8555; transform: translateY(-1px); }
+    
+    .suggestions-section {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+    }
+    
+    .suggestion-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .suggestion-card {
+      background: #f8f9fa;
+      border-left: 4px solid #FF6B35;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    
+    .suggestion-card:hover { background: #fff3e0; transform: translateX(4px); }
+    .suggestion-text { font-size: 14px; color: #666; margin-bottom: 8px; line-height: 1.5; }
+    .suggestion-action { font-size: 13px; color: #FF6B35; font-weight: 600; }
+    
+    .loading { text-align: center; padding: 60px 20px; }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #FF6B35;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+    .empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+    .footer { text-align: center; margin-top: 32px; padding: 20px; color: #888; font-size: 14px; }
+    .footer span { color: #FF6B35; font-weight: bold; }
+    
+    @media (max-width: 640px) {
+      body { padding: 12px; }
+      .header { border-radius: 20px; padding: 24px 20px; margin-bottom: 16px; }
+      .logo { width: 60px; height: 60px; }
+      h1 { font-size: 22px; }
+      .subtitle { font-size: 14px; }
+      .filters-bar { border-radius: 20px; padding: 16px; margin-bottom: 16px; }
+      .filters-row { gap: 8px; margin-bottom: 12px; }
+      .filter-chip { padding: 8px 14px; font-size: 13px; }
+      .context-banner { flex-direction: column; text-align: center; font-size: 13px; }
+      .section-header { flex-direction: column; align-items: start; gap: 12px; }
+      .section-title { font-size: 18px; }
+      .highlight-card { padding: 20px; }
+      .highlight-title { font-size: 20px; }
+      .offer-header { flex-direction: column; }
+      .offer-validity { align-self: flex-start; }
+      .offer-footer { flex-direction: column; gap: 12px; align-items: stretch; }
+      .offer-cta { width: 100%; }
+    }
+    
+    @media (min-width: 641px) {
+      .highlight-grid { grid-template-columns: repeat(2, 1fr); }
+      .offers-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    @media (min-width: 1024px) {
+      .offers-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>🎁 Ofertas Exclusivas</h1>
+      <p class="subtitle">Ofertas personalizadas para o seu condomínio</p>
+    </div>
+    
+    <div class="filters-bar">
+      <div class="filters-row">
+        <div class="filter-chip active" data-filter="todas">Todas</div>
+        <div class="filter-chip" data-filter="Manutenção e Reparos">🔧 Manutenção</div>
+        <div class="filter-chip" data-filter="Limpeza">🧹 Limpeza</div>
+        <div class="filter-chip" data-filter="Segurança">🛡️ Segurança</div>
+        <div class="filter-chip" data-filter="Elétrica">⚡ Elétrica</div>
+        <div class="filter-chip" data-filter="Hidráulica">💧 Hidráulica</div>
+      </div>
+      
+      <div class="context-banner">
+        <span class="context-icon">💡</span>
+        <div>
+          <strong>Ofertas filtradas para você!</strong> 
+          Mostrando ofertas para <strong id="userCity">São José dos Pinhais</strong> 
+          e condomínios do tipo <strong id="condoType">Residencial</strong>
+        </div>
+      </div>
+    </div>
+    
+    <div id="loadingSection" class="loading">
+      <div class="spinner"></div>
+      <p style="color:#666; font-weight:500;">Carregando ofertas personalizadas...</p>
+    </div>
+    
+    <div id="contentSection" style="display:none;">
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">⭐ Ofertas em Destaque <span class="section-badge" id="highlightCount">0</span></h2>
+          <a class="section-link" onclick="scrollToOffers()">Ver todas →</a>
+        </div>
+        <div class="highlight-grid" id="highlightsGrid"></div>
+      </div>
+      
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">🏷️ Todas as Ofertas <span class="section-badge" id="offersCount">0</span></h2>
+        </div>
+        <div class="offers-grid" id="offersGrid"></div>
+      </div>
+      
+      <div class="suggestions-section">
+        <div class="suggestion-title">🤖 Sugestões Inteligentes</div>
+        <div id="suggestionsContainer"></div>
+      </div>
+    </div>
+    
+    <div class="footer">Sindi - Ofertas para Condomínios <span>Sindibot - Impactar LLC</span></div>
+  </div>
+  
+  <script>
+    const WEBHOOK_GET_OFFERS = 'https://n8n.polenta.chat/webhook-test/ofertas-sindico';
+    const WEBHOOK_REQUEST = 'https://n8n.polenta.chat/webhook-test/solicitar-contato-oferta';
+    
+    let allOffers = [];
+    let currentFilter = 'todas';
+    const userContext = { city: 'São José dos Pinhais', condoType: 'Residencial', condoSize: 'Médio' };
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      loadOffers();
+      document.querySelectorAll('.filter-chip').forEach(c => {
+        c.addEventListener('click', function() {
+          document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('active'));
+          this.classList.add('active');
+          currentFilter = this.dataset.filter;
+          renderOffers();
+        });
+      });
+    });
+    
+    async function loadOffers() {
+      try {
+        const res = await fetch(WEBHOOK_GET_OFFERS, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userContext)
+        });
+        allOffers = res.ok ? (await res.json()).ofertas || getMockOffers() : getMockOffers();
+      } catch(e) { allOffers = getMockOffers(); }
+      
+      document.getElementById('loadingSection').style.display = 'none';
+      document.getElementById('contentSection').style.display = 'block';
+      renderOffers();
+      renderSuggestions();
+    }
+    
+    function renderOffers() {
+      const filtered = currentFilter === 'todas' ? allOffers : allOffers.filter(o => o.categoria === currentFilter);
+      const highlights = filtered.filter(o => o.destaque).slice(0, 3);
+      const regular = filtered.filter(o => !o.destaque);
+      
+      document.getElementById('highlightCount').textContent = highlights.length;
+      document.getElementById('highlightsGrid').innerHTML = highlights.map(o => `
+        <div class="highlight-card" onclick="requestContact('${o.id}', '${o.titulo}')">
+          <div class="highlight-badge">⭐ Oferta em Destaque</div>
+          <div class="highlight-title">${o.titulo}</div>
+          <div class="highlight-description">${o.descricao}</div>
+          <div class="highlight-meta">
+            <div class="meta-item">📍 ${o.regioes.join(', ')}</div>
+            <div class="meta-item">⏰ Válido até ${formatDate(o.validade)}</div>
+          </div>
+          <button class="highlight-cta">📞 Solicitar Contato</button>
+        </div>
+      `).join('');
+      
+      document.getElementById('offersCount').textContent = regular.length;
+      document.getElementById('offersGrid').innerHTML = regular.length === 0 ? 
+        '<div class="empty-state" style="grid-column:1/-1;"><div class="empty-icon">📦</div><p>Nenhuma oferta encontrada</p></div>' :
+        regular.map(o => `
+          <div class="offer-card" onclick="requestContact('${o.id}', '${o.titulo}')">
+            <div class="offer-header">
+              <div class="offer-title-section">
+                <div class="offer-category">${o.categoria}</div>
+                <div class="offer-title">${o.titulo}</div>
+              </div>
+              <div class="offer-validity ${isExtended(o.validade)?'extended':''}">⏰ ${formatDate(o.validade)}</div>
+            </div>
+            <div class="offer-description">${o.descricao}</div>
+            <div class="offer-footer">
+              <div class="offer-region">📍 ${o.regioes.length>1?o.regioes.length+' regiões':o.regioes[0]}</div>
+              <button class="offer-cta">📞 Contato</button>
+            </div>
+          </div>
+        `).join('');
+    }
+    
+    function renderSuggestions() {
+      const sugs = [];
+      const maint = allOffers.filter(o => o.categoria === 'Manutenção e Reparos');
+      if(maint.length) sugs.push({
+        text: `Encontramos ${maint.length} ofertas de manutenção preventiva. Realizar manutenções regulares pode economizar até 40% em reparos.`,
+        action: 'Manutenção e Reparos', actionText: 'Ver ofertas de manutenção'
+      });
+      
+      sugs.push({
+        text: 'Aproveite as ofertas exclusivas! Fornecedores verificados oferecem condições especiais para sua região.',
+        action: 'todas', actionText: 'Ver todas as ofertas'
+      });
+      
+      document.getElementById('suggestionsContainer').innerHTML = sugs.map(s => `
+        <div class="suggestion-card" onclick="applySuggestion('${s.action}')">
+          <div class="suggestion-text">${s.text}</div>
+          <div class="suggestion-action">👉 ${s.actionText}</div>
+        </div>
+      `).join('');
+    }
+    
+    async function requestContact(id, title) {
+      if(!confirm(`Deseja solicitar contato sobre "${title}"?`)) return;
+      try {
+        const r = await fetch(WEBHOOK_REQUEST, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({offerId:id, offerTitle:title, ...userContext})
+        });
+        alert(r.ok ? '✓ Solicitação enviada! O fornecedor entrará em contato.' : 'Erro ao enviar.');
+      } catch(e) { alert('Erro ao enviar solicitação.'); }
+    }
+    
+    function applySuggestion(cat) {
+      const chip = Array.from(document.querySelectorAll('.filter-chip')).find(c => c.dataset.filter === cat);
+      if(chip) { chip.click(); scrollToOffers(); }
+    }
+    
+    function scrollToOffers() { document.getElementById('offersGrid').scrollIntoView({behavior:'smooth'}); }
+    function formatDate(d) { return new Date(d).toLocaleDateString('pt-BR', {day:'2-digit',month:'short',year:'numeric'}); }
+    function isExtended(d) { return Math.ceil((new Date(d)-new Date())/(1000*60*60*24)) > 30; }
+    
+    function getMockOffers() {
+      return [
+        {id:'1',titulo:'🔧 Manutenção Preventiva Completa',categoria:'Manutenção e Reparos',descricao:'Manutenção preventiva em elevadores, bombas e sistemas elétricos. Equipe especializada e atendimento 24h. Desconto de 20% para contratos anuais.',regioes:['São José dos Pinhais','Curitiba'],validade:'2025-03-20',destaque:true},
+        {id:'2',titulo:'🧹 Limpeza Profissional Mensal',categoria:'Limpeza',descricao:'Serviço completo de limpeza e higienização de áreas comuns. Produtos ecológicos e equipe treinada.',regioes:['São José dos Pinhais'],validade:'2025-02-28',destaque:true},
+        {id:'3',titulo:'🛡️ Sistema de Segurança Integrado',categoria:'Segurança',descricao:'Câmeras IP, controle de acesso e monitoramento 24h. Instalação gratuita para condomínios acima de 50 unidades.',regioes:['São José dos Pinhais','Curitiba'],validade:'2025-04-15',destaque:true},
+        {id:'4',titulo:'⚡ Modernização Elétrica',categoria:'Elétrica',descricao:'Atualização de quadros elétricos e instalação de proteções. Laudo técnico incluso.',regioes:['Curitiba'],validade:'2025-03-10',destaque:false},
+        {id:'5',titulo:'💧 Manutenção Hidráulica',categoria:'Hidráulica',descricao:'Desentupimento, troca de registros e reparos em geral. Atendimento emergencial disponível.',regioes:['São José dos Pinhais'],validade:'2025-03-05',destaque:false}
+      ];
+    }
+  </script>
+</body>
+</html>
