@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Inativar Morador</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; padding: 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    .header { background: white; border-radius: 28px; padding: 32px 28px; margin-bottom: 24px; box-shadow: 0 15px 45px rgba(0,0,0,0.08); text-align: center; border: 1px solid #eee; }
+    .logo { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #FF6B35; margin: 0 auto 16px; box-shadow: 0 4px 12px rgba(255,107,53,0.25); }
+    h1 { font-size: 28px; color: #222; margin-bottom: 8px; font-weight: 700; }
+    .subtitle { color: #666; font-size: 16px; }
+    .form-card { background: white; border-radius: 24px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; }
+    .warning-banner { background: #fff3e0; border-left: 4px solid #ff9800; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; color: #e65100; }
+    .warning-banner strong { display: block; margin-bottom: 4px; font-size: 15px; }
+    .section-title { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
+    .required { color: #FF6B35; }
+    input[type="text"], input[type="date"], input[type="time"], select, textarea { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 15px; background: white; color: #333; transition: all 0.3s; font-family: inherit; }
+    textarea { resize: vertical; min-height: 80px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 640px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+    .form-hint { font-size: 13px; color: #999; margin-top: 6px; }
+    .btn-group { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .btn { flex: 1; min-width: 200px; padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; }
+    .btn-search { background: #e3f2fd; color: #1565c0; border: 2px solid #2196f3; }
+    .btn-search:hover:not(:disabled) { background: #2196f3; color: white; transform: translateY(-2px); }
+    .btn-inactivate { background: linear-gradient(135deg, #f44336 0%, #e57373 100%); color: white; box-shadow: 0 4px 12px rgba(244,67,54,0.3); }
+    .btn-inactivate:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(244,67,54,0.4); }
+    .btn-clear { background: #f5f5f5; color: #666; border: 2px solid #e0e0e0; }
+    .btn-clear:hover:not(:disabled) { background: #e8e8e8; border-color: #FF6B35; color: #FF6B35; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .success-message, .error-message, .info-message { padding: 16px; border-radius: 14px; margin-bottom: 24px; text-align: center; font-weight: 600; display: none; }
+    .success-message { background: #e8f5e9; border: 2px solid #4caf50; color: #2e7d32; }
+    .error-message { background: #ffebee; border: 2px solid #f44336; color: #c62828; }
+    .info-message { background: #e3f2fd; border: 2px solid #2196f3; color: #1565c0; }
+    .success-message.show, .error-message.show, .info-message.show { display: block; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .footer { text-align: center; margin-top: 32px; padding: 20px; color: #888; font-size: 14px; }
+    .footer span { color: #FF6B35; font-weight: bold; }
+    .select-wrapper { position: relative; }
+    select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 45px; }
+    .morador-info { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 20px; margin-bottom: 24px; display: none; }
+    .morador-info.show { display: block; animation: slideUp 0.4s ease; }
+    .info-row { display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 12px; }
+    @media (min-width: 640px) { .info-row { grid-template-columns: repeat(2, 1fr); } }
+    .info-field { display: flex; flex-direction: column; }
+    .info-field-label { font-size: 12px; color: #666; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .info-field-value { font-size: 15px; color: #222; font-weight: 500; }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #e3f2fd; color: #1976d2; }
+    .badge.proprietario { background: #e8f5e9; color: #2e7d32; }
+    .badge.inquilino { background: #fff3e0; color: #e65100; }
+    .list-items { margin-top: 8px; }
+    .list-item { background: white; padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; font-size: 14px; border: 1px solid #e0e0e0; }
+    .loading { text-align: center; padding: 20px; display: none; }
+    .loading.show { display: block; }
+    .loading-spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #FF6B35; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 12px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loading-text { color: #666; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Inativar Morador</h1>
+      <p class="subtitle">Marque moradores como inativos mantendo o histórico</p>
+    </div>
+    
+    <div id="successMessage" class="success-message"><span id="successText">Morador inativado com sucesso!</span></div>
+    <div id="errorMessage" class="error-message"><span id="errorText">Erro ao processar. Tente novamente.</span></div>
+    <div id="infoMessage" class="info-message"><span id="infoText"></span></div>
+    
+    <div class="form-card">
+      <div class="warning-banner">
+        <strong>⚠️ Atenção</strong>
+        Esta ação irá inativar o morador principal e TODOS os registros associados (demais moradores, pets e veículos). O histórico será mantido para consultas futuras.
+      </div>
+      
+      <form id="searchForm">
+        <div class="section-title">🔍 Buscar Morador</div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Condomínio <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="condominio" required>
+                <option value="">Selecione o condomínio</option>
+                <option value="Edificio Central Park">Edifício Central Park</option>
+                <option value="Residencial Jardins">Residencial Jardins</option>
+                <option value="Condominio Vista Verde">Condomínio Vista Verde</option>
+                <option value="Torres do Sol">Torres do Sol</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Unidade <span class="required">*</span></label>
+            <input type="text" id="unidade" placeholder="Ex: 101, 202" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Bloco</label>
+            <input type="text" id="bloco" placeholder="Ex: A, B">
+            <div class="form-hint">Deixe em branco se não houver</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Nome do Morador</label>
+            <input type="text" id="nome" placeholder="Nome completo ou parcial">
+            <div class="form-hint">Opcional - ajuda a confirmar</div>
+          </div>
+        </div>
+        
+        <div class="btn-group">
+          <button type="submit" class="btn btn-search" id="searchBtn">🔍 Buscar Morador</button>
+          <button type="button" class="btn btn-clear" id="clearSearchBtn">🗑️ Limpar</button>
+        </div>
+      </form>
+      
+      <div id="loadingState" class="loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Buscando morador...</div>
+      </div>
+      
+      <div id="moradorInfo" class="morador-info">
+        <div class="section-title">📋 Dados do Cadastro</div>
+        <div id="moradorData"></div>
+        
+        <form id="inactivateForm">
+          <div class="section-title" style="margin-top: 24px;">📅 Data de Inativação</div>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Data <span class="required">*</span></label>
+              <input type="date" id="dataInativacao" required>
+              <div class="form-hint">Data a partir da qual o morador não está mais na unidade</div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Hora (opcional)</label>
+              <input type="time" id="horaInativacao">
+              <div class="form-hint">Formato 24h - deixe em branco se não souber</div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Motivo da Inativação</label>
+            <textarea id="motivo" placeholder="Ex: Mudança, venda do imóvel, término de contrato..."></textarea>
+            <div class="form-hint">Opcional - ajuda a manter o histórico organizado</div>
+          </div>
+          
+          <div class="btn-group">
+            <button type="submit" class="btn btn-inactivate" id="inactivateBtn">⛔ Inativar Cadastro</button>
+            <button type="button" class="btn btn-clear" id="cancelBtn">↩️ Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <div class="footer">Sindi - Inativar Morador <span>Sindibot - Impactar LLC</span></div>
+  </div>
+  
+  <script>
+    var WEBHOOK_SEARCH = 'https://n8n.polenta.chat/webhook-test/buscar-morador-inativar';
+    var WEBHOOK_INACTIVATE = 'https://n8n.polenta.chat/webhook-test/inativar-morador';
+    var currentMorador = null;
+    
+    var dataInput = document.getElementById('dataInativacao');
+    var today = new Date().toISOString().split('T')[0];
+    dataInput.value = today;
+    dataInput.max = today;
+    
+    document.getElementById('clearSearchBtn').addEventListener('click', function() {
+      document.getElementById('searchForm').reset();
+      document.getElementById('moradorInfo').classList.remove('show');
+      hideMessages();
+    });
+    
+    document.getElementById('cancelBtn').addEventListener('click', function() {
+      document.getElementById('inactivateForm').reset();
+      dataInput.value = today;
+      document.getElementById('moradorInfo').classList.remove('show');
+      currentMorador = null;
+      hideMessages();
+    });
+    
+    function hideMessages() {
+      document.getElementById('successMessage').classList.remove('show');
+      document.getElementById('errorMessage').classList.remove('show');
+      document.getElementById('infoMessage').classList.remove('show');
+    }
+    
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      hideMessages();
+      
+      var searchBtn = document.getElementById('searchBtn');
+      var loadingState = document.getElementById('loadingState');
+      
+      searchBtn.disabled = true;
+      searchBtn.textContent = '⏳ Buscando...';
+      loadingState.classList.add('show');
+      document.getElementById('moradorInfo').classList.remove('show');
+      
+      var searchData = {
+        condominio: document.getElementById('condominio').value,
+        unidade: document.getElementById('unidade').value,
+        bloco: document.getElementById('bloco').value,
+        nome: document.getElementById('nome').value
+      };
+      
+      fetch(WEBHOOK_SEARCH, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(searchData)
+      })
+      .then(function(r) { if(r.ok) return r.json(); throw new Error('Erro na busca'); })
+      .then(function(data) {
+        loadingState.classList.remove('show');
+        
+        if (!data || !data.nome) {
+          document.getElementById('infoText').textContent = '❌ Nenhum morador encontrado com os dados informados.';
+          document.getElementById('infoMessage').classList.add('show');
+          return;
+        }
+        
+        currentMorador = data;
+        displayMoradorInfo(data);
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        loadingState.classList.remove('show');
+        document.getElementById('errorText').textContent = '❌ Erro ao buscar morador. Verifique os dados e tente novamente.';
+        document.getElementById('errorMessage').classList.add('show');
+      })
+      .finally(function() {
+        searchBtn.disabled = false;
+        searchBtn.textContent = '🔍 Buscar Morador';
+      });
+    });
+    
+    function displayMoradorInfo(data) {
+      var html = '<div class="info-row">';
+      
+      if(data.condominio) html += '<div class="info-field"><span class="info-field-label">Condomínio</span><span class="info-field-value">' + data.condominio + '</span></div>';
+      if(data.unidade) html += '<div class="info-field"><span class="info-field-label">Unidade</span><span class="info-field-value">' + data.unidade + '</span></div>';
+      if(data.bloco) html += '<div class="info-field"><span class="info-field-label">Bloco</span><span class="info-field-value">' + data.bloco + '</span></div>';
+      if(data.andar) html += '<div class="info-field"><span class="info-field-label">Andar</span><span class="info-field-value">' + data.andar + '</span></div>';
+      if(data.nome) html += '<div class="info-field"><span class="info-field-label">Nome</span><span class="info-field-value">' + data.nome + '</span></div>';
+      if(data.telefone) html += '<div class="info-field"><span class="info-field-label">Telefone</span><span class="info-field-value">' + data.telefone + '</span></div>';
+      if(data.tipoMorador) html += '<div class="info-field"><span class="info-field-label">Tipo</span><span class="info-field-value"><span class="badge ' + data.tipoMorador + '">' + (data.tipoMorador === 'proprietario' ? 'Proprietário' : 'Inquilino') + '</span></span></div>';
+      
+      html += '</div>';
+      
+      if(data.demaisMoradores && data.demaisMoradores.length > 0) {
+        html += '<div class="info-field" style="margin-top: 16px;"><span class="info-field-label">Demais Moradores (' + data.demaisMoradores.length + ')</span><div class="list-items">';
+        data.demaisMoradores.forEach(function(m) {
+          html += '<div class="list-item">👤 ' + m.nome + (m.telefone ? ' - ' + m.telefone : '') + '</div>';
+        });
+        html += '</div></div>';
+      }
+      
+      if(data.pets && data.pets.length > 0) {
+        html += '<div class="info-field" style="margin-top: 16px;"><span class="info-field-label">Pets (' + data.pets.length + ')</span><div class="list-items">';
+        data.pets.forEach(function(p) {
+          html += '<div class="list-item">🐾 ' + p.tipo + '</div>';
+        });
+        html += '</div></div>';
+      }
+      
+      if(data.veiculos && data.veiculos.length > 0) {
+        html += '<div class="info-field" style="margin-top: 16px;"><span class="info-field-label">Veículos (' + data.veiculos.length + ')</span><div class="list-items">';
+        data.veiculos.forEach(function(v) {
+          html += '<div class="list-item">🚗 ' + v.tipo + (v.placa ? ' - ' + v.placa : '') + (v.modelo ? ' (' + v.modelo + ')' : '') + '</div>';
+        });
+        html += '</div></div>';
+      }
+      
+      document.getElementById('moradorData').innerHTML = html;
+      document.getElementById('moradorInfo').classList.add('show');
+    }
+    
+    document.getElementById('inactivateForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if(!currentMorador) {
+        document.getElementById('errorText').textContent = '❌ Nenhum morador selecionado.';
+        document.getElementById('errorMessage').classList.add('show');
+        return;
+      }
+      
+      hideMessages();
+      var btn = document.getElementById('inactivateBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Inativando...';
+      
+      var inactivateData = {
+        morador: currentMorador,
+        dataInativacao: document.getElementById('dataInativacao').value,
+        horaInativacao: document.getElementById('horaInativacao').value,
+        motivo: document.getElementById('motivo').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      fetch(WEBHOOK_INACTIVATE, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(inactivateData)
+      })
+      .then(function(r) { if(r.ok) return r.json(); throw new Error('Erro'); })
+      .then(function() {
+        document.getElementById('successText').textContent = '✅ Morador e todos os registros associados foram inativados com sucesso!';
+        document.getElementById('successMessage').classList.add('show');
+        document.getElementById('searchForm').reset();
+        document.getElementById('inactivateForm').reset();
+        dataInput.value = today;
+        document.getElementById('moradorInfo').classList.remove('show');
+        currentMorador = null;
+        
+        setTimeout(function() { document.getElementById('successMessage').classList.remove('show'); }, 7000);
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        document.getElementById('errorText').textContent = '❌ Erro ao inativar morador. Tente novamente.';
+        document.getElementById('errorMessage').classList.add('show');
+      })
+      .finally(function() {
+        btn.disabled = false;
+        btn.textContent = '⛔ Inativar Cadastro';
+      });
+    });
+  </script>
+</body>
+</html>
