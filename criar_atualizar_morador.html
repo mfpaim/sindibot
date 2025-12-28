@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Cadastro de Moradores</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { background: white; border-radius: 28px; padding: 32px 28px; margin-bottom: 24px; box-shadow: 0 15px 45px rgba(0,0,0,0.08); text-align: center; border: 1px solid #eee; }
+    .logo { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #FF6B35; margin: 0 auto 16px; box-shadow: 0 4px 12px rgba(255,107,53,0.25); }
+    h1 { font-size: 28px; color: #222; margin-bottom: 8px; font-weight: 700; }
+    .subtitle { color: #666; font-size: 16px; }
+    .action-selector { background: white; border-radius: 24px; padding: 24px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; margin-bottom: 24px; }
+    .action-buttons { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 640px) { .action-buttons { grid-template-columns: 1fr 1fr; } }
+    .action-btn { padding: 20px; border: 3px solid #e0e0e0; border-radius: 16px; background: white; cursor: pointer; transition: all 0.3s; text-align: center; }
+    .action-btn:hover { border-color: #FF6B35; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,107,53,0.2); }
+    .action-btn.active { border-color: #FF6B35; background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%); color: white; }
+    .action-btn-icon { font-size: 32px; margin-bottom: 8px; }
+    .action-btn-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+    .action-btn-desc { font-size: 13px; color: #666; }
+    .action-btn.active .action-btn-desc { color: rgba(255,255,255,0.9); }
+    .form-card { background: white; border-radius: 24px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; display: none; }
+    .form-card.show { display: block; animation: slideUp 0.4s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .section-title { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
+    .required { color: #FF6B35; }
+    input[type="text"], input[type="tel"], select { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 15px; background: white; color: #333; transition: all 0.3s; font-family: inherit; }
+    input:focus, select:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 640px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .form-grid { grid-template-columns: repeat(3, 1fr); } }
+    .form-hint { font-size: 13px; color: #999; margin-top: 6px; }
+    .btn-group { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .btn { flex: 1; min-width: 200px; padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; }
+    .btn-submit { background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%); color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+    .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,53,0.4); }
+    .btn-clear { background: #f5f5f5; color: #666; border: 2px solid #e0e0e0; }
+    .btn-clear:hover:not(:disabled) { background: #e8e8e8; border-color: #FF6B35; color: #FF6B35; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .success-message, .error-message { padding: 16px; border-radius: 14px; margin-bottom: 24px; text-align: center; font-weight: 600; display: none; }
+    .success-message { background: #e8f5e9; border: 2px solid #4caf50; color: #2e7d32; }
+    .error-message { background: #ffebee; border: 2px solid #f44336; color: #c62828; }
+    .success-message.show, .error-message.show { display: block; animation: slideUp 0.3s ease; }
+    .footer { text-align: center; margin-top: 32px; padding: 20px; color: #888; font-size: 14px; }
+    .footer span { color: #FF6B35; font-weight: bold; }
+    .select-wrapper { position: relative; }
+    select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 45px; }
+    .info-banner { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; color: #1565c0; }
+    .info-banner strong { display: block; margin-bottom: 4px; }
+    .dynamic-list { margin-top: 12px; }
+    .dynamic-item { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 16px; margin-bottom: 12px; animation: slideUp 0.3s ease; }
+    .dynamic-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .dynamic-item-title { font-size: 14px; font-weight: 600; color: #666; }
+    .btn-remove { background: #ffebee; color: #c62828; border: 2px solid #ef5350; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .btn-remove:hover { background: #ef5350; color: white; }
+    .btn-add { width: 100%; background: #e8f5e9; color: #2e7d32; border: 2px dashed #4caf50; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-top: 12px; }
+    .btn-add:hover { background: #4caf50; color: white; border-style: solid; }
+    .dynamic-item-fields { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 640px) { .dynamic-item-fields { grid-template-columns: 1fr 1fr; } }
+    .dynamic-item-fields.three-cols { grid-template-columns: 1fr; }
+    @media (min-width: 768px) { .dynamic-item-fields.three-cols { grid-template-columns: 1fr 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Cadastro de Moradores</h1>
+      <p class="subtitle">Crie ou atualize informações dos moradores</p>
+    </div>
+    
+    <div class="action-selector">
+      <div class="action-buttons">
+        <div class="action-btn active" id="btnCriar" onclick="selectAction('criar')">
+          <div class="action-btn-icon">✨</div>
+          <div class="action-btn-title">Criar Novo</div>
+          <div class="action-btn-desc">Cadastrar novo morador</div>
+        </div>
+        <div class="action-btn" id="btnAtualizar" onclick="selectAction('atualizar')">
+          <div class="action-btn-icon">🔄</div>
+          <div class="action-btn-title">Atualizar</div>
+          <div class="action-btn-desc">Atualizar dados existentes</div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="successMessage" class="success-message"><span id="successText">Operação realizada com sucesso!</span></div>
+    <div id="errorMessage" class="error-message"><span id="errorText">Erro ao processar. Tente novamente.</span></div>
+    
+    <div class="form-card show" id="formCard">
+      <div class="info-banner" id="infoBanner">
+        <strong>🆕 Modo: Criar Novo Morador</strong>
+        Preencha os campos obrigatórios para cadastrar um novo morador no sistema.
+      </div>
+      
+      <form id="moradorForm">
+        <div class="section-title">🏢 Informações do Condomínio</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Condomínio <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="condominio" required>
+                <option value="">Selecione o condomínio</option>
+                <option value="Edificio Central Park">Edifício Central Park</option>
+                <option value="Residencial Jardins">Residencial Jardins</option>
+                <option value="Condominio Vista Verde">Condomínio Vista Verde</option>
+                <option value="Torres do Sol">Torres do Sol</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Unidade <span class="required">*</span></label>
+            <input type="text" id="unidade" placeholder="Ex: 101, 202" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bloco</label>
+            <input type="text" id="bloco" placeholder="Ex: A, B">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Andar</label>
+            <input type="text" id="andar" placeholder="Ex: 1, 2">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cidade <span class="required">*</span></label>
+            <input type="text" id="cidade" placeholder="Ex: São Paulo" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estado <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="estado" required>
+                <option value="">Selecione</option>
+                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option><option value="AM">AM</option>
+                <option value="BA">BA</option><option value="CE">CE</option><option value="DF">DF</option><option value="ES">ES</option>
+                <option value="GO">GO</option><option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option><option value="PR">PR</option>
+                <option value="PE">PE</option><option value="PI">PI</option><option value="RJ">RJ</option><option value="RN">RN</option>
+                <option value="RS">RS</option><option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section-title">👤 Morador Principal</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nome Completo <span class="required">*</span></label>
+            <input type="text" id="nome" placeholder="Nome completo" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Telefone <span class="required">*</span></label>
+            <input type="tel" id="telefone" placeholder="(00) 00000-0000" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tipo de Morador <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="tipoMorador" required>
+                <option value="">Selecione</option>
+                <option value="proprietario">Proprietário</option>
+                <option value="inquilino">Inquilino</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section-title">👥 Demais Moradores</div>
+        <div class="form-group">
+          <div id="moradorList" class="dynamic-list"></div>
+          <button type="button" class="btn-add" onclick="addMorador()">➕ Adicionar Morador</button>
+        </div>
+        
+        <div class="section-title">🐕 Pets</div>
+        <div class="form-group">
+          <div id="petsList" class="dynamic-list"></div>
+          <button type="button" class="btn-add" onclick="addPet()">➕ Adicionar Pet</button>
+        </div>
+        
+        <div class="section-title">🚗 Veículos</div>
+        <div class="form-group">
+          <div id="veiculosList" class="dynamic-list"></div>
+          <button type="button" class="btn-add" onclick="addVeiculo()">➕ Adicionar Veículo</button>
+        </div>
+        
+        <div class="btn-group">
+          <button type="submit" class="btn btn-submit" id="submitBtn"><span id="submitText">✨ Criar Cadastro</span></button>
+          <button type="button" class="btn btn-clear" id="clearBtn">🗑️ Limpar Campos</button>
+        </div>
+      </form>
+    </div>
+    
+    <div class="footer">Sindi - Cadastro de Moradores <span>Sindibot - Impactar LLC</span></div>
+  </div>
+  
+  <script>
+    var WEBHOOK_CREATE = 'https://n8n.polenta.chat/webhook-test/criar-morador';
+    var WEBHOOK_UPDATE = 'https://n8n.polenta.chat/webhook-test/atualizar-morador';
+    var currentAction = 'criar', moradorCnt = 0, petCnt = 0, veiculoCnt = 0;
+    
+    function selectAction(a) {
+      currentAction = a;
+      document.getElementById('btnCriar').classList.toggle('active', a === 'criar');
+      document.getElementById('btnAtualizar').classList.toggle('active', a === 'atualizar');
+      document.getElementById('submitText').textContent = a === 'criar' ? '✨ Criar Cadastro' : '🔄 Atualizar Cadastro';
+      document.getElementById('infoBanner').innerHTML = a === 'criar' 
+        ? '<strong>🆕 Modo: Criar Novo Morador</strong>Preencha os campos obrigatórios para cadastrar um novo morador.'
+        : '<strong>🔄 Modo: Atualizar Morador</strong>Preencha os campos para identificar e atualizar o morador.';
+      document.getElementById('successMessage').classList.remove('show');
+      document.getElementById('errorMessage').classList.remove('show');
+    }
+    
+    function addMorador() {
+      moradorCnt++;
+      var div = document.createElement('div');
+      div.className = 'dynamic-item';
+      div.id = 'morador-' + moradorCnt;
+      div.innerHTML = '<div class="dynamic-item-header"><span class="dynamic-item-title">👤 Morador #' + moradorCnt + 
+        '</span><button type="button" class="btn-remove" onclick="remove(\'morador-' + moradorCnt + '\')">✖ Remover</button></div>' +
+        '<div class="dynamic-item-fields"><div class="form-group"><label class="form-label">Nome Completo</label>' +
+        '<input type="text" id="nomeMorador-' + moradorCnt + '" placeholder="Nome"></div>' +
+        '<div class="form-group"><label class="form-label">Telefone (opcional)</label>' +
+        '<input type="tel" id="telMorador-' + moradorCnt + '" placeholder="(00) 00000-0000"></div></div>';
+      document.getElementById('moradorList').appendChild(div);
+    }
+    
+    function addPet() {
+      petCnt++;
+      var div = document.createElement('div');
+      div.className = 'dynamic-item';
+      div.id = 'pet-' + petCnt;
+      div.innerHTML = '<div class="dynamic-item-header"><span class="dynamic-item-title">🐾 Pet #' + petCnt + 
+        '</span><button type="button" class="btn-remove" onclick="remove(\'pet-' + petCnt + '\')">✖ Remover</button></div>' +
+        '<div class="dynamic-item-fields"><div class="form-group"><label class="form-label">Tipo de Pet</label>' +
+        '<div class="select-wrapper"><select id="tipoPet-' + petCnt + '"><option value="">Selecione</option>' +
+        '<option value="cachorro">Cachorro</option><option value="gato">Gato</option>' +
+        '<option value="passaro">Pássaro</option><option value="outros">Outros</option></select></div></div></div>';
+      document.getElementById('petsList').appendChild(div);
+    }
+    
+    function addVeiculo() {
+      veiculoCnt++;
+      var div = document.createElement('div');
+      div.className = 'dynamic-item';
+      div.id = 'veiculo-' + veiculoCnt;
+      div.innerHTML = '<div class="dynamic-item-header"><span class="dynamic-item-title">🚗 Veículo #' + veiculoCnt + 
+        '</span><button type="button" class="btn-remove" onclick="remove(\'veiculo-' + veiculoCnt + '\')">✖ Remover</button></div>' +
+        '<div class="dynamic-item-fields three-cols"><div class="form-group"><label class="form-label">Tipo</label>' +
+        '<div class="select-wrapper"><select id="tipoVeiculo-' + veiculoCnt + '"><option value="">Selecione</option>' +
+        '<option value="carro">Carro</option><option value="moto">Moto</option><option value="bicicleta">Bicicleta</option></select></div></div>' +
+        '<div class="form-group"><label class="form-label">Placa</label><input type="text" id="placa-' + veiculoCnt + '" placeholder="ABC-1234"></div>' +
+        '<div class="form-group"><label class="form-label">Modelo</label><input type="text" id="modelo-' + veiculoCnt + '" placeholder="Honda Civic"></div></div>';
+      document.getElementById('veiculosList').appendChild(div);
+    }
+    
+    function remove(id) { var el = document.getElementById(id); if(el) el.remove(); }
+    
+    function getMoradores() {
+      var m = [];
+      for(var i = 1; i <= moradorCnt; i++) {
+        var el = document.getElementById('morador-' + i);
+        if(el) {
+          var nome = document.getElementById('nomeMorador-' + i).value;
+          var tel = document.getElementById('telMorador-' + i).value;
+          if(nome) m.push({nome: nome, telefone: tel});
+        }
+      }
+      return m;
+    }
+    
+    function getPets() {
+      var p = [];
+      for(var i = 1; i <= petCnt; i++) {
+        var el = document.getElementById('pet-' + i);
+        if(el) {
+          var tipo = document.getElementById('tipoPet-' + i).value;
+          if(tipo) p.push({tipo: tipo});
+        }
+      }
+      return p;
+    }
+    
+    function getVeiculos() {
+      var v = [];
+      for(var i = 1; i <= veiculoCnt; i++) {
+        var el = document.getElementById('veiculo-' + i);
+        if(el) {
+          var tipo = document.getElementById('tipoVeiculo-' + i).value;
+          var placa = document.getElementById('placa-' + i).value;
+          var modelo = document.getElementById('modelo-' + i).value;
+          if(tipo || placa || modelo) v.push({tipo: tipo, placa: placa, modelo: modelo});
+        }
+      }
+      return v;
+    }
+    
+    function clearAll() {
+      document.getElementById('moradorList').innerHTML = '';
+      document.getElementById('petsList').innerHTML = '';
+      document.getElementById('veiculosList').innerHTML = '';
+      moradorCnt = petCnt = veiculoCnt = 0;
+    }
+    
+    document.getElementById('clearBtn').addEventListener('click', function() {
+      document.getElementById('moradorForm').reset();
+      clearAll();
+      document.getElementById('successMessage').classList.remove('show');
+      document.getElementById('errorMessage').classList.remove('show');
+    });
+    
+    document.getElementById('moradorForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      document.getElementById('successMessage').classList.remove('show');
+      document.getElementById('errorMessage').classList.remove('show');
+      var btn = document.getElementById('submitBtn');
+      var txt = document.getElementById('submitText');
+      btn.disabled = true;
+      txt.textContent = '⏳ Processando...';
+      
+      var data = {
+        acao: currentAction,
+        condominio: document.getElementById('condominio').value,
+        unidade: document.getElementById('unidade').value,
+        bloco: document.getElementById('bloco').value,
+        andar: document.getElementById('andar').value,
+        cidade: document.getElementById('cidade').value,
+        estado: document.getElementById('estado').value,
+        nome: document.getElementById('nome').value,
+        telefone: document.getElementById('telefone').value,
+        tipoMorador: document.getElementById('tipoMorador').value,
+        demaisMoradores: getMoradores(),
+        pets: getPets(),
+        veiculos: getVeiculos(),
+        timestamp: new Date().toISOString()
+      };
+      
+      fetch(currentAction === 'criar' ? WEBHOOK_CREATE : WEBHOOK_UPDATE, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      })
+      .then(function(r) { if(r.ok) return r.json(); throw new Error('Erro'); })
+      .then(function() {
+        document.getElementById('successText').textContent = currentAction === 'criar' 
+          ? '✅ Morador cadastrado com sucesso!' : '✅ Cadastro atualizado com sucesso!';
+        document.getElementById('successMessage').classList.add('show');
+        document.getElementById('moradorForm').reset();
+        clearAll();
+        setTimeout(function() { document.getElementById('successMessage').classList.remove('show'); }, 5000);
+      })
+      .catch(function() {
+        document.getElementById('errorText').textContent = currentAction === 'criar'
+          ? '❌ Erro ao criar cadastro.' : '❌ Erro ao atualizar cadastro.';
+        document.getElementById('errorMessage').classList.add('show');
+        setTimeout(function() { document.getElementById('errorMessage').classList.remove('show'); }, 5000);
+      })
+      .finally(function() {
+        btn.disabled = false;
+        txt.textContent = currentAction === 'criar' ? '✨ Criar Cadastro' : '🔄 Atualizar Cadastro';
+      });
+    });
+  </script>
+</body>
+</html>
