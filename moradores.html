@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Busca de Registros</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8f9fa;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 28px;
+      padding: 32px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #FF6B35;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+    }
+    
+    h1 {
+      font-size: 28px;
+      color: #222;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .search-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+      margin-bottom: 24px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    input[type="text"],
+    input[type="tel"],
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 15px;
+      background: white;
+      color: #333;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #FF6B35;
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    
+    @media (min-width: 640px) {
+      .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .form-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      flex: 1;
+      min-width: 200px;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+    }
+    
+    .btn-search {
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+    }
+    
+    .btn-search:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    }
+    
+    .btn-clear {
+      background: #f5f5f5;
+      color: #666;
+      border: 2px solid #e0e0e0;
+    }
+    
+    .btn-clear:hover:not(:disabled) {
+      background: #e8e8e8;
+      border-color: #FF6B35;
+      color: #FF6B35;
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .results-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+      display: none;
+    }
+    
+    .results-card.show {
+      display: block;
+      animation: slideUp 0.4s ease;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    
+    .results-count {
+      font-size: 18px;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .results-count span {
+      color: #FF6B35;
+    }
+    
+    .result-item {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border: 2px solid #e9ecef;
+      transition: all 0.3s;
+    }
+    
+    .result-item:hover {
+      border-color: #FF6B35;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.15);
+    }
+    
+    .result-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    
+    @media (min-width: 640px) {
+      .result-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .result-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    .result-field {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .result-field-label {
+      font-size: 12px;
+      color: #666;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    
+    .result-field-value {
+      font-size: 15px;
+      color: #222;
+      font-weight: 500;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+    
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    
+    .empty-state-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    
+    .empty-state-subtext {
+      font-size: 14px;
+      color: #999;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 40px;
+    }
+    
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #FF6B35;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .error-message {
+      background: #ffebee;
+      border: 2px solid #f44336;
+      color: #c62828;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+      animation: slideUp 0.3s ease;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      padding: 20px;
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .footer span {
+      color: #FF6B35;
+      font-weight: bold;
+    }
+    
+    .select-wrapper {
+      position: relative;
+    }
+    
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 45px;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+    
+    .badge.proprietario {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    
+    .badge.inquilino {
+      background: #fff3e0;
+      color: #e65100;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Busca de Registros</h1>
+      <p class="subtitle">Pesquise por qualquer combinação de campos</p>
+    </div>
+    
+    <div id="errorMessage" class="error-message">
+      Erro ao buscar registros. Por favor, tente novamente.
+    </div>
+    
+    <div class="search-card">
+      <form id="searchForm">
+        <div class="section-title">🏢 Informações do Condomínio</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Condomínio</label>
+            <div class="select-wrapper">
+              <select id="condominio">
+                <option value="">Todos os condomínios</option>
+                <option value="Edificio Central Park">Edifício Central Park</option>
+                <option value="Residencial Jardins">Residencial Jardins</option>
+                <option value="Condominio Vista Verde">Condomínio Vista Verde</option>
+                <option value="Torres do Sol">Torres do Sol</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Unidade</label>
+            <input type="text" id="unidade" placeholder="Ex: 101, 202, 303">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Bloco</label>
+            <input type="text" id="bloco" placeholder="Ex: A, B, C">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Andar</label>
+            <input type="text" id="andar" placeholder="Ex: 1, 2, 10">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Cidade</label>
+            <input type="text" id="cidade" placeholder="Ex: São Paulo">
+          </div>
+        </div>
+        
+        <div class="section-title">👤 Informações Pessoais</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nome da Pessoa</label>
+            <input type="text" id="nome" placeholder="Nome completo ou parcial">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Telefone</label>
+            <input type="tel" id="telefone" placeholder="(00) 00000-0000">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Tipo de Morador</label>
+            <div class="select-wrapper">
+              <select id="tipoMorador">
+                <option value="">Todos</option>
+                <option value="proprietario">Proprietário</option>
+                <option value="inquilino">Inquilino</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section-title">🐕 Pets e Veículos</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Tipo de Pet</label>
+            <div class="select-wrapper">
+              <select id="tipoPet">
+                <option value="">Todos</option>
+                <option value="cachorro">Cachorro</option>
+                <option value="gato">Gato</option>
+                <option value="passaro">Pássaro</option>
+                <option value="outros">Outros</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Tipo de Veículo</label>
+            <div class="select-wrapper">
+              <select id="tipoVeiculo">
+                <option value="">Todos</option>
+                <option value="carro">Carro</option>
+                <option value="moto">Moto</option>
+                <option value="bicicleta">Bicicleta</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Placa do Veículo</label>
+            <input type="text" id="placa" placeholder="ABC-1234">
+          </div>
+        </div>
+        
+        <div class="btn-group">
+          <button type="submit" class="btn btn-search" id="searchBtn">
+            🔍 Buscar Registros
+          </button>
+          <button type="button" class="btn btn-clear" id="clearBtn">
+            🗑️ Limpar Campos
+          </button>
+        </div>
+      </form>
+    </div>
+    
+    <div class="results-card" id="resultsCard">
+      <div class="results-header">
+        <div class="results-count" id="resultsCount">
+          Encontrados <span>0</span> registros
+        </div>
+      </div>
+      
+      <div id="loadingState" class="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Buscando registros...</div>
+      </div>
+      
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">🔍</div>
+        <div class="empty-state-text">Nenhum registro encontrado</div>
+        <div class="empty-state-subtext">Tente ajustar os filtros de busca</div>
+      </div>
+      
+      <div id="resultsContainer"></div>
+    </div>
+    
+    <div class="footer">
+      Sindi - Busca de Registros <span>Sindibot - Impactar LLC</span>
+    </div>
+  </div>
+  
+  <script>
+    var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/buscar-registros';
+    
+    var form = document.getElementById('searchForm');
+    var searchBtn = document.getElementById('searchBtn');
+    var clearBtn = document.getElementById('clearBtn');
+    var errorMessage = document.getElementById('errorMessage');
+    var resultsCard = document.getElementById('resultsCard');
+    var resultsContainer = document.getElementById('resultsContainer');
+    var resultsCount = document.getElementById('resultsCount');
+    var loadingState = document.getElementById('loadingState');
+    var emptyState = document.getElementById('emptyState');
+    
+    clearBtn.addEventListener('click', function() {
+      form.reset();
+      resultsCard.classList.remove('show');
+      errorMessage.classList.remove('show');
+    });
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      errorMessage.classList.remove('show');
+      resultsCard.classList.add('show');
+      loadingState.style.display = 'block';
+      emptyState.style.display = 'none';
+      resultsContainer.innerHTML = '';
+      
+      searchBtn.disabled = true;
+      searchBtn.textContent = '⏳ Buscando...';
+      
+      var searchData = {
+        condominio: document.getElementById('condominio').value,
+        unidade: document.getElementById('unidade').value,
+        bloco: document.getElementById('bloco').value,
+        andar: document.getElementById('andar').value,
+        nome: document.getElementById('nome').value,
+        telefone: document.getElementById('telefone').value,
+        cidade: document.getElementById('cidade').value,
+        tipoPet: document.getElementById('tipoPet').value,
+        tipoVeiculo: document.getElementById('tipoVeiculo').value,
+        placa: document.getElementById('placa').value,
+        tipoMorador: document.getElementById('tipoMorador').value
+      };
+      
+      var filteredData = {};
+      for (var key in searchData) {
+        if (searchData[key]) {
+          filteredData[key] = searchData[key];
+        }
+      }
+      
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(filteredData)
+      })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Erro na busca');
+      })
+      .then(function(data) {
+        loadingState.style.display = 'none';
+        
+        var results = data.results || data.registros || data;
+        if (!Array.isArray(results)) {
+          results = [results];
+        }
+        
+        if (results.length === 0) {
+          emptyState.style.display = 'block';
+          resultsCount.innerHTML = 'Encontrados <span>0</span> registros';
+        } else {
+          displayResults(results);
+        }
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        loadingState.style.display = 'none';
+        errorMessage.classList.add('show');
+        resultsCard.classList.remove('show');
+        
+        setTimeout(function() {
+          errorMessage.classList.remove('show');
+        }, 5000);
+      })
+      .finally(function() {
+        searchBtn.disabled = false;
+        searchBtn.textContent = '🔍 Buscar Registros';
+      });
+    });
+    
+    function displayResults(results) {
+      resultsCount.innerHTML = 'Encontrados <span>' + results.length + '</span> registro' + (results.length !== 1 ? 's' : '');
+      
+      resultsContainer.innerHTML = results.map(function(item) {
+        return '<div class="result-item">' +
+          '<div class="result-row">' +
+            (item.condominio ? '<div class="result-field"><span class="result-field-label">Condomínio</span><span class="result-field-value">' + item.condominio + '</span></div>' : '') +
+            (item.unidade ? '<div class="result-field"><span class="result-field-label">Unidade</span><span class="result-field-value">' + item.unidade + '</span></div>' : '') +
+            (item.bloco ? '<div class="result-field"><span class="result-field-label">Bloco</span><span class="result-field-value">' + item.bloco + '</span></div>' : '') +
+            (item.andar ? '<div class="result-field"><span class="result-field-label">Andar</span><span class="result-field-value">' + item.andar + '</span></div>' : '') +
+            (item.nome ? '<div class="result-field"><span class="result-field-label">Nome</span><span class="result-field-value">' + item.nome + '</span></div>' : '') +
+            (item.telefone ? '<div class="result-field"><span class="result-field-label">Telefone</span><span class="result-field-value">' + item.telefone + '</span></div>' : '') +
+            (item.cidade ? '<div class="result-field"><span class="result-field-label">Cidade</span><span class="result-field-value">' + item.cidade + '</span></div>' : '') +
+            (item.tipoMorador ? '<div class="result-field"><span class="result-field-label">Tipo de Morador</span><span class="result-field-value"><span class="badge ' + item.tipoMorador + '">' + (item.tipoMorador === 'proprietario' ? 'Proprietário' : 'Inquilino') + '</span></span></div>' : '') +
+            (item.tipoPet ? '<div class="result-field"><span class="result-field-label">Pet</span><span class="result-field-value">' + item.tipoPet + '</span></div>' : '') +
+            (item.tipoVeiculo ? '<div class="result-field"><span class="result-field-label">Veículo</span><span class="result-field-value">' + item.tipoVeiculo + '</span></div>' : '') +
+            (item.placa ? '<div class="result-field"><span class="result-field-label">Placa</span><span class="result-field-value">' + item.placa + '</span></div>' : '') +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+  </script>
+</body>
+</html>
