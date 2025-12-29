@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Eventos Recorrentes</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; padding: 20px; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .header { background: white; border-radius: 28px; padding: 32px 28px; margin-bottom: 24px; box-shadow: 0 15px 45px rgba(0,0,0,0.08); text-align: center; border: 1px solid #eee; }
+    .logo { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #FF6B35; margin: 0 auto 16px; box-shadow: 0 4px 12px rgba(255,107,53,0.25); }
+    h1 { font-size: 28px; color: #222; margin-bottom: 8px; font-weight: 700; }
+    .subtitle { color: #666; font-size: 16px; }
+    .form-card { background: white; border-radius: 24px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; }
+    .info-banner { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; color: #1565c0; }
+    .info-banner strong { display: block; margin-bottom: 4px; }
+    .section-title { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
+    .required { color: #FF6B35; }
+    input[type="text"], input[type="date"], input[type="number"], select, textarea { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 15px; background: white; color: #333; transition: all 0.3s; font-family: inherit; }
+    textarea { resize: vertical; min-height: 100px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 640px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+    .form-hint { font-size: 13px; color: #999; margin-top: 6px; }
+    .btn-group { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .btn { flex: 1; min-width: 200px; padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; }
+    .btn-submit { background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%); color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+    .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,53,0.4); }
+    .btn-clear { background: #f5f5f5; color: #666; border: 2px solid #e0e0e0; }
+    .btn-clear:hover:not(:disabled) { background: #e8e8e8; border-color: #FF6B35; color: #FF6B35; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .success-message, .error-message { padding: 16px; border-radius: 14px; margin-bottom: 24px; text-align: center; font-weight: 600; display: none; }
+    .success-message { background: #e8f5e9; border: 2px solid #4caf50; color: #2e7d32; }
+    .error-message { background: #ffebee; border: 2px solid #f44336; color: #c62828; }
+    .success-message.show, .error-message.show { display: block; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .footer { text-align: center; margin-top: 32px; padding: 20px; color: #888; font-size: 14px; }
+    .footer span { color: #FF6B35; font-weight: bold; }
+    .select-wrapper { position: relative; }
+    select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 45px; }
+    .periodicidade-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; align-items: end; }
+    .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+    .checkbox-group input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #FF6B35; }
+    .checkbox-group label { font-size: 14px; color: #333; cursor: pointer; margin: 0; }
+    .evento-tag { display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin: 4px; background: #e3f2fd; color: #1976d2; }
+    .evento-tag.manutencao { background: #fff3e0; color: #e65100; }
+    .evento-tag.inspecao { background: #f3e5f5; color: #7b1fa2; }
+    .evento-tag.limpeza { background: #e8f5e9; color: #2e7d32; }
+    .evento-tag.leitura { background: #fce4ec; color: #c2185b; }
+    .quick-select { margin-top: 12px; }
+    .quick-select-title { font-size: 13px; color: #666; margin-bottom: 8px; font-weight: 600; }
+    .quick-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+    .quick-btn { padding: 8px 16px; border: 2px solid #e0e0e0; border-radius: 10px; background: white; color: #666; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .quick-btn:hover { border-color: #FF6B35; color: #FF6B35; background: #fff8f5; }
+    .quick-btn.selected { border-color: #FF6B35; background: #FF6B35; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Eventos Recorrentes</h1>
+      <p class="subtitle">Registre e gerencie eventos periódicos do condomínio</p>
+    </div>
+    
+    <div id="successMessage" class="success-message"><span id="successText">Evento cadastrado com sucesso!</span></div>
+    <div id="errorMessage" class="error-message"><span id="errorText">Erro ao cadastrar evento. Tente novamente.</span></div>
+    
+    <div class="form-card">
+      <div class="info-banner">
+        <strong>📅 Cadastro de Eventos Recorrentes</strong>
+        Configure eventos que se repetem periodicamente para manter a organização e histórico do condomínio.
+      </div>
+      
+      <form id="eventoForm">
+        <div class="section-title">🏢 Informações do Condomínio</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Condomínio <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="condominio" required>
+                <option value="">Selecione o condomínio</option>
+                <option value="Edificio Central Park">Edifício Central Park</option>
+                <option value="Residencial Jardins">Residencial Jardins</option>
+                <option value="Condominio Vista Verde">Condomínio Vista Verde</option>
+                <option value="Torres do Sol">Torres do Sol</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Localização/Área</label>
+            <input type="text" id="localizacao" placeholder="Ex: Bloco A, Subsolo, Área comum">
+            <div class="form-hint">Onde o evento ocorre (opcional)</div>
+          </div>
+        </div>
+        
+        <div class="section-title">📋 Detalhes do Evento</div>
+        
+        <div class="form-group">
+          <label class="form-label">Tipo de Evento <span class="required">*</span></label>
+          <div class="quick-select">
+            <div class="quick-select-title">Seleção rápida:</div>
+            <div class="quick-buttons">
+              <button type="button" class="quick-btn" onclick="selectQuickEvent('Troca de gás', 'manutencao')">🔥 Troca de gás</button>
+              <button type="button" class="quick-btn" onclick="selectQuickEvent('Limpeza de caixa d\'água', 'limpeza')">💧 Limpeza caixa d'água</button>
+              <button type="button" class="quick-btn" onclick="selectQuickEvent('Limpeza de caixa de gordura', 'limpeza')">🧼 Limpeza caixa gordura</button>
+              <button type="button" class="quick-btn" onclick="selectQuickEvent('Leitura de gás', 'leitura')">📊 Leitura gás</button>
+              <button type="button" class="quick-btn" onclick="selectQuickEvent('Leitura de água', 'leitura')">💦 Leitura água</button>
+              <button type="button" class="quick-btn" onclick="selectQuickEvent('Leitura de energia', 'leitura')">⚡ Leitura energia</button>
+              <button type="button" class="quick-btn" onclick="selectQuickEvent('Inspeção de elevador', 'inspecao')">🛗 Inspeção elevador</button>
+              <button type="button" class="quick-btn" onclick="selectQuickEvent('Renovação de seguro', 'manutencao')">🛡️ Renovação seguro</button>
+            </div>
+          </div>
+          <input type="text" id="tipoEvento" placeholder="Ex: Troca de gás, Limpeza de caixa d'água..." required style="margin-top: 12px;">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Categoria <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="categoria" required>
+              <option value="">Selecione a categoria</option>
+              <option value="manutencao">🔧 Manutenção</option>
+              <option value="inspecao">🔍 Inspeção</option>
+              <option value="limpeza">🧹 Limpeza</option>
+              <option value="leitura">📊 Leitura de medidores</option>
+              <option value="seguro">🛡️ Seguros e contratos</option>
+              <option value="outros">📌 Outros</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Descrição do Evento</label>
+          <textarea id="descricao" placeholder="Descreva detalhes importantes sobre o evento, como procedimentos, empresas responsáveis, etc."></textarea>
+        </div>
+        
+        <div class="section-title">🔄 Periodicidade</div>
+        
+        <div class="form-group">
+          <label class="form-label">Frequência <span class="required">*</span></label>
+          <div class="periodicidade-grid">
+            <div class="select-wrapper">
+              <select id="frequencia" required onchange="updateFrequenciaLabel()">
+                <option value="">Selecione a frequência</option>
+                <option value="diaria">Diária</option>
+                <option value="semanal">Semanal</option>
+                <option value="quinzenal">Quinzenal</option>
+                <option value="mensal">Mensal</option>
+                <option value="bimestral">Bimestral</option>
+                <option value="trimestral">Trimestral</option>
+                <option value="semestral">Semestral</option>
+                <option value="anual">Anual</option>
+                <option value="personalizada">Personalizada</option>
+              </select>
+            </div>
+            <div id="intervaloGroup" style="display: none;">
+              <input type="number" id="intervalo" min="1" placeholder="Dias">
+            </div>
+          </div>
+          <div class="form-hint" id="frequenciaHint">Escolha com que frequência o evento se repete</div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Data do Primeiro Evento <span class="required">*</span></label>
+            <input type="date" id="dataInicio" required>
+            <div class="form-hint">A partir de quando começar a contar</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Data de Término (opcional)</label>
+            <input type="date" id="dataFim">
+            <div class="form-hint">Deixe em branco para eventos contínuos</div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <div class="checkbox-group">
+            <input type="checkbox" id="alertaAntecipado">
+            <label for="alertaAntecipado">Ativar alerta antecipado</label>
+          </div>
+          <div id="alertaGroup" style="display: none; margin-top: 12px;">
+            <div class="form-grid">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Dias de antecedência</label>
+                <input type="number" id="diasAlerta" min="1" max="90" placeholder="Ex: 7">
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="section-title">👤 Responsável e Contatos</div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Responsável pelo Evento</label>
+            <input type="text" id="responsavel" placeholder="Nome do responsável ou empresa">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Telefone de Contato</label>
+            <input type="text" id="telefone" placeholder="(00) 00000-0000">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Observações Importantes</label>
+          <textarea id="observacoes" placeholder="Informações adicionais, custos médios, documentos necessários, etc."></textarea>
+        </div>
+        
+        <div class="btn-group">
+          <button type="submit" class="btn btn-submit" id="submitBtn">✨ Cadastrar Evento</button>
+          <button type="button" class="btn btn-clear" id="clearBtn">🗑️ Limpar Campos</button>
+        </div>
+      </form>
+    </div>
+    
+    <div class="footer">Sindi - Eventos Recorrentes <span>Sindibot - Impactar LLC</span></div>
+  </div>
+  
+  <script>
+    var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/criar-evento-recorrente';
+    var currentCategory = '';
+    
+    var dataInicioInput = document.getElementById('dataInicio');
+    var today = new Date().toISOString().split('T')[0];
+    dataInicioInput.value = today;
+    dataInicioInput.min = today;
+    
+    document.getElementById('dataFim').min = today;
+    
+    document.getElementById('alertaAntecipado').addEventListener('change', function() {
+      document.getElementById('alertaGroup').style.display = this.checked ? 'block' : 'none';
+    });
+    
+    function updateFrequenciaLabel() {
+      var freq = document.getElementById('frequencia').value;
+      var intervaloGroup = document.getElementById('intervaloGroup');
+      var hint = document.getElementById('frequenciaHint');
+      
+      if (freq === 'personalizada') {
+        intervaloGroup.style.display = 'block';
+        hint.textContent = 'Digite o número de dias entre cada ocorrência';
+      } else {
+        intervaloGroup.style.display = 'none';
+        var hints = {
+          'diaria': 'Evento ocorre todos os dias',
+          'semanal': 'Evento ocorre a cada 7 dias',
+          'quinzenal': 'Evento ocorre a cada 15 dias',
+          'mensal': 'Evento ocorre a cada 30 dias',
+          'bimestral': 'Evento ocorre a cada 2 meses',
+          'trimestral': 'Evento ocorre a cada 3 meses',
+          'semestral': 'Evento ocorre a cada 6 meses',
+          'anual': 'Evento ocorre a cada 12 meses'
+        };
+        hint.textContent = hints[freq] || 'Escolha com que frequência o evento se repete';
+      }
+    }
+    
+    function selectQuickEvent(tipo, categoria) {
+      document.getElementById('tipoEvento').value = tipo;
+      document.getElementById('categoria').value = categoria;
+      currentCategory = categoria;
+      
+      var btns = document.querySelectorAll('.quick-btn');
+      btns.forEach(function(btn) { btn.classList.remove('selected'); });
+      event.target.classList.add('selected');
+    }
+    
+    document.getElementById('clearBtn').addEventListener('click', function() {
+      document.getElementById('eventoForm').reset();
+      dataInicioInput.value = today;
+      document.getElementById('alertaGroup').style.display = 'none';
+      document.getElementById('intervaloGroup').style.display = 'none';
+      document.getElementById('successMessage').classList.remove('show');
+      document.getElementById('errorMessage').classList.remove('show');
+      
+      var btns = document.querySelectorAll('.quick-btn');
+      btns.forEach(function(btn) { btn.classList.remove('selected'); });
+      currentCategory = '';
+    });
+    
+    document.getElementById('eventoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      document.getElementById('successMessage').classList.remove('show');
+      document.getElementById('errorMessage').classList.remove('show');
+      
+      var submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = '⏳ Cadastrando...';
+      
+      var frequencia = document.getElementById('frequencia').value;
+      var intervalo = frequencia === 'personalizada' ? document.getElementById('intervalo').value : null;
+      
+      var formData = {
+        condominio: document.getElementById('condominio').value,
+        localizacao: document.getElementById('localizacao').value,
+        tipoEvento: document.getElementById('tipoEvento').value,
+        categoria: document.getElementById('categoria').value,
+        descricao: document.getElementById('descricao').value,
+        frequencia: frequencia,
+        intervaloPersonalizado: intervalo,
+        dataInicio: document.getElementById('dataInicio').value,
+        dataFim: document.getElementById('dataFim').value,
+        alertaAntecipado: document.getElementById('alertaAntecipado').checked,
+        diasAlerta: document.getElementById('alertaAntecipado').checked ? document.getElementById('diasAlerta').value : null,
+        responsavel: document.getElementById('responsavel').value,
+        telefone: document.getElementById('telefone').value,
+        observacoes: document.getElementById('observacoes').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(formData)
+      })
+      .then(function(r) { if(r.ok) return r.json(); throw new Error('Erro'); })
+      .then(function() {
+        document.getElementById('successText').textContent = '✅ Evento recorrente cadastrado com sucesso!';
+        document.getElementById('successMessage').classList.add('show');
+        document.getElementById('eventoForm').reset();
+        dataInicioInput.value = today;
+        document.getElementById('alertaGroup').style.display = 'none';
+        document.getElementById('intervaloGroup').style.display = 'none';
+        
+        var btns = document.querySelectorAll('.quick-btn');
+        btns.forEach(function(btn) { btn.classList.remove('selected'); });
+        
+        setTimeout(function() { document.getElementById('successMessage').classList.remove('show'); }, 5000);
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        document.getElementById('errorText').textContent = '❌ Erro ao cadastrar evento. Tente novamente.';
+        document.getElementById('errorMessage').classList.add('show');
+        setTimeout(function() { document.getElementById('errorMessage').classList.remove('show'); }, 5000);
+      })
+      .finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '✨ Cadastrar Evento';
+      });
+    });
+  </script>
+</body>
+</html>
