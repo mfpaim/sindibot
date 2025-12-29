@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Buscar Procedimentos</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { background: white; border-radius: 28px; padding: 32px 28px; margin-bottom: 24px; box-shadow: 0 15px 45px rgba(0,0,0,0.08); text-align: center; border: 1px solid #eee; }
+    .logo { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #FF6B35; margin: 0 auto 16px; box-shadow: 0 4px 12px rgba(255,107,53,0.25); }
+    h1 { font-size: 28px; color: #222; margin-bottom: 8px; font-weight: 700; }
+    .subtitle { color: #666; font-size: 16px; }
+    .search-card { background: white; border-radius: 24px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; margin-bottom: 24px; }
+    .section-title { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
+    input[type="text"], select { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 15px; background: white; color: #333; transition: all 0.3s; font-family: inherit; }
+    input:focus, select:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 640px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .form-grid { grid-template-columns: repeat(3, 1fr); } }
+    .btn-group { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+    .btn { flex: 1; min-width: 150px; padding: 14px; border-radius: 14px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; }
+    .btn-search { background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%); color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+    .btn-search:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,53,0.4); }
+    .btn-clear { background: #f5f5f5; color: #666; border: 2px solid #e0e0e0; }
+    .btn-clear:hover:not(:disabled) { background: #e8e8e8; border-color: #FF6B35; color: #FF6B35; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .select-wrapper { position: relative; }
+    select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 45px; }
+    .results-card { background: white; border-radius: 24px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; display: none; }
+    .results-card.show { display: block; animation: slideUp 0.4s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .loading { text-align: center; padding: 40px; display: none; }
+    .loading.show { display: block; }
+    .loading-spinner { width: 48px; height: 48px; border: 4px solid #f3f3f3; border-top: 4px solid #FF6B35; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loading-text { color: #666; font-size: 16px; }
+    .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .results-count { font-size: 18px; font-weight: 600; color: #333; }
+    .results-count span { color: #FF6B35; }
+    .procedimento-item { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 16px; padding: 20px; margin-bottom: 16px; transition: all 0.3s; }
+    .procedimento-item:hover { border-color: #FF6B35; box-shadow: 0 4px 12px rgba(255,107,53,0.15); }
+    .procedimento-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; gap: 16px; }
+    .procedimento-title { font-size: 20px; font-weight: 700; color: #222; flex: 1; }
+    .procedimento-actions { display: flex; gap: 8px; }
+    .btn-action { padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; }
+    .btn-view { background: #e3f2fd; color: #1976d2; border: 2px solid #2196f3; }
+    .btn-view:hover { background: #2196f3; color: white; }
+    .btn-edit { background: #fff3e0; color: #e65100; border: 2px solid #ff9800; }
+    .btn-edit:hover { background: #ff9800; color: white; }
+    .btn-delete { background: #ffebee; color: #c62828; border: 2px solid #f44336; }
+    .btn-delete:hover { background: #f44336; color: white; }
+    .procedimento-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; font-size: 14px; color: #666; }
+    .meta-item { display: flex; align-items: center; gap: 6px; }
+    .procedimento-desc { color: #555; line-height: 1.6; margin-bottom: 12px; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { background: #e3f2fd; color: #1976d2; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+    .urgencia-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+    .urgencia-baixa { background: #e8f5e9; color: #2e7d32; }
+    .urgencia-media { background: #fff3e0; color: #e65100; }
+    .urgencia-alta { background: #ffebee; color: #c62828; }
+    .empty-state { text-align: center; padding: 60px 20px; color: #999; }
+    .empty-state-icon { font-size: 64px; margin-bottom: 16px; }
+    .empty-state-text { font-size: 18px; font-weight: 600; color: #666; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+    .modal.show { display: flex; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-content { background: white; border-radius: 24px; padding: 32px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; animation: slideDown 0.3s ease; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .modal-title { font-size: 24px; font-weight: 700; color: #222; }
+    .btn-close-modal { background: #f5f5f5; color: #666; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+    .btn-close-modal:hover { background: #e0e0e0; }
+    .passo-detail { background: #f8f9fa; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+    .passo-detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .passo-detail-number { background: #FF6B35; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    .passo-detail-text { color: #333; line-height: 1.6; }
+    .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 12px; }
+    .media-item { width: 100%; height: 150px; border-radius: 8px; overflow: hidden; border: 2px solid #e0e0e0; cursor: pointer; position: relative; }
+    .media-item img, .media-item video { width: 100%; height: 100%; object-fit: cover; }
+    .media-badge { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; }
+    .success-message, .error-message, .confirm-message { padding: 16px; border-radius: 14px; margin-bottom: 24px; text-align: center; font-weight: 600; display: none; }
+    .success-message { background: #e8f5e9; border: 2px solid #4caf50; color: #2e7d32; }
+    .error-message { background: #ffebee; border: 2px solid #f44336; color: #c62828; }
+    .confirm-message { background: #fff3e0; border: 2px solid #ff9800; color: #e65100; }
+    .success-message.show, .error-message.show, .confirm-message.show { display: block; animation: slideUp 0.3s ease; }
+    .confirm-actions { display: flex; gap: 12px; margin-top: 16px; }
+    .btn-confirm { background: #f44336; color: white; }
+    .btn-confirm:hover { background: #d32f2f; }
+    .btn-cancel { background: #f5f5f5; color: #666; }
+    .footer { text-align: center; margin-top: 32px; padding: 20px; color: #888; font-size: 14px; }
+    .footer span { color: #FF6B35; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Buscar Procedimentos</h1>
+      <p class="subtitle">Pesquise, visualize, edite e gerencie procedimentos</p>
+    </div>
+    
+    <div id="successMessage" class="success-message"><span id="successText"></span></div>
+    <div id="errorMessage" class="error-message"><span id="errorText"></span></div>
+    <div id="confirmMessage" class="confirm-message">
+      <div><strong>⚠️ Confirmar exclusão</strong></div>
+      <div style="margin-top: 8px;">Tem certeza que deseja excluir este procedimento? Esta ação não pode ser desfeita.</div>
+      <div class="confirm-actions">
+        <button class="btn btn-confirm" onclick="confirmDelete()">Sim, Excluir</button>
+        <button class="btn btn-cancel" onclick="cancelDelete()">Cancelar</button>
+      </div>
+    </div>
+    
+    <div class="search-card">
+      <div class="section-title">🔍 Buscar Procedimentos</div>
+      
+      <form id="searchForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Condomínio</label>
+            <div class="select-wrapper">
+              <select id="condominio">
+                <option value="">Todos os condomínios</option>
+                <option value="Edificio Central Park">Edifício Central Park</option>
+                <option value="Residencial Jardins">Residencial Jardins</option>
+                <option value="Condominio Vista Verde">Condomínio Vista Verde</option>
+                <option value="Torres do Sol">Torres do Sol</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Categoria</label>
+            <div class="select-wrapper">
+              <select id="categoria">
+                <option value="">Todas as categorias</option>
+                <option value="eletrica">⚡ Elétrica</option>
+                <option value="hidraulica">💧 Hidráulica</option>
+                <option value="elevador">🛗 Elevador</option>
+                <option value="seguranca">🔐 Segurança</option>
+                <option value="gas">🔥 Gás</option>
+                <option value="acesso">🔑 Acessos</option>
+                <option value="emergencia">🚨 Emergência</option>
+                <option value="manutencao">🔧 Manutenção</option>
+                <option value="outros">📌 Outros</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Urgência</label>
+            <div class="select-wrapper">
+              <select id="urgencia">
+                <option value="">Todas</option>
+                <option value="baixa">🟢 Baixa</option>
+                <option value="media">🟡 Média</option>
+                <option value="alta">🔴 Alta</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Buscar por palavra-chave</label>
+          <input type="text" id="keywords" placeholder="Digite título, descrição, localização ou tags...">
+        </div>
+        
+        <div class="btn-group">
+          <button type="submit" class="btn btn-search" id="searchBtn">🔍 Buscar</button>
+          <button type="button" class="btn btn-clear" id="clearBtn">🗑️ Limpar</button>
+        </div>
+      </form>
+    </div>
+    
+    <div id="loadingState" class="loading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Buscando procedimentos...</div>
+    </div>
+    
+    <div id="resultsCard" class="results-card">
+      <div class="results-header">
+        <div class="results-count" id="resultsCount">Encontrados <span>0</span> procedimentos</div>
+      </div>
+      <div id="emptyState" class="empty-state" style="display: none;">
+        <div class="empty-state-icon">📚</div>
+        <div class="empty-state-text">Nenhum procedimento encontrado</div>
+      </div>
+      <div id="resultsContainer"></div>
+    </div>
+    
+    <div id="viewModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title" id="modalTitle"></div>
+          <button class="btn-close-modal" onclick="closeModal()">✖</button>
+        </div>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+    
+    <div class="footer">Sindi - Buscar Procedimentos <span>Sindibot - Impactar LLC</span></div>
+  </div>
+  
+  <script>
+    var WEBHOOK_SEARCH = 'https://n8n.polenta.chat/webhook-test/buscar-procedimentos';
+    var WEBHOOK_DELETE = 'https://n8n.polenta.chat/webhook-test/excluir-procedimento';
+    var WEBHOOK_EDIT = 'https://n8n.polenta.chat/webhook-test/editar-procedimento';
+    var deleteId = null;
+    
+    document.getElementById('clearBtn').addEventListener('click', function() {
+      document.getElementById('searchForm').reset();
+      document.getElementById('resultsCard').classList.remove('show');
+      hideMessages();
+    });
+    
+    function hideMessages() {
+      document.getElementById('successMessage').classList.remove('show');
+      document.getElementById('errorMessage').classList.remove('show');
+      document.getElementById('confirmMessage').classList.remove('show');
+    }
+    
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      hideMessages();
+      
+      var searchBtn = document.getElementById('searchBtn');
+      var loadingState = document.getElementById('loadingState');
+      
+      searchBtn.disabled = true;
+      searchBtn.textContent = '⏳ Buscando...';
+      loadingState.classList.add('show');
+      document.getElementById('resultsCard').classList.remove('show');
+      
+      var searchData = {
+        condominio: document.getElementById('condominio').value,
+        categoria: document.getElementById('categoria').value,
+        urgencia: document.getElementById('urgencia').value,
+        keywords: document.getElementById('keywords').value
+      };
+      
+      fetch(WEBHOOK_SEARCH, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(searchData)
+      })
+      .then(function(r) { if(r.ok) return r.json(); throw new Error('Erro'); })
+      .then(function(data) {
+        loadingState.classList.remove('show');
+        displayResults(data.procedimentos || data || []);
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        loadingState.classList.remove('show');
+        document.getElementById('errorText').textContent = '❌ Erro ao buscar. Tente novamente.';
+        document.getElementById('errorMessage').classList.add('show');
+      })
+      .finally(function() {
+        searchBtn.disabled = false;
+        searchBtn.textContent = '🔍 Buscar';
+      });
+    });
+    
+    function displayResults(procedimentos) {
+      var container = document.getElementById('resultsContainer');
+      var emptyState = document.getElementById('emptyState');
+      var count = document.getElementById('resultsCount');
+      
+      count.innerHTML = 'Encontrados <span>' + procedimentos.length + '</span> procedimento' + (procedimentos.length !== 1 ? 's' : '');
+      
+      if(procedimentos.length === 0) {
+        emptyState.style.display = 'block';
+        container.innerHTML = '';
+      } else {
+        emptyState.style.display = 'none';
+        container.innerHTML = procedimentos.map(function(proc) {
+          var urgenciaClass = 'urgencia-' + (proc.urgencia || 'baixa');
+          var urgenciaText = {baixa: '🟢 Baixa', media: '🟡 Média', alta: '🔴 Alta'}[proc.urgencia || 'baixa'];
+          
+          return '<div class="procedimento-item">' +
+            '<div class="procedimento-header">' +
+              '<div class="procedimento-title">' + proc.titulo + '</div>' +
+              '<div class="procedimento-actions">' +
+                '<button class="btn-action btn-view" onclick="viewProcedimento(\'' + proc.id + '\')">👁️ Ver</button>' +
+                '<button class="btn-action btn-edit" onclick="editProcedimento(\'' + proc.id + '\')">✏️ Editar</button>' +
+                '<button class="btn-action btn-delete" onclick="deleteProcedimento(\'' + proc.id + '\')">🗑️ Excluir</button>' +
+              '</div>' +
+            '</div>' +
+            '<div class="procedimento-meta">' +
+              '<div class="meta-item">🏢 ' + proc.condominio + '</div>' +
+              '<div class="meta-item">📂 ' + proc.categoria + '</div>' +
+              '<div class="urgencia-badge ' + urgenciaClass + '">' + urgenciaText + '</div>' +
+            '</div>' +
+            (proc.descricao ? '<div class="procedimento-desc">' + proc.descricao + '</div>' : '') +
+            (proc.tags && proc.tags.length > 0 ? '<div class="tag-list">' + proc.tags.map(function(tag) { return '<span class="tag">' + tag + '</span>'; }).join('') + '</div>' : '') +
+          '</div>';
+        }).join('');
+      }
+      
+      document.getElementById('resultsCard').classList.add('show');
+    }
+    
+    function viewProcedimento(id) {
+      fetch(WEBHOOK_SEARCH + '?id=' + id)
+        .then(function(r) { if(r.ok) return r.json(); throw new Error('Erro'); })
+        .then(function(data) {
+          var proc = data.procedimento || data;
+          document.getElementById('modalTitle').textContent = proc.titulo;
+          
+          var html = '';
+          if(proc.descricao) html += '<p style="margin-bottom: 20px; color: #666;">' + proc.descricao + '</p>';
+          
+          if(proc.localizacao) html += '<div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 20px;"><strong>📍 Localização:</strong> ' + proc.localizacao + '</div>';
+          
+          html += '<div class="section-title">📝 Passos</div>';
+          
+          if(proc.passos && proc.passos.length > 0) {
+            proc.passos.forEach(function(passo) {
+              html += '<div class="passo-detail">' +
+                '<div class="passo-detail-header">' +
+                  '<div class="passo-detail-number">' + passo.numero + '</div>' +
+                  '<div style="flex: 1; font-weight: 600;">Passo ' + passo.numero + '</div>' +
+                '</div>' +
+                '<div class="passo-detail-text">' + passo.descricao + '</div>';
+              
+              if(passo.midias && passo.midias.length > 0) {
+                html += '<div class="media-grid">';
+                passo.midias.forEach(function(media) {
+                  var mediaEl = media.isVideo 
+                    ? '<video src="data:' + media.tipo + ';base64,' + media.conteudo + '" controls></video>'
+                    : '<img src="data:' + media.tipo + ';base64,' + media.conteudo + '">';
+                  html += '<div class="media-item">' + mediaEl + '<div class="media-badge">' + (media.isVideo ? '🎥' : '📷') + '</div></div>';
+                });
+                html += '</div>';
+              }
+              
+              html += '</div>';
+            });
+          }
+          
+          if(proc.observacoes) html += '<div style="margin-top: 20px; padding: 16px; background: #fff3e0; border-radius: 8px;"><strong>⚠️ Observações:</strong><br>' + proc.observacoes + '</div>';
+          
+          document.getElementById('modalBody').innerHTML = html;
+          document.getElementById('viewModal').classList.add('show');
+        });
+    }
+    
+    function editProcedimento(id) {
+      window.location.href = 'editar-procedimento.html?id=' + id;
+    }
+    
+    function deleteProcedimento(id) {
+      deleteId = id;
+      hideMessages();
+      document.getElementById('confirmMessage').classList.add('show');
+      document.getElementById('confirmMessage').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    function confirmDelete() {
+      if(!deleteId) return;
+      
+      fetch(WEBHOOK_DELETE, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ id: deleteId })
+      })
+      .then(function(r) { if(r.ok) return r.json(); throw new Error('Erro'); })
+      .then(function() {
+        hideMessages();
+        document.getElementById('successText').textContent = '✅ Procedimento excluído com sucesso!';
+        document.getElementById('successMessage').classList.add('show');
+        document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+        deleteId = null;
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        hideMessages();
+        document.getElementById('errorText').textContent = '❌ Erro ao excluir. Tente novamente.';
+        document.getElementById('errorMessage').classList.add('show');
+      });
+    }
+    
+    function cancelDelete() {
+      deleteId = null;
+      hideMessages();
+    }
+    
+    function closeModal() {
+      document.getElementById('viewModal').classList.remove('show');
+    }
+    
+    window.addEventListener('click', function(e) {
+      if(e.target.id === 'viewModal') closeModal();
+    });
+  </script>
+</body>
+</html>
