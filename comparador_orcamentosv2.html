@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Comparador de Orçamentos</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header { background: white; border-radius: 28px; padding: 32px 28px; margin-bottom: 24px; box-shadow: 0 15px 45px rgba(0,0,0,0.08); text-align: center; border: 1px solid #eee; }
+    .logo { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #FF6B35; margin: 0 auto 16px; box-shadow: 0 4px 12px rgba(255,107,53,0.25); }
+    h1 { font-size: 28px; color: #222; margin-bottom: 8px; font-weight: 700; }
+    .subtitle { color: #666; font-size: 16px; }
+    .form-card { background: white; border-radius: 24px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; margin-bottom: 24px; }
+    .info-banner { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; color: #1565c0; }
+    .info-banner strong { display: block; margin-bottom: 4px; }
+    .info-banner ul { margin-left: 20px; margin-top: 8px; }
+    .info-banner li { margin-bottom: 4px; }
+    .section-title { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
+    .required { color: #FF6B35; }
+    input[type="text"], select, textarea { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 15px; background: white; color: #333; transition: all 0.3s; font-family: inherit; }
+    textarea { resize: vertical; min-height: 100px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
+    .form-hint { font-size: 13px; color: #999; margin-top: 6px; }
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 640px) { .form-grid { grid-template-columns: repeat(2, 1fr); } }
+    .orcamento-card { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 16px; padding: 20px; margin-bottom: 16px; position: relative; }
+    .orcamento-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .orcamento-number { font-size: 16px; font-weight: 700; color: #FF6B35; }
+    .btn-remove-orc { background: #ffebee; color: #c62828; border: 2px solid #ef5350; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .btn-remove-orc:hover { background: #ef5350; color: white; }
+    .file-upload-mini { border: 2px dashed #e0e0e0; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: white; }
+    .file-upload-mini:hover { border-color: #FF6B35; background: #fff8f5; }
+    .file-upload-mini-icon { font-size: 32px; margin-bottom: 8px; }
+    .file-upload-mini-text { font-size: 14px; color: #666; font-weight: 600; }
+    .file-item-mini { background: white; border: 2px solid #4caf50; border-radius: 10px; padding: 12px; margin-top: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .file-info-mini { display: flex; align-items: center; gap: 8px; }
+    .file-icon-mini { font-size: 20px; }
+    .file-name-mini { font-size: 13px; font-weight: 600; color: #333; }
+    .btn-remove-file-mini { background: transparent; color: #c62828; border: none; cursor: pointer; font-size: 18px; }
+    .btn-add-orcamento { width: 100%; background: #e8f5e9; color: #2e7d32; border: 2px dashed #4caf50; padding: 16px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s; margin-bottom: 20px; }
+    .btn-add-orcamento:hover:not(:disabled) { background: #4caf50; color: white; border-style: solid; }
+    .btn-add-orcamento:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-group { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .btn { flex: 1; min-width: 200px; padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; }
+    .btn-compare { background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%); color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+    .btn-compare:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,53,0.4); }
+    .btn-clear { background: #f5f5f5; color: #666; border: 2px solid #e0e0e0; }
+    .btn-clear:hover:not(:disabled) { background: #e8e8e8; border-color: #FF6B35; color: #FF6B35; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .error-message { background: #ffebee; border: 2px solid #f44336; color: #c62828; padding: 16px; border-radius: 14px; margin-bottom: 24px; text-align: center; font-weight: 600; display: none; }
+    .error-message.show { display: block; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .results-card { background: white; border-radius: 24px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; display: none; }
+    .results-card.show { display: block; animation: slideUp 0.4s ease; }
+    .loading { text-align: center; padding: 40px; display: none; }
+    .loading.show { display: block; }
+    .loading-spinner { width: 48px; height: 48px; border: 4px solid #f3f3f3; border-top: 4px solid #FF6B35; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loading-text { color: #666; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .loading-subtext { color: #999; font-size: 14px; }
+    .comparison-section { margin-bottom: 32px; }
+    .comparison-title { font-size: 20px; font-weight: 700; color: #222; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .comparison-content { background: #f8f9fa; border-radius: 12px; padding: 20px; line-height: 1.8; color: #333; }
+    .comparison-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    .comparison-table th { background: #FF6B35; color: white; padding: 12px; text-align: left; font-size: 14px; }
+    .comparison-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; font-size: 14px; }
+    .comparison-table tr:hover { background: #f5f5f5; }
+    .winner-badge { background: #4caf50; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+    .alert-badge { background: #ff9800; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+    .footer { text-align: center; margin-top: 32px; padding: 20px; color: #888; font-size: 14px; }
+    .footer span { color: #FF6B35; font-weight: bold; }
+    .select-wrapper { position: relative; }
+    select { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 45px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Comparador de Orçamentos</h1>
+      <p class="subtitle">Análise inteligente e comparativa de múltiplas propostas</p>
+    </div>
+    
+    <div id="errorMessage" class="error-message"><span id="errorText">Erro ao comparar orçamentos.</span></div>
+    
+    <div class="form-card">
+      <div class="info-banner">
+        <strong>🤖 Como funciona</strong>
+        Envie de 2 a 5 orçamentos e nossa IA fará:
+        <ul>
+          <li>📊 Análise comparativa detalhada</li>
+          <li>💰 Planilhamento de custos e itens</li>
+          <li>⚖️ Comparação de vantagens e desvantagens</li>
+          <li>⚠️ Identificação de divergências e pontos de atenção</li>
+          <li>🏆 Recomendação da melhor proposta</li>
+          <li>📋 Relatório executivo completo</li>
+        </ul>
+      </div>
+      
+      <form id="comparisonForm">
+        <div class="section-title">🏢 Informações Gerais</div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Condomínio <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="condominio" required>
+                <option value="">Selecione o condomínio</option>
+                <option value="Edificio Central Park">Edifício Central Park</option>
+                <option value="Residencial Jardins">Residencial Jardins</option>
+                <option value="Condominio Vista Verde">Condomínio Vista Verde</option>
+                <option value="Torres do Sol">Torres do Sol</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Tipo de Serviço/Produto <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="tipoServico" required>
+                <option value="">Selecione o tipo</option>
+                <option value="manutencao">Manutenção</option>
+                <option value="reforma">Reforma/Obra</option>
+                <option value="limpeza">Limpeza</option>
+                <option value="seguranca">Segurança</option>
+                <option value="jardinagem">Jardinagem</option>
+                <option value="pintura">Pintura</option>
+                <option value="elevador">Elevador</option>
+                <option value="fornecimento">Fornecimento de produtos</option>
+                <option value="outros">Outros</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Descrição do Serviço/Produto</label>
+          <textarea id="descricao" placeholder="Descreva o que está sendo orçado (ex: pintura completa da fachada, troca de elevadores, etc.)"></textarea>
+        </div>
+        
+        <div class="section-title">📄 Orçamentos (mínimo 2, máximo 5)</div>
+        
+        <div id="orcamentosContainer"></div>
+        
+        <button type="button" class="btn-add-orcamento" id="addOrcamentoBtn" onclick="addOrcamento()">
+          ➕ Adicionar Orçamento
+        </button>
+        
+        <div class="form-group">
+          <label class="form-label">Critérios Prioritários para Análise</label>
+          <textarea id="criterios" placeholder="Ex: Menor preço, melhor prazo, experiência da empresa, garantia oferecida..."></textarea>
+          <div class="form-hint">Informe o que é mais importante na escolha</div>
+        </div>
+        
+        <div class="btn-group">
+          <button type="submit" class="btn btn-compare" id="compareBtn">📊 Comparar Orçamentos</button>
+          <button type="button" class="btn btn-clear" id="clearBtn">🗑️ Limpar</button>
+        </div>
+      </form>
+    </div>
+    
+    <div id="loadingState" class="loading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Comparando orçamentos...</div>
+      <div class="loading-subtext">Analisando propostas e gerando relatório</div>
+    </div>
+    
+    <div id="resultsCard" class="results-card">
+      <div class="section-title">📊 Relatório Comparativo</div>
+      <div id="comparisonResults"></div>
+    </div>
+    
+    <div class="footer">Sindi - Comparador de Orçamentos <span>Sindibot - Impactar LLC</span></div>
+  </div>
+  
+  <script>
+    var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/comparar-orcamentos';
+    var orcamentoCount = 0;
+    var orcamentos = {};
+    
+    function addOrcamento() {
+      if(orcamentoCount >= 5) return;
+      
+      orcamentoCount++;
+      var container = document.getElementById('orcamentosContainer');
+      var div = document.createElement('div');
+      div.className = 'orcamento-card';
+      div.id = 'orcamento-' + orcamentoCount;
+      div.innerHTML = 
+        '<div class="orcamento-header">' +
+          '<span class="orcamento-number">📋 Orçamento #' + orcamentoCount + '</span>' +
+          '<button type="button" class="btn-remove-orc" onclick="removeOrcamento(' + orcamentoCount + ')">✖ Remover</button>' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label">Nome da Empresa/Fornecedor</label>' +
+          '<input type="text" id="empresa-' + orcamentoCount + '" placeholder="Nome da empresa">' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label">Arquivo do Orçamento</label>' +
+          '<div class="file-upload-mini" onclick="triggerFileInput(' + orcamentoCount + ')">' +
+            '<div class="file-upload-mini-icon">📎</div>' +
+            '<div class="file-upload-mini-text">Clique para enviar PDF, DOC, DOCX, XLS</div>' +
+          '</div>' +
+          '<input type="file" id="file-' + orcamentoCount + '" accept=".pdf,.doc,.docx,.xls,.xlsx" style="display: none;" onchange="handleFileUpload(' + orcamentoCount + ')">' +
+          '<div id="file-display-' + orcamentoCount + '"></div>' +
+        '</div>';
+      
+      container.appendChild(div);
+      updateAddButton();
+    }
+    
+    function removeOrcamento(id) {
+      var el = document.getElementById('orcamento-' + id);
+      if(el) {
+        el.remove();
+        delete orcamentos[id];
+        orcamentoCount--;
+        updateAddButton();
+      }
+    }
+    
+    function triggerFileInput(id) {
+      document.getElementById('file-' + id).click();
+    }
+    
+    function handleFileUpload(id) {
+      var input = document.getElementById('file-' + id);
+      var file = input.files[0];
+      if(file) {
+        orcamentos[id] = file;
+        var size = (file.size / 1024).toFixed(2);
+        var unit = size > 1024 ? ((size/1024).toFixed(2) + ' MB') : (size + ' KB');
+        
+        var icon = '📄';
+        if(file.type.includes('pdf')) icon = '📕';
+        else if(file.type.includes('word')) icon = '📘';
+        else if(file.type.includes('sheet') || file.type.includes('excel')) icon = '📗';
+        
+        var display = document.getElementById('file-display-' + id);
+        display.innerHTML = 
+          '<div class="file-item-mini">' +
+            '<div class="file-info-mini">' +
+              '<span class="file-icon-mini">' + icon + '</span>' +
+              '<span class="file-name-mini">' + file.name + ' (' + unit + ')</span>' +
+            '</div>' +
+            '<button type="button" class="btn-remove-file-mini" onclick="removeFile(' + id + ')">✖</button>' +
+          '</div>';
+      }
+    }
+    
+    function removeFile(id) {
+      delete orcamentos[id];
+      document.getElementById('file-' + id).value = '';
+      document.getElementById('file-display-' + id).innerHTML = '';
+    }
+    
+    function updateAddButton() {
+      var btn = document.getElementById('addOrcamentoBtn');
+      if(orcamentoCount >= 5) {
+        btn.disabled = true;
+        btn.textContent = '✓ Máximo de 5 orçamentos atingido';
+      } else {
+        btn.disabled = false;
+        btn.textContent = '➕ Adicionar Orçamento';
+      }
+    }
+    
+    addOrcamento();
+    addOrcamento();
+    
+    document.getElementById('clearBtn').addEventListener('click', function() {
+      document.getElementById('comparisonForm').reset();
+      document.getElementById('orcamentosContainer').innerHTML = '';
+      orcamentoCount = 0;
+      orcamentos = {};
+      addOrcamento();
+      addOrcamento();
+      document.getElementById('resultsCard').classList.remove('show');
+      document.getElementById('errorMessage').classList.remove('show');
+    });
+    
+    document.getElementById('comparisonForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      var fileCount = Object.keys(orcamentos).length;
+      if(fileCount < 2) {
+        document.getElementById('errorText').textContent = '❌ Envie pelo menos 2 orçamentos para comparar.';
+        document.getElementById('errorMessage').classList.add('show');
+        return;
+      }
+      
+      document.getElementById('errorMessage').classList.remove('show');
+      document.getElementById('resultsCard').classList.remove('show');
+      document.getElementById('loadingState').classList.add('show');
+      
+      var compareBtn = document.getElementById('compareBtn');
+      compareBtn.disabled = true;
+      compareBtn.textContent = '⏳ Comparando...';
+      
+      var filesData = [];
+      var filesProcessed = 0;
+      
+      Object.keys(orcamentos).forEach(function(id) {
+        var file = orcamentos[id];
+        var empresa = document.getElementById('empresa-' + id).value;
+        var reader = new FileReader();
+        
+        reader.onload = function(e) {
+          filesData.push({
+            numero: id,
+            empresa: empresa,
+            arquivo: {
+              nome: file.name,
+              tipo: file.type,
+              tamanho: file.size,
+              conteudo: e.target.result.split(',')[1]
+            }
+          });
+          
+          filesProcessed++;
+          if(filesProcessed === Object.keys(orcamentos).length) {
+            sendComparison(filesData);
+          }
+        };
+        
+        reader.readAsDataURL(file);
+      });
+    });
+    
+    function sendComparison(filesData) {
+      var data = {
+        condominio: document.getElementById('condominio').value,
+        tipoServico: document.getElementById('tipoServico').value,
+        descricao: document.getElementById('descricao').value,
+        criterios: document.getElementById('criterios').value,
+        orcamentos: filesData,
+        timestamp: new Date().toISOString()
+      };
+      
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      })
+      .then(function(r) { if(r.ok) return r.json(); throw new Error('Erro'); })
+      .then(function(result) {
+        document.getElementById('loadingState').classList.remove('show');
+        displayResults(result);
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        document.getElementById('loadingState').classList.remove('show');
+        document.getElementById('errorText').textContent = '❌ Erro ao comparar orçamentos. Tente novamente.';
+        document.getElementById('errorMessage').classList.add('show');
+      })
+      .finally(function() {
+        var btn = document.getElementById('compareBtn');
+        btn.disabled = false;
+        btn.textContent = '📊 Comparar Orçamentos';
+      });
+    }
+    
+    function displayResults(data) {
+      var html = '';
+      
+      if(data.resumoExecutivo) {
+        html += '<div class="comparison-section">' +
+          '<div class="comparison-title">📋 Resumo Executivo</div>' +
+          '<div class="comparison-content">' + formatText(data.resumoExecutivo) + '</div>' +
+        '</div>';
+      }
+      
+      if(data.planilhamentoComparativo) {
+        html += '<div class="comparison-section">' +
+          '<div class="comparison-title">💰 Planilhamento Comparativo</div>' +
+          '<div class="comparison-content">' + formatText(data.planilhamentoComparativo) + '</div>' +
+        '</div>';
+      }
+      
+      if(data.analiseDetalhada) {
+        html += '<div class="comparison-section">' +
+          '<div class="comparison-title">🔍 Análise Detalhada</div>' +
+          '<div class="comparison-content">' + formatText(data.analiseDetalhada) + '</div>' +
+        '</div>';
+      }
+      
+      if(data.pontosAtencao) {
+        html += '<div class="comparison-section">' +
+          '<div class="comparison-title">⚠️ Pontos de Atenção</div>' +
+          '<div class="comparison-content">' + formatText(data.pontosAtencao) + '</div>' +
+        '</div>';
+      }
+      
+      if(data.recomendacao) {
+        html += '<div class="comparison-section">' +
+          '<div class="comparison-title">🏆 Recomendação Final</div>' +
+          '<div class="comparison-content">' + formatText(data.recomendacao) + '</div>' +
+        '</div>';
+      }
+      
+      document.getElementById('comparisonResults').innerHTML = html;
+      document.getElementById('resultsCard').classList.add('show');
+      document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    function formatText(text) {
+      if (!text) return '';
+
+      // If content already contains HTML (e.g., comparative table), return as-is
+      if (/<\/?(table|thead|tbody|tr|td|th|div|p|br|h1|h2|h3|ul|li)\b/i.test(text)) {
+        return text;
+      }
+
+      const lines = String(text).split('\n');
+      let out = '';
+      let inList = false;
+
+      for (let line of lines) {
+        const h3 = line.match(/^###\s+(.*)$/);
+        if (h3) {
+          if (inList) { out += '</ul>'; inList = false; }
+          out += `<h3>${escapeHtml(h3[1])}</h3>`;
+          continue;
+        }
+
+        const li = line.match(/^\-\s+(.*)$/);
+        if (li) {
+          if (!inList) { out += '<ul>'; inList = true; }
+          out += `<li>${escapeHtml(li[1])}</li>`;
+          continue;
+        }
+
+        if (inList) { out += '</ul>'; inList = false; }
+
+        if (line.trim() === '') {
+          out += '<br>';
+        } else {
+          const bolded = escapeHtml(line).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          out += `${bolded}<br>`;
+        }
+      }
+
+      if (inList) out += '</ul>';
+      return out;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+  </script>
+</body>
+</html>
