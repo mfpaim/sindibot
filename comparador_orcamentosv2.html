@@ -341,24 +341,62 @@
         timestamp: new Date().toISOString()
       };
       
+      console.log('📤 Enviando dados:', data);
+      
       fetch(WEBHOOK_URL, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
       })
-      .then(function(r) { 
-        if(r.ok) return r.json(); 
-        throw new Error('Erro na resposta: ' + r.status); 
+      .then(function(r) {
+        console.log('📥 Status da resposta:', r.status, r.statusText);
+        console.log('📥 Headers:', r.headers);
+        
+        // Verificar se a resposta está ok
+        if(!r.ok) {
+          throw new Error('Erro HTTP ' + r.status + ': ' + r.statusText);
+        }
+        
+        // Tentar ler o corpo como texto primeiro para debug
+        return r.text().then(function(text) {
+          console.log('📥 Resposta em texto (primeiros 500 chars):', text.substring(0, 500));
+          
+          // Verificar se está vazio
+          if(!text || text.trim() === '') {
+            throw new Error('Resposta vazia do servidor. O workflow pode ainda estar processando.');
+          }
+          
+          // Tentar fazer parse do JSON
+          try {
+            return JSON.parse(text);
+          } catch(e) {
+            console.error('❌ Erro ao fazer parse do JSON:', e);
+            console.error('📄 Conteúdo recebido:', text);
+            throw new Error('Resposta inválida do servidor. Verifique o workflow do n8n.');
+          }
+        });
       })
       .then(function(result) {
-        console.log('✅ Resposta recebida:', result);
+        console.log('✅ Resposta parseada com sucesso:', result);
         document.getElementById('loadingState').classList.remove('show');
         displayResults(result);
       })
       .catch(function(error) {
-        console.error('❌ Erro:', error);
+        console.error('❌ Erro completo:', error);
         document.getElementById('loadingState').classList.remove('show');
-        document.getElementById('errorText').textContent = '❌ Erro ao comparar orçamentos: ' + error.message;
+        
+        var errorMsg = '❌ Erro ao comparar orçamentos: ' + error.message;
+        
+        // Adicionar dicas baseadas no tipo de erro
+        if(error.message.includes('vazia')) {
+          errorMsg += '\n\n💡 Dica: O workflow pode estar demorando para processar. Aguarde alguns segundos e tente novamente.';
+        } else if(error.message.includes('inválida')) {
+          errorMsg += '\n\n💡 Dica: Verifique se o workflow do n8n está configurado corretamente e ativo.';
+        } else if(error.message.includes('Failed to fetch')) {
+          errorMsg += '\n\n💡 Dica: Problema de conexão. Verifique sua internet ou se a URL do webhook está correta.';
+        }
+        
+        document.getElementById('errorText').innerHTML = errorMsg.replace(/\n/g, '<br>');
         document.getElementById('errorMessage').classList.add('show');
       })
       .finally(function() {
