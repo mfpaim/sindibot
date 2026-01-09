@@ -346,15 +346,19 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
       })
-      .then(function(r) { if(r.ok) return r.json(); throw new Error('Erro'); })
+      .then(function(r) { 
+        if(r.ok) return r.json(); 
+        throw new Error('Erro na resposta: ' + r.status); 
+      })
       .then(function(result) {
+        console.log('✅ Resposta recebida:', result);
         document.getElementById('loadingState').classList.remove('show');
         displayResults(result);
       })
       .catch(function(error) {
-        console.error('Erro:', error);
+        console.error('❌ Erro:', error);
         document.getElementById('loadingState').classList.remove('show');
-        document.getElementById('errorText').textContent = '❌ Erro ao comparar orçamentos. Tente novamente.';
+        document.getElementById('errorText').textContent = '❌ Erro ao comparar orçamentos: ' + error.message;
         document.getElementById('errorMessage').classList.add('show');
       })
       .finally(function() {
@@ -365,7 +369,28 @@
     }
     
     function displayResults(data) {
+      console.log('📊 Exibindo resultados:', data);
+      
+      // Verificar se success existe e é true
+      if (data.success === false) {
+        document.getElementById('errorText').textContent = '❌ Erro no processamento: ' + (data.error || 'Erro desconhecido');
+        document.getElementById('errorMessage').classList.add('show');
+        return;
+      }
+      
       var html = '';
+      
+      // Adicionar informações do meta se disponível
+      if(data.meta) {
+        html += '<div class="comparison-section">' +
+          '<div class="comparison-title">ℹ️ Informações da Solicitação</div>' +
+          '<div class="comparison-content">' +
+            '<p><strong>Condomínio:</strong> ' + (data.meta.condominio || 'N/A') + '</p>' +
+            '<p><strong>Tipo de Serviço:</strong> ' + (data.meta.tipoServico || 'N/A') + '</p>' +
+            '<p><strong>Data/Hora:</strong> ' + (data.meta.dataHora || 'N/A') + '</p>' +
+          '</div>' +
+        '</div>';
+      }
       
       if(data.resumoExecutivo) {
         html += '<div class="comparison-section">' +
@@ -402,57 +427,38 @@
         '</div>';
       }
       
+      // Se não houver nenhum conteúdo, mostrar mensagem
+      if(!html) {
+        html = '<div class="comparison-section">' +
+          '<div class="comparison-content">' +
+          '<p style="text-align: center; color: #999;">⚠️ Nenhum resultado disponível. Verifique os dados enviados.</p>' +
+          '<pre style="background: #f5f5f5; padding: 10px; border-radius: 8px; font-size: 12px; overflow: auto;">' +
+          JSON.stringify(data, null, 2) +
+          '</pre>' +
+          '</div>' +
+        '</div>';
+      }
+      
       document.getElementById('comparisonResults').innerHTML = html;
       document.getElementById('resultsCard').classList.add('show');
       document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     
     function formatText(text) {
-      if (!text) return '';
-
-      // If content already contains HTML (e.g., comparative table), return as-is
-      if (/<\/?(table|thead|tbody|tr|td|th|div|p|br|h1|h2|h3|ul|li)\b/i.test(text)) {
+      if(!text) return '';
+      
+      // Se o texto já contém HTML (como tabelas), retornar direto
+      if(text.includes('<table') || text.includes('<div')) {
         return text;
       }
-
-      const lines = String(text).split('\n');
-      let out = '';
-      let inList = false;
-
-      for (let line of lines) {
-        const h3 = line.match(/^###\s+(.*)$/);
-        if (h3) {
-          if (inList) { out += '</ul>'; inList = false; }
-          out += `<h3>${escapeHtml(h3[1])}</h3>`;
-          continue;
-        }
-
-        const li = line.match(/^\-\s+(.*)$/);
-        if (li) {
-          if (!inList) { out += '<ul>'; inList = true; }
-          out += `<li>${escapeHtml(li[1])}</li>`;
-          continue;
-        }
-
-        if (inList) { out += '</ul>'; inList = false; }
-
-        if (line.trim() === '') {
-          out += '<br>';
-        } else {
-          const bolded = escapeHtml(line).replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          out += `${bolded}<br>`;
-        }
-      }
-
-      if (inList) out += '</ul>';
-      return out;
-    }
-
-    function escapeHtml(s) {
-      return String(s)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+      
+      // Caso contrário, fazer formatação básica
+      return text
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/### (.*?)(<br>|\n)/g, '<h3>$1</h3>')
+        .replace(/- (.*?)(<br>|\n)/g, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
     }
   </script>
 </body>
