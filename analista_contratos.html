@@ -223,145 +223,150 @@
     var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/analisar-contrato';
     var selectedFile = null;
     
-    var fileUploadArea = document.getElementById('fileUploadArea');
-    var fileInput = document.getElementById('fileInput');
-    var fileList = document.getElementById('fileList');
-    
-    fileUploadArea.addEventListener('click', function() { fileInput.click(); });
-    
-    fileUploadArea.addEventListener('dragover', function(e) {
-      e.preventDefault();
-      fileUploadArea.classList.add('dragover');
-    });
-    
-    fileUploadArea.addEventListener('dragleave', function() {
-      fileUploadArea.classList.remove('dragover');
-    });
-    
-    fileUploadArea.addEventListener('drop', function(e) {
-      e.preventDefault();
-      fileUploadArea.classList.remove('dragover');
-      if(e.dataTransfer.files.length > 0) {
-        fileInput.files = e.dataTransfer.files;
-        handleFileSelect();
-      }
-    });
-    
-    fileInput.addEventListener('change', handleFileSelect);
-    
-    function handleFileSelect() {
-      if(fileInput.files.length > 0) {
-        selectedFile = fileInput.files[0];
-        displayFile(selectedFile);
-      }
-    }
-    
-    function displayFile(file) {
-      var size = (file.size / 1024).toFixed(2);
-      var unit = 'KB';
-      if(size > 1024) {
-        size = (size / 1024).toFixed(2);
-        unit = 'MB';
-      }
+    // Aguarda o DOM carregar completamente
+    document.addEventListener('DOMContentLoaded', function() {
+      var fileUploadArea = document.getElementById('fileUploadArea');
+      var fileInput = document.getElementById('fileInput');
+      var fileList = document.getElementById('fileList');
       
-      var icon = '📄';
-      if(file.type.includes('pdf')) icon = '📕';
-      else if(file.type.includes('word')) icon = '📘';
+      fileUploadArea.addEventListener('click', function(e) { 
+        e.preventDefault();
+        e.stopPropagation();
+        fileInput.click(); 
+      });
       
-      fileList.innerHTML = '<div class="file-item">' +
-        '<div class="file-info">' +
-          '<div class="file-icon">' + icon + '</div>' +
-          '<div class="file-details">' +
-            '<div class="file-name">' + file.name + '</div>' +
-            '<div class="file-size">' + size + ' ' + unit + '</div>' +
-          '</div>' +
-        '</div>' +
-        '<button type="button" class="btn-remove-file" onclick="removeFile()">✖ Remover</button>' +
-      '</div>';
-    }
-    
-    function removeFile() {
-      selectedFile = null;
-      fileInput.value = '';
-      fileList.innerHTML = '';
-    }
-    
-    document.getElementById('clearBtn').addEventListener('click', function() {
-      document.getElementById('analysisForm').reset();
-      removeFile();
-      document.getElementById('resultsCard').classList.remove('show');
-      document.getElementById('errorMessage').classList.remove('show');
-    });
-    
-    document.getElementById('analysisForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+      fileUploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        fileUploadArea.classList.add('dragover');
+      });
       
-      if(!selectedFile) {
-        document.getElementById('errorText').textContent = '❌ Por favor, selecione um arquivo.';
-        document.getElementById('errorMessage').classList.add('show');
-        return;
+      fileUploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        fileUploadArea.classList.remove('dragover');
+      });
+      
+      fileUploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        fileUploadArea.classList.remove('dragover');
+        if(e.dataTransfer.files.length > 0) {
+          fileInput.files = e.dataTransfer.files;
+          handleFileSelect();
+        }
+      });
+      
+      fileInput.addEventListener('change', handleFileSelect);
+      
+      function handleFileSelect() {
+        if(fileInput.files.length > 0) {
+          selectedFile = fileInput.files[0];
+          displayFile(selectedFile);
+        }
       }
       
-      document.getElementById('errorMessage').classList.remove('show');
-      document.getElementById('resultsCard').classList.remove('show');
-      document.getElementById('loadingState').classList.add('show');
-      
-      var analyzeBtn = document.getElementById('analyzeBtn');
-      analyzeBtn.disabled = true;
-      analyzeBtn.textContent = '⏳ Analisando...';
-      
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var base64Data = e.target.result.split(',')[1];
+      function displayFile(file) {
+        var size = (file.size / 1024).toFixed(2);
+        var unit = 'KB';
+        if(size > 1024) {
+          size = (size / 1024).toFixed(2);
+          unit = 'MB';
+        }
         
-        var analysisData = {
-          condominio: document.getElementById('condominio').value,
-          tipoContrato: document.getElementById('tipoContrato').value,
-          nomeContrato: document.getElementById('nomeContrato').value,
-          observacoes: document.getElementById('observacoes').value,
-          aspectosAnalise: {
-            pontosAtencao: document.getElementById('checkPontosAtencao').checked,
-            valores: document.getElementById('checkValores').checked,
-            rescisao: document.getElementById('checkRescisao').checked,
-            prazos: document.getElementById('checkPrazos').checked,
-            obrigacoes: document.getElementById('checkObrigacoes').checked
-          },
-          arquivo: {
-            nome: selectedFile.name,
-            tipo: selectedFile.type,
-            tamanho: selectedFile.size,
-            conteudo: base64Data
-          },
-          timestamp: new Date().toISOString()
+        var icon = '📄';
+        if(file.type.includes('pdf')) icon = '📕';
+        else if(file.type.includes('word')) icon = '📘';
+        
+        fileList.innerHTML = '<div class="file-item">' +
+          '<div class="file-info">' +
+            '<div class="file-icon">' + icon + '</div>' +
+            '<div class="file-details">' +
+              '<div class="file-name">' + file.name + '</div>' +
+              '<div class="file-size">' + size + ' ' + unit + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<button type="button" class="btn-remove-file" onclick="removeFile()">✖ Remover</button>' +
+        '</div>';
+      }
+      
+      document.getElementById('clearBtn').addEventListener('click', function() {
+        document.getElementById('analysisForm').reset();
+        removeFile();
+        document.getElementById('resultsCard').classList.remove('show');
+        document.getElementById('errorMessage').classList.remove('show');
+      });
+      
+      document.getElementById('analysisForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if(!selectedFile) {
+          document.getElementById('errorText').textContent = '❌ Por favor, selecione um arquivo.';
+          document.getElementById('errorMessage').classList.add('show');
+          return;
+        }
+        
+        document.getElementById('errorMessage').classList.remove('show');
+        document.getElementById('resultsCard').classList.remove('show');
+        document.getElementById('loadingState').classList.add('show');
+        
+        var analyzeBtn = document.getElementById('analyzeBtn');
+        analyzeBtn.disabled = true;
+        analyzeBtn.textContent = '⏳ Analisando...';
+        
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var base64Data = e.target.result.split(',')[1];
+          
+          var analysisData = {
+            condominio: document.getElementById('condominio').value,
+            tipoContrato: document.getElementById('tipoContrato').value,
+            nomeContrato: document.getElementById('nomeContrato').value,
+            observacoes: document.getElementById('observacoes').value,
+            aspectosAnalise: {
+              pontosAtencao: document.getElementById('checkPontosAtencao').checked,
+              valores: document.getElementById('checkValores').checked,
+              rescisao: document.getElementById('checkRescisao').checked,
+              prazos: document.getElementById('checkPrazos').checked,
+              obrigacoes: document.getElementById('checkObrigacoes').checked
+            },
+            arquivo: {
+              nome: selectedFile.name,
+              tipo: selectedFile.type,
+              tamanho: selectedFile.size,
+              conteudo: base64Data
+            },
+            timestamp: new Date().toISOString()
+          };
+          
+          fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(analysisData)
+          })
+          .then(function(r) { 
+            if(r.ok) return r.json(); 
+            throw new Error('Erro na análise'); 
+          })
+          .then(function(data) {
+            console.log('Resposta recebida:', data);
+            document.getElementById('loadingState').classList.remove('show');
+            displayResults(data);
+          })
+          .catch(function(error) {
+            console.error('Erro:', error);
+            document.getElementById('loadingState').classList.remove('show');
+            document.getElementById('errorText').textContent = '❌ Erro ao analisar contrato. Tente novamente.';
+            document.getElementById('errorMessage').classList.add('show');
+          })
+          .finally(function() {
+            analyzeBtn.disabled = false;
+            analyzeBtn.textContent = '🔍 Analisar Contrato';
+          });
         };
         
-        fetch(WEBHOOK_URL, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(analysisData)
-        })
-        .then(function(r) { 
-          if(r.ok) return r.json(); 
-          throw new Error('Erro na análise'); 
-        })
-        .then(function(data) {
-          console.log('Resposta recebida:', data);
-          document.getElementById('loadingState').classList.remove('show');
-          displayResults(data);
-        })
-        .catch(function(error) {
-          console.error('Erro:', error);
-          document.getElementById('loadingState').classList.remove('show');
-          document.getElementById('errorText').textContent = '❌ Erro ao analisar contrato. Tente novamente.';
-          document.getElementById('errorMessage').classList.add('show');
-        })
-        .finally(function() {
-          analyzeBtn.disabled = false;
-          analyzeBtn.textContent = '🔍 Analisar Contrato';
-        });
-      };
-      
-      reader.readAsDataURL(selectedFile);
+        reader.readAsDataURL(selectedFile);
+      });
     });
     
     function displayResults(data) {
