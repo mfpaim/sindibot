@@ -58,6 +58,11 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .loading-text { color: #666; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
     .loading-subtext { color: #999; font-size: 14px; }
+    .contract-header { background: #f8f9fa; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .contract-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .info-item { }
+    .info-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+    .info-value { font-size: 15px; color: #333; font-weight: 600; }
     .analysis-section { margin-bottom: 32px; }
     .analysis-section:last-child { margin-bottom: 0; }
     .analysis-title { font-size: 20px; font-weight: 700; color: #222; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
@@ -79,6 +84,8 @@
     .checkbox-item { display: flex; align-items: center; gap: 8px; }
     .checkbox-item input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #FF6B35; }
     .checkbox-item label { font-size: 14px; color: #333; cursor: pointer; margin: 0; }
+    .download-link { display: inline-block; margin-top: 12px; padding: 10px 16px; background: #e3f2fd; color: #1565c0; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; transition: all 0.3s; }
+    .download-link:hover { background: #1565c0; color: white; }
   </style>
 </head>
 <body>
@@ -98,7 +105,7 @@
         <ul>
           <li>📋 Resumo analítico completo</li>
           <li>⚠️ Pontos de atenção e riscos</li>
-          <li>🔍 Cláusulas importantes e divergências</li>
+          <li>📝 Cláusulas importantes e divergências</li>
           <li>💰 Valores, multas e condições de rescisão</li>
           <li>📅 Prazos e vigências</li>
           <li>✅ Recomendações e próximos passos</li>
@@ -333,8 +340,12 @@
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(analysisData)
         })
-        .then(function(r) { if(r.ok) return r.json(); throw new Error('Erro na análise'); })
+        .then(function(r) { 
+          if(r.ok) return r.json(); 
+          throw new Error('Erro na análise'); 
+        })
         .then(function(data) {
+          console.log('Resposta recebida:', data);
           document.getElementById('loadingState').classList.remove('show');
           displayResults(data);
         })
@@ -356,52 +367,108 @@
     function displayResults(data) {
       var html = '';
       
-      if(data.resumo) {
-        html += '<div class="analysis-section">' +
-          '<div class="analysis-title">📋 Resumo Analítico</div>' +
-          '<div class="analysis-content">' + formatText(data.resumo) + '</div>' +
-        '</div>';
+      // Cabeçalho com informações do contrato
+      if(data.contratoId || data.fornecedor || data.dataInicioContrato || data.dataEncerramentoContrato) {
+        html += '<div class="contract-header">';
+        html += '<div class="contract-info">';
+        
+        if(data.contratoId) {
+          html += '<div class="info-item">' +
+            '<div class="info-label">ID do Contrato</div>' +
+            '<div class="info-value">' + data.contratoId + '</div>' +
+          '</div>';
+        }
+        
+        if(data.fornecedor) {
+          html += '<div class="info-item">' +
+            '<div class="info-label">Fornecedor</div>' +
+            '<div class="info-value">' + data.fornecedor + '</div>' +
+          '</div>';
+        }
+        
+        if(data.dataInicioContrato) {
+          html += '<div class="info-item">' +
+            '<div class="info-label">Data de Início</div>' +
+            '<div class="info-value">' + formatDate(data.dataInicioContrato) + '</div>' +
+          '</div>';
+        }
+        
+        if(data.dataEncerramentoContrato) {
+          html += '<div class="info-item">' +
+            '<div class="info-label">Data de Encerramento</div>' +
+            '<div class="info-value">' + formatDate(data.dataEncerramentoContrato) + '</div>' +
+          '</div>';
+        }
+        
+        html += '</div></div>';
       }
       
-      if(data.pontosAtencao) {
+      // Se houver htmlResumo, usa ele (conteúdo formatado)
+      if(data.htmlResumo) {
         html += '<div class="analysis-section">' +
-          '<div class="analysis-title">⚠️ Pontos de Atenção</div>' +
-          '<div class="analysis-content">' + formatText(data.pontosAtencao) + '</div>' +
+          '<div class="analysis-title">📋 Análise Completa</div>' +
+          '<div class="analysis-content">' + data.htmlResumo + '</div>' +
         '</div>';
+      } else {
+        // Caso contrário, usa os campos individuais
+        
+        if(data.resumo) {
+          html += '<div class="analysis-section">' +
+            '<div class="analysis-title">📋 Resumo Analítico</div>' +
+            '<div class="analysis-content">' + formatText(data.resumo) + '</div>' +
+          '</div>';
+        }
+        
+        if(data.pontosAtencao || data.pontosAtencaoTexto) {
+          var pontosContent = data.pontosAtencao || data.pontosAtencaoTexto;
+          html += '<div class="analysis-section">' +
+            '<div class="analysis-title">⚠️ Pontos de Atenção</div>' +
+            '<div class="analysis-content">' + formatText(pontosContent) + '</div>' +
+          '</div>';
+        }
+        
+        if(data.clausulasImportantes) {
+          html += '<div class="analysis-section">' +
+            '<div class="analysis-title">📝 Cláusulas Importantes</div>' +
+            '<div class="analysis-content">' + formatText(data.clausulasImportantes) + '</div>' +
+          '</div>';
+        }
+        
+        if(data.valores) {
+          html += '<div class="analysis-section">' +
+            '<div class="analysis-title">💰 Valores e Custos</div>' +
+            '<div class="analysis-content">' + formatText(data.valores) + '</div>' +
+          '</div>';
+        }
+        
+        if(data.rescisao) {
+          html += '<div class="analysis-section">' +
+            '<div class="analysis-title">⛔ Condições de Rescisão</div>' +
+            '<div class="analysis-content">' + formatText(data.rescisao) + '</div>' +
+          '</div>';
+        }
+        
+        if(data.prazos) {
+          html += '<div class="analysis-section">' +
+            '<div class="analysis-title">📅 Prazos e Vigências</div>' +
+            '<div class="analysis-content">' + formatText(data.prazos) + '</div>' +
+          '</div>';
+        }
       }
       
-      if(data.clausulasImportantes) {
-        html += '<div class="analysis-section">' +
-          '<div class="analysis-title">🔍 Cláusulas Importantes</div>' +
-          '<div class="analysis-content">' + formatText(data.clausulasImportantes) + '</div>' +
-        '</div>';
-      }
-      
-      if(data.valores) {
-        html += '<div class="analysis-section">' +
-          '<div class="analysis-title">💰 Valores e Custos</div>' +
-          '<div class="analysis-content">' + formatText(data.valores) + '</div>' +
-        '</div>';
-      }
-      
-      if(data.rescisao) {
-        html += '<div class="analysis-section">' +
-          '<div class="analysis-title">⛔ Condições de Rescisão</div>' +
-          '<div class="analysis-content">' + formatText(data.rescisao) + '</div>' +
-        '</div>';
-      }
-      
-      if(data.prazos) {
-        html += '<div class="analysis-section">' +
-          '<div class="analysis-title">📅 Prazos e Vigências</div>' +
-          '<div class="analysis-content">' + formatText(data.prazos) + '</div>' +
-        '</div>';
-      }
-      
-      if(data.recomendacoes) {
+      if(data.recomendacoes || data.recomendacoesTexto) {
+        var recomendacoesContent = data.recomendacoes || data.recomendacoesTexto;
         html += '<div class="analysis-section">' +
           '<div class="analysis-title">✅ Recomendações</div>' +
-          '<div class="analysis-content">' + formatText(data.recomendacoes) + '</div>' +
+          '<div class="analysis-content">' + formatText(recomendacoesContent) + '</div>' +
+        '</div>';
+      }
+      
+      // Link para o arquivo original
+      if(data.urlArquivoOriginal) {
+        html += '<div class="analysis-section">' +
+          '<div class="analysis-title">📎 Arquivo Original</div>' +
+          '<a href="' + data.urlArquivoOriginal + '" target="_blank" class="download-link">📥 Baixar Contrato Original</a>' +
         '</div>';
       }
       
@@ -410,15 +477,15 @@
       document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
     
+    function formatDate(dateString) {
+      if(!dateString) return '';
+      var date = new Date(dateString);
+      return date.toLocaleDateString('pt-BR');
+    }
+    
     function formatText(text) {
       if(!text) return '';
       return text
         .replace(/\n/g, '<br>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/### (.*?)(\n|<br>)/g, '<h3>$1</h3>')
-        .replace(/- (.*?)(\n|<br>)/g, '<li>$1</li>')
-        .replace(/(<li>.*<\/li>)/g, '<ul>$1</ul>');
-    }
-  </script>
-</body>
-</html>
+        .replace(/###
