@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Procuração Condominial</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 28px;
+      padding: 32px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #FF6B35;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+    }
+    
+    h1 {
+      font-size: 28px;
+      color: #222;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .form-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+      margin-bottom: 24px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #FF6B35;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #FFE5DD;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .required {
+      color: #FF6B35;
+    }
+    
+    input[type="text"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      font-size: 15px;
+      background: white;
+      color: #333;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #FF6B35;
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    
+    @media (min-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .form-hint {
+      font-size: 13px;
+      color: #999;
+      margin-top: 6px;
+    }
+    
+    .checkbox-group {
+      background: #f9f9f9;
+      border-radius: 14px;
+      padding: 20px;
+      margin-top: 12px;
+    }
+    
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: white;
+      border-radius: 10px;
+      border: 2px solid #e0e0e0;
+      transition: all 0.3s;
+    }
+    
+    .checkbox-item:hover {
+      border-color: #FF6B35;
+    }
+    
+    .checkbox-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      margin-right: 12px;
+      margin-top: 2px;
+      cursor: pointer;
+      accent-color: #FF6B35;
+      flex-shrink: 0;
+    }
+    
+    .checkbox-label {
+      font-size: 14px;
+      color: #444;
+      line-height: 1.5;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+      transition: all 0.3s;
+      margin-top: 32px;
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    }
+    
+    .btn-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .success-message {
+      background: #e8f5e9;
+      border: 2px solid #4caf50;
+      color: #2e7d32;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .success-message.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .error-message {
+      background: #ffebee;
+      border: 2px solid #f44336;
+      color: #c62828;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .download-link {
+      background: #e3f2fd;
+      border: 2px solid #2196f3;
+      color: #1565c0;
+      padding: 16px;
+      border-radius: 14px;
+      margin-top: 16px;
+      text-align: center;
+      display: none;
+    }
+    
+    .download-link.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .download-link a {
+      color: #1565c0;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 16px;
+    }
+    
+    .download-link a:hover {
+      text-decoration: underline;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      padding: 20px;
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .footer span {
+      color: #FF6B35;
+      font-weight: bold;
+    }
+    
+    .select-wrapper {
+      position: relative;
+    }
+    
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 45px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Procuração Condominial</h1>
+      <p class="subtitle">Gere sua procuração para assembleias de forma rápida</p>
+    </div>
+    
+    <div id="successMessage" class="success-message">
+      Procuração gerada com sucesso!
+    </div>
+    
+    <div id="errorMessage" class="error-message">
+      Erro ao gerar procuração. Por favor, tente novamente.
+    </div>
+    
+    <div id="downloadLink" class="download-link">
+      <p style="margin-bottom: 8px;">📄 Documento pronto!</p>
+      <a href="#" target="_blank" id="pdfLink">Clique aqui para baixar o PDF</a>
+    </div>
+    
+    <div class="form-card">
+      <form id="procuracaoForm">
+        <div class="form-group">
+          <label class="form-label">Condomínio <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="condominio" required>
+              <option value="">Selecione o condomínio</option>
+              <option value="Edifício Central Park">Edifício Central Park</option>
+              <option value="Residencial Jardins">Residencial Jardins</option>
+              <option value="Condomínio Vista Verde">Condomínio Vista Verde</option>
+              <option value="Torres do Sol">Torres do Sol</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="section-title">📋 Dados do Outorgante (Quem concede a procuração)</div>
+        
+        <div class="form-group">
+          <label class="form-label">Nome Completo <span class="required">*</span></label>
+          <input type="text" id="outorganteNome" placeholder="Nome completo" required>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nacionalidade <span class="required">*</span></label>
+            <input type="text" id="outorganteNacionalidade" placeholder="Ex: Brasileiro(a)" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Estado Civil <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="outorganteEstadoCivil" required>
+                <option value="">Selecione</option>
+                <option value="Solteiro(a)">Solteiro(a)</option>
+                <option value="Casado(a)">Casado(a)</option>
+                <option value="Divorciado(a)">Divorciado(a)</option>
+                <option value="Viúvo(a)">Viúvo(a)</option>
+                <option value="União Estável">União Estável</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Profissão <span class="required">*</span></label>
+            <input type="text" id="outorganteProfissao" placeholder="Ex: Engenheiro" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">RG <span class="required">*</span></label>
+            <input type="text" id="outorganteRG" placeholder="Número do RG" required>
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">CPF <span class="required">*</span></label>
+            <input type="text" id="outorganteCPF" placeholder="000.000.000-00" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Número da Unidade <span class="required">*</span></label>
+            <input type="text" id="outorganteUnidade" placeholder="Ex: 101, 202" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Endereço Completo <span class="required">*</span></label>
+          <input type="text" id="outorganteEndereco" placeholder="Rua, número, bairro, cidade, estado, CEP" required>
+        </div>
+        
+        <div class="section-title">👤 Dados do Outorgado (Quem receberá a procuração)</div>
+        
+        <div class="form-group">
+          <label class="form-label">Nome Completo <span class="required">*</span></label>
+          <input type="text" id="outorgadoNome" placeholder="Nome completo" required>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nacionalidade <span class="required">*</span></label>
+            <input type="text" id="outorgadoNacionalidade" placeholder="Ex: Brasileiro(a)" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Estado Civil <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="outorgadoEstadoCivil" required>
+                <option value="">Selecione</option>
+                <option value="Solteiro(a)">Solteiro(a)</option>
+                <option value="Casado(a)">Casado(a)</option>
+                <option value="Divorciado(a)">Divorciado(a)</option>
+                <option value="Viúvo(a)">Viúvo(a)</option>
+                <option value="União Estável">União Estável</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Profissão <span class="required">*</span></label>
+            <input type="text" id="outorgadoProfissao" placeholder="Ex: Advogado" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">RG <span class="required">*</span></label>
+            <input type="text" id="outorgadoRG" placeholder="Número do RG" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">CPF <span class="required">*</span></label>
+          <input type="text" id="outorgadoCPF" placeholder="000.000.000-00" required>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Endereço Completo <span class="required">*</span></label>
+          <input type="text" id="outorgadoEndereco" placeholder="Rua, número, bairro, cidade, estado, CEP" required>
+        </div>
+        
+        <div class="section-title">✅ Poderes Conferidos</div>
+        
+        <div class="form-group">
+          <label class="form-label">Selecione os poderes que deseja conceder:</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item">
+              <input type="checkbox" id="poder1" checked>
+              <span class="checkbox-label"><strong>Representação Plena:</strong> Representar o OUTORGANTE em todas as Assembleias Gerais Ordinárias e Extraordinárias do Condomínio, discutindo, votando e deliberando sobre todas as matérias constantes da ordem do dia, inclusive sobre eleição de síndico, conselheiros e aprovações de contas.</span>
+            </label>
+            
+            <label class="checkbox-item">
+              <input type="checkbox" id="poder2" checked>
+              <span class="checkbox-label"><strong>Votação e Deliberação:</strong> Participar e votar em todas as discussões e deliberações pertinentes às Assembleias, seja de caráter ordinário ou extraordinário, aprovando ou recusando propostas, bem como propor novas medidas e providências.</span>
+            </label>
+            
+            <label class="checkbox-item">
+              <input type="checkbox" id="poder3" checked>
+              <span class="checkbox-label"><strong>Defesa de Direitos:</strong> Defender os direitos e interesses do OUTORGANTE em todos os assuntos relativos ao Condomínio, interpondo recursos, se necessário, contra decisões que julgar prejudiciais ao mandante.</span>
+            </label>
+            
+            <label class="checkbox-item">
+              <input type="checkbox" id="poder4" checked>
+              <span class="checkbox-label"><strong>Substituição de Síndico e Conselhos:</strong> Votar e manifestar-se sobre destituição e substituição de síndico, conselhos consultivo e fiscal, bem como sobre quaisquer questões de ordem administrativa, financeira ou estrutural do Condomínio.</span>
+            </label>
+            
+            <label class="checkbox-item">
+              <input type="checkbox" id="poder5" checked>
+              <span class="checkbox-label"><strong>Alterações de Convenção e Regulamento:</strong> Votar em matérias que envolvam alteração de convenção condominial, regulamento interno, assim como outros documentos de interesse da coletividade condominial.</span>
+            </label>
+          </div>
+          <div class="form-hint">Todos os poderes estão selecionados por padrão. Desmarque os que não deseja conceder.</div>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Local <span class="required">*</span></label>
+            <input type="text" id="local" placeholder="Ex: São Paulo - SP" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Data <span class="required">*</span></label>
+            <input type="date" id="data" required>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn-submit" id="submitBtn">
+          Gerar Procuração em PDF
+        </button>
+      </form>
+    </div>
+    
+    <div class="footer">
+      Sindi - Procuração Condominial <span>Sindibot - Impactar LLC</span>
+    </div>
+  </div>
+  
+  <script>
+    var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/procuracao';
+    
+    var form = document.getElementById('procuracaoForm');
+    var submitBtn = document.getElementById('submitBtn');
+    var successMessage = document.getElementById('successMessage');
+    var errorMessage = document.getElementById('errorMessage');
+    var downloadLink = document.getElementById('downloadLink');
+    var pdfLink = document.getElementById('pdfLink');
+    
+    var dataInput = document.getElementById('data');
+    var today = new Date().toISOString().split('T')[0];
+    dataInput.value = today;
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      successMessage.classList.remove('show');
+      errorMessage.classList.remove('show');
+      downloadLink.classList.remove('show');
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Gerando procuração...';
+      
+      var formData = {
+        condominio: document.getElementById('condominio').value,
+        outorgante: {
+          nome: document.getElementById('outorganteNome').value,
+          nacionalidade: document.getElementById('outorganteNacionalidade').value,
+          estadoCivil: document.getElementById('outorganteEstadoCivil').value,
+          profissao: document.getElementById('outorganteProfissao').value,
+          rg: document.getElementById('outorganteRG').value,
+          cpf: document.getElementById('outorganteCPF').value,
+          endereco: document.getElementById('outorganteEndereco').value,
+          unidade: document.getElementById('outorganteUnidade').value
+        },
+        outorgado: {
+          nome: document.getElementById('outorgadoNome').value,
+          nacionalidade: document.getElementById('outorgadoNacionalidade').value,
+          estadoCivil: document.getElementById('outorgadoEstadoCivil').value,
+          profissao: document.getElementById('outorgadoProfissao').value,
+          rg: document.getElementById('outorgadoRG').value,
+          cpf: document.getElementById('outorgadoCPF').value,
+          endereco: document.getElementById('outorgadoEndereco').value
+        },
+        poderes: {
+          representacaoPlena: document.getElementById('poder1').checked,
+          votacaoDeliberacao: document.getElementById('poder2').checked,
+          defesaDireitos: document.getElementById('poder3').checked,
+          substituicaoSindico: document.getElementById('poder4').checked,
+          alteracoesConvencao: document.getElementById('poder5').checked
+        },
+        local: document.getElementById('local').value,
+        data: document.getElementById('data').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Erro na requisição');
+      })
+      .then(function(data) {
+        successMessage.classList.add('show');
+        
+        if (data.pdfUrl) {
+          pdfLink.href = data.pdfUrl;
+          downloadLink.classList.add('show');
+        }
+        
+        form.reset();
+        dataInput.value = today;
+        
+        document.getElementById('poder1').checked = true;
+        document.getElementById('poder2').checked = true;
+        document.getElementById('poder3').checked = true;
+        document.getElementById('poder4').checked = true;
+        document.getElementById('poder5').checked = true;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        setTimeout(function() {
+          successMessage.classList.remove('show');
+        }, 8000);
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        errorMessage.classList.add('show');
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        setTimeout(function() {
+          errorMessage.classList.remove('show');
+        }, 5000);
+      })
+      .finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Gerar Procuração em PDF';
+      });
+    });
+  </script>
+</body>
+</html>
