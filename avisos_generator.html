@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sindi - Gerador de Posts</title>
+  <title>Sindi - Gerador de Avisos Tipo "Posts"</title>
   <style>
     * {
       margin: 0;
@@ -396,7 +396,7 @@
     <div class="header">
       <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
       <h1>Gerador de Posts</h1>
-      <p class="subtitle">Crie posts profissionais para Instagram em segundos</p>
+      <p class="subtitle">Crie avisos tipos "posts" profissionais para Grupos em segundos</p>
     </div>
     
     <div id="successMessage" class="success-message">
@@ -410,9 +410,9 @@
     <div id="downloadLink" class="download-link">
       <div class="download-link-header">
         <span>📸</span>
-        <span>Seu post está pronto!</span>
+        <span>Seu aviso está pronto!</span>
       </div>
-      <a href="#" target="_blank" id="pngLink">Baixar PNG para Instagram</a>
+      <a href="#" target="_blank" id="pngLink">Baixar PNG para postar no Grupo</a>
     </div>
     
     <div class="form-card">
@@ -499,7 +499,7 @@
         </div>
         
         <button type="submit" class="btn-submit" id="submitBtn">
-          Gerar Post para Instagram
+          Gerar Aviso para Grupo
         </button>
       </form>
     </div>
@@ -695,7 +695,7 @@
       })
       .finally(function() {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Gerar Post para Instagram';
+        submitBtn.textContent = 'Gerar Aviso para Grupo';
       });
     });
   </script>
