@@ -21,7 +21,7 @@
     .form-group { margin-bottom: 20px; }
     .form-label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
     .required { color: #FF6B35; }
-    input[type="text"], input[type="file"], select, textarea { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 15px; background: white; color: #333; transition: all 0.3s; font-family: inherit; }
+    input[type="text"], select, textarea { width: 100%; padding: 12px 16px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 15px; background: white; color: #333; transition: all 0.3s; font-family: inherit; }
     textarea { resize: vertical; min-height: 120px; }
     input:focus, select:focus, textarea:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
     .form-hint { font-size: 13px; color: #999; margin-top: 6px; }
@@ -31,6 +31,7 @@
     .file-upload-icon { font-size: 48px; margin-bottom: 16px; }
     .file-upload-text { font-size: 16px; color: #333; font-weight: 600; margin-bottom: 8px; }
     .file-upload-hint { font-size: 14px; color: #999; }
+    input[type="file"] { display: none; }
     .file-list { margin-top: 16px; }
     .file-item { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
     .file-info { display: flex; align-items: center; gap: 12px; flex: 1; }
@@ -72,10 +73,6 @@
     .analysis-content ul { margin-left: 20px; margin-top: 8px; }
     .analysis-content li { margin-bottom: 8px; }
     .analysis-content strong { color: #222; }
-    .alert-box { border-left: 4px solid #ff9800; background: #fff3e0; padding: 16px; border-radius: 8px; margin: 16px 0; }
-    .alert-box.danger { border-left-color: #f44336; background: #ffebee; }
-    .alert-box.success { border-left-color: #4caf50; background: #e8f5e9; }
-    .value-highlight { background: #fff3e0; padding: 2px 8px; border-radius: 6px; font-weight: 600; color: #e65100; }
     .footer { text-align: center; margin-top: 32px; padding: 20px; color: #888; font-size: 14px; }
     .footer span { color: #FF6B35; font-weight: bold; }
     .select-wrapper { position: relative; }
@@ -105,7 +102,7 @@
         <ul>
           <li>📋 Resumo analítico completo</li>
           <li>⚠️ Pontos de atenção e riscos</li>
-          <li>📝 Cláusulas importantes e divergências</li>
+          <li>🔍 Cláusulas importantes e divergências</li>
           <li>💰 Valores, multas e condições de rescisão</li>
           <li>📅 Prazos e vigências</li>
           <li>✅ Recomendações e próximos passos</li>
@@ -122,7 +119,7 @@
             <div class="file-upload-text">Clique ou arraste o arquivo aqui</div>
             <div class="file-upload-hint">PDF, DOC, DOCX até 10MB</div>
           </div>
-          <input type="file" id="fileInput" accept=".pdf,.doc,.docx" style="display: none;" required>
+          <input type="file" id="fileInput" accept=".pdf,.doc,.docx" required>
           <div id="fileList" class="file-list"></div>
         </div>
         
@@ -133,9 +130,9 @@
           <div class="select-wrapper">
             <select id="condominio" required>
               <option value="">Selecione o condomínio</option>
-              <option value="Edificio Central Park">Edifício Central Park</option>
+              <option value="Edifício Central Park">Edifício Central Park</option>
               <option value="Residencial Jardins">Residencial Jardins</option>
-              <option value="Condominio Vista Verde">Condomínio Vista Verde</option>
+              <option value="Condomínio Vista Verde">Condomínio Vista Verde</option>
               <option value="Torres do Sol">Torres do Sol</option>
             </select>
           </div>
@@ -220,97 +217,82 @@
   </div>
   
   <script>
-    // Variáveis globais
     var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/analisar-contrato';
     var selectedFile = null;
     
-    // Função global para remover arquivo
-    function removeFile() {
-      selectedFile = null;
-      var fileInput = document.getElementById('fileInput');
-      var fileList = document.getElementById('fileList');
-      if(fileInput) fileInput.value = '';
-      if(fileList) fileList.innerHTML = '';
+    var fileUploadArea = document.getElementById('fileUploadArea');
+    var fileInput = document.getElementById('fileInput');
+    var fileList = document.getElementById('fileList');
+    var analysisForm = document.getElementById('analysisForm');
+    var clearBtn = document.getElementById('clearBtn');
+    var analyzeBtn = document.getElementById('analyzeBtn');
+    
+    // Click na área de upload
+    fileUploadArea.addEventListener('click', function() {
+      fileInput.click();
+    });
+    
+    // Drag and drop
+    fileUploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      fileUploadArea.classList.add('dragover');
+    });
+    
+    fileUploadArea.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      fileUploadArea.classList.remove('dragover');
+    });
+    
+    fileUploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      fileUploadArea.classList.remove('dragover');
+      
+      if (e.dataTransfer.files.length > 0) {
+        var file = e.dataTransfer.files[0];
+        handleFile(file);
+      }
+    });
+    
+    // Change no input
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files.length > 0) {
+        handleFile(fileInput.files[0]);
+      }
+    });
+    
+    function handleFile(file) {
+      if (file.size > 10 * 1024 * 1024) {
+        document.getElementById('errorText').textContent = '❌ Arquivo muito grande. Máximo 10MB.';
+        document.getElementById('errorMessage').classList.add('show');
+        return;
+      }
+      
+      var validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!validTypes.includes(file.type)) {
+        document.getElementById('errorText').textContent = '❌ Tipo de arquivo inválido. Use PDF, DOC ou DOCX.';
+        document.getElementById('errorMessage').classList.add('show');
+        return;
+      }
+      
+      selectedFile = file;
+      displayFile(file);
+      document.getElementById('errorMessage').classList.remove('show');
     }
     
-    // Aguarda DOM carregar
-    window.addEventListener('load', function() {
-      console.log('Página carregada, inicializando...');
-      
-      var fileUploadArea = document.getElementById('fileUploadArea');
-      var fileInput = document.getElementById('fileInput');
-      var fileList = document.getElementById('fileList');
-      
-      console.log('Elementos encontrados:', {
-        fileUploadArea: !!fileUploadArea,
-        fileInput: !!fileInput,
-        fileList: !!fileList
-      });
-      
-      // Click na área de upload
-      if(fileUploadArea && fileInput) {
-        fileUploadArea.addEventListener('click', function(e) {
-          console.log('Área de upload clicada');
-          e.preventDefault();
-          e.stopPropagation();
-          fileInput.click();
-        });
+    function displayFile(file) {
+      var size = (file.size / 1024).toFixed(2);
+      var unit = 'KB';
+      if (size > 1024) {
+        size = (size / 1024).toFixed(2);
+        unit = 'MB';
       }
       
-      // Drag and drop
-      if(fileUploadArea) {
-        fileUploadArea.addEventListener('dragover', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          fileUploadArea.classList.add('dragover');
-        });
-        
-        fileUploadArea.addEventListener('dragleave', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          fileUploadArea.classList.remove('dragover');
-        });
-        
-        fileUploadArea.addEventListener('drop', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          fileUploadArea.classList.remove('dragover');
-          if(e.dataTransfer.files.length > 0) {
-            fileInput.files = e.dataTransfer.files;
-            handleFileSelect();
-          }
-        });
-      }
+      var icon = '📄';
+      if (file.type.includes('pdf')) icon = '📕';
+      else if (file.type.includes('word')) icon = '📘';
       
-      // Change no input de arquivo
-      if(fileInput) {
-        fileInput.addEventListener('change', function() {
-          console.log('Arquivo selecionado:', fileInput.files);
-          handleFileSelect();
-        });
-      }
-      
-      function handleFileSelect() {
-        if(fileInput.files.length > 0) {
-          selectedFile = fileInput.files[0];
-          console.log('Arquivo processado:', selectedFile.name);
-          displayFile(selectedFile);
-        }
-      }
-      
-      function displayFile(file) {
-        var size = (file.size / 1024).toFixed(2);
-        var unit = 'KB';
-        if(size > 1024) {
-          size = (size / 1024).toFixed(2);
-          unit = 'MB';
-        }
-        
-        var icon = '📄';
-        if(file.type.includes('pdf')) icon = '📕';
-        else if(file.type.includes('word')) icon = '📘';
-        
-        fileList.innerHTML = '<div class="file-item">' +
+      fileList.innerHTML = 
+        '<div class="file-item">' +
           '<div class="file-info">' +
             '<div class="file-icon">' + icon + '</div>' +
             '<div class="file-details">' +
@@ -320,201 +302,143 @@
           '</div>' +
           '<button type="button" class="btn-remove-file" onclick="removeFile()">✖ Remover</button>' +
         '</div>';
+    }
+    
+    function removeFile() {
+      selectedFile = null;
+      fileInput.value = '';
+      fileList.innerHTML = '';
+    }
+    
+    // Botão limpar
+    clearBtn.addEventListener('click', function() {
+      analysisForm.reset();
+      removeFile();
+      document.getElementById('resultsCard').classList.remove('show');
+      document.getElementById('errorMessage').classList.remove('show');
+    });
+    
+    // Submit do formulário
+    analysisForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if (!selectedFile) {
+        document.getElementById('errorText').textContent = '❌ Por favor, selecione um arquivo.';
+        document.getElementById('errorMessage').classList.add('show');
+        return;
       }
       
-      // Botão limpar
-      var clearBtn = document.getElementById('clearBtn');
-      if(clearBtn) {
-        clearBtn.addEventListener('click', function() {
-          document.getElementById('analysisForm').reset();
-          removeFile();
-          document.getElementById('resultsCard').classList.remove('show');
-          document.getElementById('errorMessage').classList.remove('show');
-        });
-      }
+      document.getElementById('errorMessage').classList.remove('show');
+      document.getElementById('resultsCard').classList.remove('show');
+      document.getElementById('loadingState').classList.add('show');
       
-      // Submit do formulário
-      var analysisForm = document.getElementById('analysisForm');
-      if(analysisForm) {
-        analysisForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          if(!selectedFile) {
-            document.getElementById('errorText').textContent = '❌ Por favor, selecione um arquivo.';
-            document.getElementById('errorMessage').classList.add('show');
-            return;
-          }
-          
-          document.getElementById('errorMessage').classList.remove('show');
-          document.getElementById('resultsCard').classList.remove('show');
-          document.getElementById('loadingState').classList.add('show');
-          
-          var analyzeBtn = document.getElementById('analyzeBtn');
-          analyzeBtn.disabled = true;
-          analyzeBtn.textContent = '⏳ Analisando...';
-          
-          var reader = new FileReader();
-          reader.onload = function(e) {
-            var base64Data = e.target.result.split(',')[1];
-            
-            var analysisData = {
-              condominio: document.getElementById('condominio').value,
-              tipoContrato: document.getElementById('tipoContrato').value,
-              nomeContrato: document.getElementById('nomeContrato').value,
-              observacoes: document.getElementById('observacoes').value,
-              aspectosAnalise: {
-                pontosAtencao: document.getElementById('checkPontosAtencao').checked,
-                valores: document.getElementById('checkValores').checked,
-                rescisao: document.getElementById('checkRescisao').checked,
-                prazos: document.getElementById('checkPrazos').checked,
-                obrigacoes: document.getElementById('checkObrigacoes').checked
-              },
-              arquivo: {
-                nome: selectedFile.name,
-                tipo: selectedFile.type,
-                tamanho: selectedFile.size,
-                conteudo: base64Data
-              },
-              timestamp: new Date().toISOString()
-            };
-            
-            fetch(WEBHOOK_URL, {
-              method: 'POST',
-              headers: {'Content-Type': 'application/json'},
-              body: JSON.stringify(analysisData)
-            })
-            .then(function(r) { 
-              if(r.ok) return r.json(); 
-              throw new Error('Erro na análise'); 
-            })
-            .then(function(data) {
-              console.log('Resposta recebida:', data);
-              document.getElementById('loadingState').classList.remove('show');
-              displayResults(data);
-            })
-            .catch(function(error) {
-              console.error('Erro:', error);
-              document.getElementById('loadingState').classList.remove('show');
-              document.getElementById('errorText').textContent = '❌ Erro ao analisar contrato. Tente novamente.';
-              document.getElementById('errorMessage').classList.add('show');
-            })
-            .finally(function() {
-              analyzeBtn.disabled = false;
-              analyzeBtn.textContent = '🔍 Analisar Contrato';
-            });
-          };
-          
-          reader.readAsDataURL(selectedFile);
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = '⏳ Analisando...';
+      
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var base64Data = e.target.result.split(',')[1];
+        
+        var analysisData = {
+          condominio: document.getElementById('condominio').value,
+          tipoContrato: document.getElementById('tipoContrato').value,
+          nomeContrato: document.getElementById('nomeContrato').value,
+          observacoes: document.getElementById('observacoes').value,
+          aspectosAnalise: {
+            pontosAtencao: document.getElementById('checkPontosAtencao').checked,
+            valores: document.getElementById('checkValores').checked,
+            rescisao: document.getElementById('checkRescisao').checked,
+            prazos: document.getElementById('checkPrazos').checked,
+            obrigacoes: document.getElementById('checkObrigacoes').checked
+          },
+          arquivo: {
+            nome: selectedFile.name,
+            tipo: selectedFile.type,
+            tamanho: selectedFile.size,
+            conteudo: base64Data
+          },
+          timestamp: new Date().toISOString()
+        };
+        
+        fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(analysisData)
+        })
+        .then(function(r) { 
+          if (r.ok) return r.json(); 
+          throw new Error('Erro na análise'); 
+        })
+        .then(function(data) {
+          document.getElementById('loadingState').classList.remove('show');
+          displayResults(data);
+        })
+        .catch(function(error) {
+          console.error('Erro:', error);
+          document.getElementById('loadingState').classList.remove('show');
+          document.getElementById('errorText').textContent = '❌ Erro ao analisar contrato. Tente novamente.';
+          document.getElementById('errorMessage').classList.add('show');
+        })
+        .finally(function() {
+          analyzeBtn.disabled = false;
+          analyzeBtn.textContent = '🔍 Analisar Contrato';
         });
-      }
+      };
+      
+      reader.readAsDataURL(selectedFile);
     });
     
     function displayResults(data) {
       var html = '';
       
-      // Cabeçalho com informações do contrato
-      if(data.contratoId || data.fornecedor || data.dataInicioContrato || data.dataEncerramentoContrato) {
-        html += '<div class="contract-header">';
-        html += '<div class="contract-info">';
+      if (data.contratoId || data.fornecedor || data.dataInicioContrato || data.dataEncerramentoContrato) {
+        html += '<div class="contract-header"><div class="contract-info">';
         
-        if(data.contratoId) {
-          html += '<div class="info-item">' +
-            '<div class="info-label">ID do Contrato</div>' +
-            '<div class="info-value">' + data.contratoId + '</div>' +
-          '</div>';
+        if (data.contratoId) {
+          html += '<div class="info-item"><div class="info-label">ID do Contrato</div><div class="info-value">' + data.contratoId + '</div></div>';
         }
-        
-        if(data.fornecedor) {
-          html += '<div class="info-item">' +
-            '<div class="info-label">Fornecedor</div>' +
-            '<div class="info-value">' + data.fornecedor + '</div>' +
-          '</div>';
+        if (data.fornecedor) {
+          html += '<div class="info-item"><div class="info-label">Fornecedor</div><div class="info-value">' + data.fornecedor + '</div></div>';
         }
-        
-        if(data.dataInicioContrato) {
-          html += '<div class="info-item">' +
-            '<div class="info-label">Data de Início</div>' +
-            '<div class="info-value">' + formatDate(data.dataInicioContrato) + '</div>' +
-          '</div>';
+        if (data.dataInicioContrato) {
+          html += '<div class="info-item"><div class="info-label">Data de Início</div><div class="info-value">' + formatDate(data.dataInicioContrato) + '</div></div>';
         }
-        
-        if(data.dataEncerramentoContrato) {
-          html += '<div class="info-item">' +
-            '<div class="info-label">Data de Encerramento</div>' +
-            '<div class="info-value">' + formatDate(data.dataEncerramentoContrato) + '</div>' +
-          '</div>';
+        if (data.dataEncerramentoContrato) {
+          html += '<div class="info-item"><div class="info-label">Data de Encerramento</div><div class="info-value">' + formatDate(data.dataEncerramentoContrato) + '</div></div>';
         }
         
         html += '</div></div>';
       }
       
-      // Se houver htmlResumo, usa ele (conteúdo formatado)
-      if(data.htmlResumo) {
-        html += '<div class="analysis-section">' +
-          '<div class="analysis-title">📋 Análise Completa</div>' +
-          '<div class="analysis-content">' + data.htmlResumo + '</div>' +
-        '</div>';
+      if (data.htmlResumo) {
+        html += '<div class="analysis-section"><div class="analysis-title">📋 Análise Completa</div><div class="analysis-content">' + data.htmlResumo + '</div></div>';
       } else {
-        // Caso contrário, usa os campos individuais
-        
-        if(data.resumo) {
-          html += '<div class="analysis-section">' +
-            '<div class="analysis-title">📋 Resumo Analítico</div>' +
-            '<div class="analysis-content">' + formatText(data.resumo) + '</div>' +
-          '</div>';
+        if (data.resumo) {
+          html += '<div class="analysis-section"><div class="analysis-title">📋 Resumo Analítico</div><div class="analysis-content">' + formatText(data.resumo) + '</div></div>';
         }
-        
-        if(data.pontosAtencao || data.pontosAtencaoTexto) {
-          var pontosContent = data.pontosAtencao || data.pontosAtencaoTexto;
-          html += '<div class="analysis-section">' +
-            '<div class="analysis-title">⚠️ Pontos de Atenção</div>' +
-            '<div class="analysis-content">' + formatText(pontosContent) + '</div>' +
-          '</div>';
+        if (data.pontosAtencao || data.pontosAtencaoTexto) {
+          html += '<div class="analysis-section"><div class="analysis-title">⚠️ Pontos de Atenção</div><div class="analysis-content">' + formatText(data.pontosAtencao || data.pontosAtencaoTexto) + '</div></div>';
         }
-        
-        if(data.clausulasImportantes) {
-          html += '<div class="analysis-section">' +
-            '<div class="analysis-title">📝 Cláusulas Importantes</div>' +
-            '<div class="analysis-content">' + formatText(data.clausulasImportantes) + '</div>' +
-          '</div>';
+        if (data.clausulasImportantes) {
+          html += '<div class="analysis-section"><div class="analysis-title">🔍 Cláusulas Importantes</div><div class="analysis-content">' + formatText(data.clausulasImportantes) + '</div></div>';
         }
-        
-        if(data.valores) {
-          html += '<div class="analysis-section">' +
-            '<div class="analysis-title">💰 Valores e Custos</div>' +
-            '<div class="analysis-content">' + formatText(data.valores) + '</div>' +
-          '</div>';
+        if (data.valores) {
+          html += '<div class="analysis-section"><div class="analysis-title">💰 Valores e Custos</div><div class="analysis-content">' + formatText(data.valores) + '</div></div>';
         }
-        
-        if(data.rescisao) {
-          html += '<div class="analysis-section">' +
-            '<div class="analysis-title">⛔ Condições de Rescisão</div>' +
-            '<div class="analysis-content">' + formatText(data.rescisao) + '</div>' +
-          '</div>';
+        if (data.rescisao) {
+          html += '<div class="analysis-section"><div class="analysis-title">⛔ Condições de Rescisão</div><div class="analysis-content">' + formatText(data.rescisao) + '</div></div>';
         }
-        
-        if(data.prazos) {
-          html += '<div class="analysis-section">' +
-            '<div class="analysis-title">📅 Prazos e Vigências</div>' +
-            '<div class="analysis-content">' + formatText(data.prazos) + '</div>' +
-          '</div>';
+        if (data.prazos) {
+          html += '<div class="analysis-section"><div class="analysis-title">📅 Prazos e Vigências</div><div class="analysis-content">' + formatText(data.prazos) + '</div></div>';
         }
       }
       
-      if(data.recomendacoes || data.recomendacoesTexto) {
-        var recomendacoesContent = data.recomendacoes || data.recomendacoesTexto;
-        html += '<div class="analysis-section">' +
-          '<div class="analysis-title">✅ Recomendações</div>' +
-          '<div class="analysis-content">' + formatText(recomendacoesContent) + '</div>' +
-        '</div>';
+      if (data.recomendacoes || data.recomendacoesTexto) {
+        html += '<div class="analysis-section"><div class="analysis-title">✅ Recomendações</div><div class="analysis-content">' + formatText(data.recomendacoes || data.recomendacoesTexto) + '</div></div>';
       }
       
-      // Link para o arquivo original
-      if(data.urlArquivoOriginal) {
-        html += '<div class="analysis-section">' +
-          '<div class="analysis-title">📎 Arquivo Original</div>' +
-          '<a href="' + data.urlArquivoOriginal + '" target="_blank" class="download-link">📥 Baixar Contrato Original</a>' +
-        '</div>';
+      if (data.urlArquivoOriginal) {
+        html += '<div class="analysis-section"><div class="analysis-title">🔎 Arquivo Original</div><a href="' + data.urlArquivoOriginal + '" target="_blank" class="download-link">📥 Baixar Contrato Original</a></div>';
       }
       
       document.getElementById('analysisResults').innerHTML = html;
@@ -523,20 +447,19 @@
     }
     
     function formatDate(dateString) {
-      if(!dateString) return '';
+      if (!dateString) return '';
       var date = new Date(dateString);
       return date.toLocaleDateString('pt-BR');
     }
     
     function formatText(text) {
-      if(!text) return '';
+      if (!text) return '';
       return text
         .replace(/\n/g, '<br>')
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
         .replace(/### (.*?)(\n|<br>|$)/g, '<h3>$1</h3>')
         .replace(/- (.*?)(\n|<br>|$)/g, '<li>$1</li>')
-        .replace(/(<li>.*?<\/li>)+/g, '<ul>      // Link para o arquivo original
-      if</ul>');
+        .replace(/(<li>.*?<\/li>)+/g, '<ul>$&</ul>');
     }
   </script>
 </body>
