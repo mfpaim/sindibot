@@ -3,389 +3,747 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZeroCaos Dashboard</title>
+    <title>Sindibot - Dashboard</title>
     <style>
-        /* Reset and base styles */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+        }
+
+        :root {
+            --primary: #FF6B35;
+            --primary-dark: #E55A2B;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --success: #10B981;
+            --info: #3B82F6;
+            --bg-light: #F9FAFB;
+            --bg-white: #FFFFFF;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --sidebar-width: 200px;
         }
 
         body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
             display: flex;
-            background-color: #f8f9fa;
-            color: #333;
+            min-height: 100vh;
         }
 
         /* Sidebar */
         .sidebar {
-            width: 250px;
-            background-color: #fff;
-            border-right: 1px solid #dee2e6;
-            padding: 20px;
-            height: 100vh;
+            width: var(--sidebar-width);
+            background: var(--bg-white);
+            border-right: 1px solid var(--border);
+            padding: 24px 0;
             position: fixed;
+            height: 100vh;
             overflow-y: auto;
             transition: transform 0.3s ease;
+            z-index: 100;
         }
 
-        .sidebar.hidden {
+        .sidebar.mobile-hidden {
             transform: translateX(-100%);
         }
 
         .logo {
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 20px;
+            padding: 0 20px 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
         }
 
-        .initials {
-            background-color: #fd7e14;
-            color: #fff;
+        .logo h1 {
+            font-size: 24px;
+            color: var(--text-primary);
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .logo p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .user-badge {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
             border-radius: 50%;
-            padding: 5px 10px;
-            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 12px;
         }
 
-        .sidebar h1 {
-            font-size: 1.5em;
-            margin-bottom: 20px;
-        }
-
-        .sidebar ul {
+        .nav-menu {
             list-style: none;
         }
 
-        .sidebar li {
-            padding: 10px 0;
-            cursor: pointer;
+        .nav-item {
+            margin: 4px 12px;
         }
 
-        .sidebar li.active {
-            background-color: #ffe5b4;
-            border-radius: 5px;
-            padding-left: 10px;
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
         }
 
-        .sidebar li:hover {
-            background-color: #f0f0f0;
-            border-radius: 5px;
-            padding-left: 10px;
+        .nav-link:hover {
+            background: var(--bg-light);
+            color: var(--text-primary);
         }
 
-        /* Main content */
-        .main {
-            margin-left: 250px;
-            padding: 20px;
-            width: calc(100% - 250px);
-            transition: margin-left 0.3s ease, width 0.3s ease;
+        .nav-link.active {
+            background: var(--primary);
+            color: white;
         }
 
-        .main.full-width {
+        .nav-link .badge {
+            margin-left: auto;
+            background: var(--primary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .nav-link.active .badge {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
             margin-left: 0;
-            width: 100%;
         }
 
+        /* Header */
         .header {
+            background: var(--bg-white);
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
-        .title {
-            font-size: 1.2em;
+        .header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
-        .date {
-            background-color: #ffe4c4;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.9em;
+        .header p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
         }
 
-        /* Search bar */
-        .search {
+        .header-actions {
             display: flex;
-            margin-bottom: 20px;
+            align-items: center;
+            gap: 12px;
         }
 
-        .search input {
+        .date-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .date-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .date-day {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .date-month {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .date-year {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Search Bar */
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .search-input-wrapper {
+            position: relative;
             flex: 1;
-            padding: 10px;
-            border: 1px solid #dee2e6;
-            border-radius: 5px 0 0 5px;
         }
 
-        .search select {
-            padding: 10px;
-            border: 1px solid #dee2e6;
-            border-left: none;
+        .search-input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
         }
 
-        .search button {
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .btn {
             padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
             border: none;
-            border-radius: 0 5px 5px 0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Priorities cards */
-        .priorities {
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-light);
+        }
+
+        .btn-primary {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563EB;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 24px 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card.danger { border-color: var(--danger); }
+        .stat-card.warning { border-color: var(--warning); }
+        .stat-card.success { border-color: var(--success); }
+        .stat-card.info { border-color: var(--info); }
+
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            font-size: 20px;
         }
 
-        .card {
-            flex: 1;
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: bold;
+        .stat-card.danger .stat-icon { background: #FEE2E2; color: var(--danger); }
+        .stat-card.warning .stat-icon { background: #FEF3C7; color: var(--warning); }
+        .stat-card.success .stat-icon { background: #D1FAE5; color: var(--success); }
+        .stat-card.info .stat-icon { background: #DBEAFE; color: var(--info); }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
         }
 
-        .card .icon {
-            font-size: 1.2em;
-            margin-right: 5px;
-        }
-
-        .card.high {
-            border: 2px solid #dc3545;
-        }
-
-        .card.high .icon {
-            color: #dc3545;
-        }
-
-        .card.medium {
-            border: 2px solid #ffc107;
-        }
-
-        .card.medium .icon {
-            color: #ffc107;
-        }
-
-        .card.low {
-            border: 2px solid #28a745;
-        }
-
-        .card.low .icon {
-            color: #28a745;
-        }
-
-        .card.resolved {
-            border: 2px solid #17a2b8;
-        }
-
-        .card.resolved .icon {
-            color: #17a2b8;
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         /* Filters */
         .filters {
+            padding: 0 32px 16px;
             display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 12px;
+            align-items: center;
         }
 
-        .filters select {
-            padding: 10px;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            flex: 1;
-        }
-
-        .found {
-            font-size: 0.9em;
-            color: #6c757d;
-            margin-bottom: 20px;
-        }
-
-        /* Section */
-        .section {
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        /* Item */
-        .item {
-            background-color: #f8d7da; /* Light red for high priority */
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .item .title {
-            font-weight: bold;
-        }
-
-        .item .condo {
-            font-size: 0.9em;
-            color: #6c757d;
-        }
-
-        .item .desc {
-            margin: 10px 0;
-        }
-
-        .item .time {
-            font-size: 0.8em;
-            color: #6c757d;
-        }
-
-        .item button, .item select {
-            margin-right: 10px;
-            padding: 5px 10px;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            background-color: #fff;
+        .filter-select {
+            padding: 8px 32px 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--text-primary);
+            background: white;
             cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
         }
 
-        .item button.download {
-            background-color: #f8f9fa;
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
         }
 
-        .item button.archive {
-            background-color: #f8f9fa;
+        .result-count {
+            margin-left: auto;
+            font-size: 14px;
+            color: var(--text-secondary);
         }
 
-        /* Menu toggle for mobile */
-        .menu-toggle {
+        /* Requests List */
+        .requests-section {
+            padding: 0 32px 32px;
+        }
+
+        .section-header {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        .request-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            border-left: 4px solid;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .request-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .request-card.danger { border-color: var(--danger); }
+
+        .request-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .request-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tag.danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .tag.alta {
+            background: #DC2626;
+            color: white;
+        }
+
+        .request-title {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .request-description {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .request-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .request-time {
+            font-size: 13px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            font-size: 13px;
+            border: none;
+            background: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .action-btn.success {
+            color: var(--success);
+        }
+
+        .mobile-menu-toggle {
             display: none;
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            font-size: 1.5em;
+            background: none;
+            border: none;
+            font-size: 24px;
             cursor: pointer;
-            z-index: 1000;
+            color: var(--text-primary);
         }
 
-        /* Responsive design */
+        /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
             }
 
-            .main {
-                margin-left: 0;
-                width: 100%;
+            .sidebar.mobile-visible {
+                transform: translateX(0);
             }
 
-            .menu-toggle {
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-toggle {
                 display: block;
             }
 
-            .priorities {
-                flex-direction: column;
+            .header {
+                padding: 16px 20px;
+            }
+
+            .header h2 {
+                font-size: 22px;
+            }
+
+            .stats-grid {
+                padding: 20px;
+                grid-template-columns: 1fr;
             }
 
             .filters {
+                padding: 0 20px 16px;
+                flex-wrap: wrap;
+            }
+
+            .requests-section {
+                padding: 0 20px 20px;
+            }
+
+            .search-bar {
                 flex-direction: column;
             }
 
-            .search {
-                flex-direction: column;
-            }
-
-            .search input, .search select, .search button {
-                border-radius: 5px;
-                margin-bottom: 10px;
-                border: 1px solid #dee2e6;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .date {
-                margin-top: 10px;
+            .date-badge {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="menu-toggle" onclick="toggleSidebar()">&#9776;</div>
-    <div class="sidebar" id="sidebar">
-        <div class="logo">ZeroCaos <span class="initials">AD</span></div>
-        <h1>Dashboard</h1>
-        <ul>
-            <li>Gestão de Demandas</li>
-            <li class="active">&#128202; Dashboard</li>
-            <li>&#128197; Calendário</li>
-            <li>&#128101; Grupos</li>
-            <li>&#128200; Estatísticas</li>
-            <li>&#128193; Arquivos</li>
-        </ul>
-    </div>
-    <div class="main" id="main">
-        <div class="header">
-            <div class="title">Gerencie as solicitações dos condomínios</div>
-            <div class="date">16 Sexta-Feira JAN 2026</div>
-        </div>
-        <div class="search">
-            <input type="text" placeholder="Buscar por texto, assunto, morador...">
-            <select>
-                <option>Filtros</option>
-            </select>
-            <button>Buscar</button>
-        </div>
-        <div class="priorities">
-            <div class="card high">
-                <span class="icon">!</span>5<br>Alta Prioridade
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="user-badge">AD</div>
+                <h1>Sindi<span>bot</span></h1>
+                <p>Gestão de Demandas</p>
             </div>
-            <div class="card medium">
-                <span class="icon">!</span>4<br>Média Prioridade
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <span class="nav-icon">📊</span>
+                            Dashboard
+                            <span class="badge">18</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="calendar.html" class="nav-link">
+                            <span class="nav-icon">📅</span>
+                            Calendário
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">👥</span>
+                            Grupos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="statistics.html" class="nav-link">
+                            <span class="nav-icon">📈</span>
+                            Estatísticas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📁</span>
+                            Arquivados
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-top">
+                    <div>
+                        <button class="mobile-menu-toggle" id="menuToggle">☰</button>
+                        <h2>Dashboard</h2>
+                        <p>Gerencie as solicitações dos condomínios</p>
+                    </div>
+                    <div class="header-actions">
+                        <div class="date-badge">
+                            <div class="date-info">
+                                <div class="date-day">16</div>
+                                <div class="date-month">JAN</div>
+                            </div>
+                            <div class="date-year">2026</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-bar">
+                    <div class="search-input-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" placeholder="Buscar por texto, assunto, morador...">
+                    </div>
+                    <button class="btn btn-outline">
+                        🎚️ Filtros
+                    </button>
+                    <button class="btn btn-primary">
+                        🔍 Buscar
+                    </button>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <section class="stats-grid">
+                <div class="stat-card danger">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Alta Prioridade</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Média Prioridade</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">Baixa Prioridade</div>
+                </div>
+                <div class="stat-card info">
+                    <div class="stat-icon">✓</div>
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Resolvidos</div>
+                </div>
+            </section>
+
+            <!-- Filters -->
+            <div class="filters">
+                <select class="filter-select">
+                    <option>Todos os grupos</option>
+                    <option>Condomínio Garbins</option>
+                    <option>Condomínio Moreno</option>
+                </select>
+                <select class="filter-select">
+                    <option>Todas categorias</option>
+                    <option>Elevador</option>
+                    <option>Limpeza</option>
+                    <option>Animais</option>
+                </select>
+                <select class="filter-select">
+                    <option>Todas</option>
+                    <option>Hoje</option>
+                    <option>Esta semana</option>
+                </select>
+                <span class="result-count">18 solicitações encontradas</span>
             </div>
-            <div class="card low">
-                <span class="icon">&#10003;</span>9<br>Baixa Prioridade
-            </div>
-            <div class="card resolved">
-                <span class="icon">&#10003;</span>0<br>Resolvidos
-            </div>
-        </div>
-        <div class="filters">
-            <select>
-                <option>Todos os grupos</option>
-            </select>
-            <select>
-                <option>Todas categorias</option>
-            </select>
-            <select>
-                <option>Todas</option>
-            </select>
-        </div>
-        <div class="found">18 solicitações encontradas</div>
-        <div class="section">Hoje</div>
-        <div class="item high">
-            <div class="title">Elevador Alta</div>
-            <div class="condo">Condomínio Garbis - Dona Gigi</div>
-            <div class="desc">Estou presa no elevador, socorro! O elevador parou no 5° andar e não abre a porta</div>
-            <div class="time">1h atrás</div>
-            <button class="download">Baixar Mensagem</button>
-            <select>
-                <option>Responsável</option>
-            </select>
-            <button class="archive">Arquivar</button>
-        </div>
+
+            <!-- Requests List -->
+            <section class="requests-section">
+                <h3 class="section-header">Hoje</h3>
+                
+                <div class="request-card danger">
+                    <div class="request-header">
+                        <div>
+                            <div class="request-tags">
+                                <span class="tag danger">Elevador</span>
+                                <span class="tag alta">Alta</span>
+                            </div>
+                            <div class="request-title">Condomínio Garbins • Dona Gigi</div>
+                        </div>
+                    </div>
+                    <div class="request-description">
+                        Estou presa no elevador, socorro! O elevador parou no 5º andar e não abre a porta!
+                    </div>
+                    <div class="request-footer">
+                        <div class="request-time">
+                            🕐 1h atrás
+                        </div>
+                        <div class="request-actions">
+                            <button class="action-btn">
+                                👁️ Ver mensagem
+                            </button>
+                            <button class="action-btn success">
+                                ✓ Respondido
+                            </button>
+                            <button class="action-btn">
+                                📁 Arquivar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const main = document.getElementById('main');
-            sidebar.classList.toggle('hidden');
-            main.classList.toggle('full-width');
-        }
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-visible');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('mobile-visible');
+                }
+            }
+        });
+
+        // Update date
+        const updateDate = () => {
+            const now = new Date();
+            const day = now.getDate();
+            const month = now.toLocaleString('pt-BR', { month: 'short' }).toUpperCase();
+            const year = now.getFullYear();
+            
+            document.querySelector('.date-day').textContent = day;
+            document.querySelector('.date-month').textContent = month;
+            document.querySelector('.date-year').textContent = year;
+        };
+
+        updateDate();
     </script>
 </body>
 </html>
