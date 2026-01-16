@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sindi - Aprovação de Notas Fiscais</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 28px;
+            padding: 32px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid #eee;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid #FF6B35;
+            margin: 0 auto 16px;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: #222;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .filters-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+            margin-bottom: 24px;
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .filter-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        
+        select {
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            background: white;
+            color: #333;
+            transition: all 0.3s;
+            font-family: inherit;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #FF6B35;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+        }
+        
+        .invoice-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            border: 1px solid #eee;
+            transition: all 0.3s;
+        }
+        
+        .invoice-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+        }
+        
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            gap: 16px;
+        }
+        
+        .invoice-info {
+            flex: 1;
+        }
+        
+        .invoice-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 6px;
+        }
+        
+        .invoice-date {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .status-pending {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+        
+        .status-approved {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+        
+        .status-rejected {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .invoice-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-value {
+            font-size: 15px;
+            color: #222;
+            font-weight: 600;
+        }
+        
+        .detail-value.amount {
+            font-size: 18px;
+            color: #FF6B35;
+        }
+        
+        .invoice-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-view {
+            background: #E3F2FD;
+            color: #1976D2;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .btn-view:hover {
+            background: #BBDEFB;
+            transform: translateY(-1px);
+        }
+        
+        .btn-approve {
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(76,175,80,0.3);
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(76,175,80,0.4);
+        }
+        
+        .btn-reject {
+            background: linear-gradient(135deg, #f44336 0%, #e57373 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(244,67,54,0.3);
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .btn-reject:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(244,67,54,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #222;
+        }
+        
+        .btn-close {
+            background: transparent;
+            border: none;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .btn-close:hover {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .required {
+            color: #FF6B35;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
+            font-size: 15px;
+            background: white;
+            color: #333;
+            transition: all 0.3s;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #FF6B35;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .btn-cancel {
+            background: #e0e0e0;
+            color: #666;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .btn-cancel:hover {
+            background: #d0d0d0;
+        }
+        
+        .btn-confirm {
+            flex: 2;
+            justify-content: center;
+        }
+        
+        .empty-state {
+            background: white;
+            border-radius: 24px;
+            padding: 64px 32px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            color: #999;
+            font-size: 15px;
+        }
+        
+        .loading {
+            background: white;
+            border-radius: 24px;
+            padding: 48px 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #FF6B35;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .loading p {
+            color: #666;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 32px;
+            padding: 20px;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .footer span {
+            color: #FF6B35;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 24px;
+            }
+            
+            .subtitle {
+                font-size: 15px;
+            }
+            
+            .header {
+                padding: 24px 20px;
+            }
+            
+            .logo {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .invoice-header {
+                flex-direction: column;
+            }
+            
+            .invoice-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .invoice-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+            <h1>Aprovação de Notas Fiscais</h1>
+            <p class="subtitle">Revise e aprove as notas fiscais pendentes</p>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters-card">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Condomínio</label>
+                    <select id="filterCondominio" onchange="filterInvoices()">
+                        <option value="">Todos</option>
+                        <option value="Calton Hill">Calton Hill</option>
+                        <option value="Parque dos Príncipes">Parque dos Príncipes</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select id="filterStatus" onchange="filterInvoices()">
+                        <option value="">Todos</option>
+                        <option value="pending" selected>Pendente</option>
+                        <option value="approved">Aprovado</option>
+                        <option value="rejected">Rejeitado</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Categoria</label>
+                    <select id="filterCategoria" onchange="filterInvoices()">
+                        <option value="">Todas</option>
+                        <option value="Água">Água</option>
+                        <option value="Luz">Luz</option>
+                        <option value="Gás">Gás</option>
+                        <option value="Limpeza">Limpeza</option>
+                        <option value="Manutenção">Manutenção</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Carregando notas fiscais...</p>
+        </div>
+        
+        <!-- Invoices List -->
+        <div id="invoicesList"></div>
+        
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">📄</div>
+            <h3>Nenhuma nota fiscal encontrada</h3>
+            <p>Não há notas fiscais para os filtros selecionados</p>
+        </div>
+        
+        <div class="footer">
+            Sindi - Aprovação de Notas Fiscais <span>Sindibot - Impactar LLC</span>
+        </div>
+    </div>
+    
+    <!-- Approval Modal -->
+    <div class="modal" id="approvalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Aprovar Nota Fiscal</h2>
+                <button class="btn-close" onclick="closeModal('approvalModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Comentários (opcional)</label>
+                <textarea id="approvalComments" placeholder="Adicione observações sobre a aprovação..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('approvalModal')">Cancelar</button>
+                <button class="btn btn-confirm btn-approve" onclick="confirmApproval()">✓ Confirmar Aprovação</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Rejection Modal -->
+    <div class="modal" id="rejectionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Rejeitar Nota Fiscal</h2>
+                <button class="btn-close" onclick="closeModal('rejectionModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Motivo da Rejeição <span class="required">*</span></label>
+                <textarea id="rejectionReason" placeholder="Descreva o motivo da rejeição..." required></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-cancel" onclick="closeModal('rejectionModal')">Cancelar</button>
+                <button class="btn btn-confirm btn-reject" onclick="confirmRejection()">✗ Confirmar Rejeição</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // CONFIGURE YOUR N8N WEBHOOK URLs HERE
+        const WEBHOOK_GET_INVOICES = 'https://n8n.polenta.chat/webhook/get-invoices';
+        const WEBHOOK_APPROVE = 'https://n8n.polenta.chat/webhook/approve-invoice';
+        const WEBHOOK_REJECT = 'https://n8n.polenta.chat/webhook/reject-invoice';
+        
+        let invoices = [];
+        let currentInvoiceId = null;
+        
+        // Mock data for demonstration
+        const mockInvoices = [
+            {
+                id: 'INV-2025-001',
+                condominio: 'Calton Hill',
+                categoria: 'Luz',
+                fornecedor: 'COPEL',
+                valor: 1850.45,
+                data: '2025-01-10',
+                status: 'pending',
+                arquivo: 'nota_copel_jan2025.pdf',
+                uploadedBy: 'Maria Silva'
+            },
+            {
+                id: 'INV-2025-002',
+                condominio: 'Parque dos Príncipes',
+                categoria: 'Água',
+                fornecedor: 'SANEPAR',
+                valor: 920.30,
+                data: '2025-01-12',
+                status: 'pending',
+                arquivo: 'nota_sanepar_jan2025.pdf',
+                uploadedBy: 'João Santos'
+            },
+            {
+                id: 'INV-2025-003',
+                condominio: 'Calton Hill',
+                categoria: 'Limpeza',
+                fornecedor: 'Limpeza Total',
+                valor: 2300.00,
+                data: '2025-01-08',
+                status: 'approved',
+                arquivo: 'nota_limpeza_jan2025.pdf',
+                uploadedBy: 'Ana Costa',
+                approvedBy: 'Síndico João',
+                approvedAt: '2025-01-09'
+            },
+            {
+                id: 'INV-2025-004',
+                condominio: 'Calton Hill',
+                categoria: 'Manutenção',
+                fornecedor: 'Manutenção Express',
+                valor: 650.00,
+                data: '2025-01-15',
+                status: 'rejected',
+                arquivo: 'nota_manutencao_jan2025.pdf',
+                uploadedBy: 'Pedro Lima',
+                rejectedBy: 'Síndico João',
+                rejectedAt: '2025-01-16',
+                rejectionReason: 'Serviço não autorizado previamente'
+            }
+        ];
+        
+        // Load invoices on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadInvoices();
+        });
+        
+        async function loadInvoices() {
+            const loading = document.getElementById('loading');
+            const invoicesList = document.getElementById('invoicesList');
+            
+            loading.style.display = 'block';
+            invoicesList.innerHTML = '';
+            
+            try {
+                // Try to fetch from N8N
+                const response = await fetch(WEBHOOK_GET_INVOICES);
+                
+                if (response.ok) {
+                    invoices = await response.json();
+                } else {
+                    // Use mock data if API fails
+                    console.log('Using mock data');
+                    invoices = mockInvoices;
+                }
+            } catch (error) {
+                console.error('Error loading invoices:', error);
+                // Use mock data on error
+                invoices = mockInvoices;
+            }
+            
+            setTimeout(() => {
+                loading.style.display = 'none';
+                displayInvoices();
+            }, 500);
+        }
+        
+        function displayInvoices() {
+            const invoicesList = document.getElementById('invoicesList');
+            const emptyState = document.getElementById('emptyState');
+            
+            const filteredInvoices = getFilteredInvoices();
+            
+            if (filteredInvoices.length === 0) {
+                invoicesList.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            invoicesList.innerHTML = filteredInvoices.map(invoice => `
+                <div class="invoice-card">
+                    <div class="invoice-header">
+                        <div class="invoice-info">
+                            <div class="invoice-number">${invoice.id}</div>
+                            <div class="invoice-date">Enviado em ${formatDate(invoice.data)}</div>
+                        </div>
+                        <span class="status-badge status-${invoice.status}">
+                            ${getStatusText(invoice.status)}
+                        </span>
+                    </div>
+                    
+                    <div class="invoice-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Condomínio</span>
+                            <span class="detail-value">${invoice.condominio}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Categoria</span>
+                            <span class="detail-value">${invoice.categoria}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Fornecedor</span>
+                            <span class="detail-value">${invoice.fornecedor}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Valor</span>
+                            <span class="detail-value amount">R$ ${formatMoney(invoice.valor)}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="invoice-actions">
+                        <button class="btn btn-view" onclick="viewInvoice('${invoice.id}')">
+                            👁 Visualizar
+                        </button>
+                        ${invoice.status === 'pending' ? `
+                            <button class="btn btn-approve" onclick="openApprovalModal('${invoice.id}')">
+                                ✓ Aprovar
+                            </button>
+                            <button class="btn btn-reject" onclick="openRejectionModal('${invoice.id}')">
+                                ✗ Rejeitar
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function getFilteredInvoices() {
+            const filterCondominio = document.getElementById('filterCondominio').value;
+            const filterStatus = document.getElementById('filterStatus').value;
+            const filterCategoria = document.getElementById('filterCategoria').value;
+            
+            return invoices.filter(invoice => {
+                if (filterCondominio && invoice.condominio !== filterCondominio) return false;
+                if (filterStatus && invoice.status !== filterStatus) return false;
+                if (filterCategoria && invoice.categoria !== filterCategoria) return false;
+                return true;
+            });
+        }
+        
+        function filterInvoices() {
+            displayInvoices();
+        }
+        
+        function viewInvoice(id) {
+            const invoice = invoices.find(inv => inv.id === id);
+            if (invoice && invoice.arquivo) {
+                // Open file in new tab or trigger download
+                alert('Visualizar arquivo: ' + invoice.arquivo + '\n\nIntegre aqui com seu sistema de storage (S3, etc)');
+            }
+        }
+        
+        function openApprovalModal(id) {
+            currentInvoiceId = id;
+            document.getElementById('approvalComments').value = '';
+            document.getElementById('approvalModal').classList.add('show');
+        }
+        
+        function openRejectionModal(id) {
+            currentInvoiceId = id;
+            document.getElementById('rejectionReason').value = '';
+            document.getElementById('rejectionModal').classList.add('show');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+            currentInvoiceId = null;
+        }
+        
+        async function confirmApproval() {
+            if (!currentInvoiceId) return;
+            
+            const comments = document.getElementById('approvalComments').value.trim();
+            
+            try {
+                const response = await fetch(WEBHOOK_APPROVE, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        invoiceId: currentInvoiceId,
+                        comments: comments,
+                        approvedBy: 'Síndico',
+                        approvedAt: new Date().toISOString()
+                    })
+                });
+                
+                if (response.ok) {
+                    // Update local data
+                    const invoice = invoices.find(inv => inv.id === currentInvoiceId);
+                    if (invoice) {
+                        invoice.status = 'approved';
+                        invoice.approvedBy = 'Síndico';
+                        invoice.approvedAt = new Date().toISOString();
+                    }
+                    
+                    closeModal('approvalModal');
+                    displayInvoices();
+                    alert('✓ Nota fiscal aprovada com sucesso!');
+                } else {
+                    throw new Error('Erro ao aprovar');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('✗ Erro ao aprovar nota fiscal. Tente novamente.');
+            }
+        }
+        
+        async function confirmRejection() {
+            if (!currentInvoiceId) return;
+            
+            const reason = document.getElementById('rejectionReason').value.trim();
+            
+            if (!reason) {
+                alert('Por favor, informe o motivo da rejeição');
+                return;
+            }
+            
+            try {
+                const response = await fetch(WEBHOOK_REJECT, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        invoiceId: currentInvoiceId,
+                        reason: reason,
+                        rejectedBy: 'Síndico',
+                        rejectedAt: new Date().toISOString()
+                    })
+                });
+                
+                if (response.ok) {
+                    // Update local data
+                    const invoice = invoices.find(inv => inv.id === currentInvoiceId);
+                    if (invoice) {
+                        invoice.status = 'rejected';
+                        invoice.rejectedBy = 'Síndico';
+                        invoice.rejectedAt = new Date().toISOString();
+                        invoice.rejectionReason = reason;
+                    }
+                    
+                    closeModal('rejectionModal');
+                    displayInvoices();
+                    alert('✓ Nota fiscal rejeitada com sucesso!');
+                } else {
+                    throw new Error('Erro ao rejeitar');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('✗ Erro ao rejeitar nota fiscal. Tente novamente.');
+            }
+        }
+        
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': 'Pendente',
+                'approved': 'Aprovado',
+                'rejected': 'Rejeitado'
+            };
+            return statusMap[status] || status;
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+        
+        function formatMoney(value) {
+            return value.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        
+        // Close modal on outside click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('show');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
