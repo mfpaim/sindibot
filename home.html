@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZeroCaos Dashboard</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #fff;
+            border-right: 1px solid #dee2e6;
+            padding: 20px;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .logo {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .initials {
+            background-color: #fd7e14;
+            color: #fff;
+            border-radius: 50%;
+            padding: 5px 10px;
+            font-size: 0.8em;
+        }
+
+        .sidebar h1 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            padding: 10px 0;
+            cursor: pointer;
+        }
+
+        .sidebar li.active {
+            background-color: #ffe5b4;
+            border-radius: 5px;
+            padding-left: 10px;
+        }
+
+        .sidebar li:hover {
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            padding-left: 10px;
+        }
+
+        /* Main content */
+        .main {
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+            transition: margin-left 0.3s ease, width 0.3s ease;
+        }
+
+        .main.full-width {
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 1.2em;
+        }
+
+        .date {
+            background-color: #ffe4c4;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+
+        /* Search bar */
+        .search {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .search input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px 0 0 5px;
+        }
+
+        .search select {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-left: none;
+        }
+
+        .search button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+
+        /* Priorities cards */
+        .priorities {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            flex: 1;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .card .icon {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+
+        .card.high {
+            border: 2px solid #dc3545;
+        }
+
+        .card.high .icon {
+            color: #dc3545;
+        }
+
+        .card.medium {
+            border: 2px solid #ffc107;
+        }
+
+        .card.medium .icon {
+            color: #ffc107;
+        }
+
+        .card.low {
+            border: 2px solid #28a745;
+        }
+
+        .card.low .icon {
+            color: #28a745;
+        }
+
+        .card.resolved {
+            border: 2px solid #17a2b8;
+        }
+
+        .card.resolved .icon {
+            color: #17a2b8;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filters select {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            flex: 1;
+        }
+
+        .found {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        /* Section */
+        .section {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Item */
+        .item {
+            background-color: #f8d7da; /* Light red for high priority */
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .item .title {
+            font-weight: bold;
+        }
+
+        .item .condo {
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+
+        .item .desc {
+            margin: 10px 0;
+        }
+
+        .item .time {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+
+        .item button, .item select {
+            margin-right: 10px;
+            padding: 5px 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        .item button.download {
+            background-color: #f8f9fa;
+        }
+
+        .item button.archive {
+            background-color: #f8f9fa;
+        }
+
+        /* Menu toggle for mobile */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .priorities {
+                flex-direction: column;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .search {
+                flex-direction: column;
+            }
+
+            .search input, .search select, .search button {
+                border-radius: 5px;
+                margin-bottom: 10px;
+                border: 1px solid #dee2e6;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .date {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-toggle" onclick="toggleSidebar()">&#9776;</div>
+    <div class="sidebar" id="sidebar">
+        <div class="logo">ZeroCaos <span class="initials">AD</span></div>
+        <h1>Dashboard</h1>
+        <ul>
+            <li>Gestão de Demandas</li>
+            <li class="active">&#128202; Dashboard</li>
+            <li>&#128197; Calendário</li>
+            <li>&#128101; Grupos</li>
+            <li>&#128200; Estatísticas</li>
+            <li>&#128193; Arquivos</li>
+        </ul>
+    </div>
+    <div class="main" id="main">
+        <div class="header">
+            <div class="title">Gerencie as solicitações dos condomínios</div>
+            <div class="date">16 Sexta-Feira JAN 2026</div>
+        </div>
+        <div class="search">
+            <input type="text" placeholder="Buscar por texto, assunto, morador...">
+            <select>
+                <option>Filtros</option>
+            </select>
+            <button>Buscar</button>
+        </div>
+        <div class="priorities">
+            <div class="card high">
+                <span class="icon">!</span>5<br>Alta Prioridade
+            </div>
+            <div class="card medium">
+                <span class="icon">!</span>4<br>Média Prioridade
+            </div>
+            <div class="card low">
+                <span class="icon">&#10003;</span>9<br>Baixa Prioridade
+            </div>
+            <div class="card resolved">
+                <span class="icon">&#10003;</span>0<br>Resolvidos
+            </div>
+        </div>
+        <div class="filters">
+            <select>
+                <option>Todos os grupos</option>
+            </select>
+            <select>
+                <option>Todas categorias</option>
+            </select>
+            <select>
+                <option>Todas</option>
+            </select>
+        </div>
+        <div class="found">18 solicitações encontradas</div>
+        <div class="section">Hoje</div>
+        <div class="item high">
+            <div class="title">Elevador Alta</div>
+            <div class="condo">Condomínio Garbis - Dona Gigi</div>
+            <div class="desc">Estou presa no elevador, socorro! O elevador parou no 5° andar e não abre a porta</div>
+            <div class="time">1h atrás</div>
+            <button class="download">Baixar Mensagem</button>
+            <select>
+                <option>Responsável</option>
+            </select>
+            <button class="archive">Arquivar</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const main = document.getElementById('main');
+            sidebar.classList.toggle('hidden');
+            main.classList.toggle('full-width');
+        }
+    </script>
+</body>
+</html>
