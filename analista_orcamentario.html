@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sindi - Analista de Previsões Orçamentárias</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9fa; min-height: 100vh; padding: 20px; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .header { background: white; border-radius: 28px; padding: 32px 28px; margin-bottom: 24px; box-shadow: 0 15px 45px rgba(0,0,0,0.08); text-align: center; border: 1px solid #eee; }
+    .logo { width: 80px; height: 80px; border-radius: 50%; border: 4px solid #FF6B35; margin: 0 auto 16px; box-shadow: 0 4px 12px rgba(255,107,53,0.25); }
+    h1 { font-size: 28px; color: #222; margin-bottom: 8px; font-weight: 700; }
+    .subtitle { color: #666; font-size: 16px; }
+
+    .form-card { background: white; border-radius: 24px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; margin-bottom: 24px; }
+
+    .info-banner { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 16px; border-radius: 8px; margin-bottom: 24px; font-size: 14px; color: #1565c0; }
+    .info-banner strong { display: block; margin-bottom: 4px; }
+    .info-banner ul { margin-left: 20px; margin-top: 8px; }
+    .info-banner li { margin-bottom: 4px; }
+
+    .section-title { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #f0f0f0; }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 14px; font-weight: 600; color: #333; margin-bottom: 8px; }
+    .required { color: #FF6B35; }
+
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      font-size: 15px;
+      background: white;
+      color: #333;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    textarea { resize: vertical; min-height: 120px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #FF6B35; box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
+    .form-hint { font-size: 13px; color: #999; margin-top: 6px; }
+
+    .file-upload-area { border: 3px dashed #e0e0e0; border-radius: 16px; padding: 32px; text-align: center; transition: all 0.3s; cursor: pointer; background: #fafafa; }
+    .file-upload-area:hover { border-color: #FF6B35; background: #fff8f5; }
+    .file-upload-area.dragover { border-color: #FF6B35; background: #fff8f5; transform: scale(1.02); }
+    .file-upload-icon { font-size: 48px; margin-bottom: 16px; }
+    .file-upload-text { font-size: 16px; color: #333; font-weight: 600; margin-bottom: 8px; }
+    .file-upload-hint { font-size: 14px; color: #999; }
+    input[type="file"] { display: none; }
+
+    .file-list { margin-top: 16px; }
+    .file-item { background: #f8f9fa; border: 2px solid #e9ecef; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .file-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+    .file-icon { font-size: 24px; }
+    .file-details { flex: 1; min-width: 0; }
+    .file-name { font-size: 14px; font-weight: 600; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .file-size { font-size: 12px; color: #999; }
+
+    .btn-remove-file { background: #ffebee; color: #c62828; border: 2px solid #ef5350; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+    .btn-remove-file:hover { background: #ef5350; color: white; }
+
+    .btn-group { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .btn { flex: 1; min-width: 200px; padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; }
+    .btn-analyze { background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%); color: white; box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+    .btn-analyze:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,53,0.4); }
+    .btn-clear { background: #f5f5f5; color: #666; border: 2px solid #e0e0e0; }
+    .btn-clear:hover:not(:disabled) { background: #e8e8e8; border-color: #FF6B35; color: #FF6B35; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .error-message { background: #ffebee; border: 2px solid #f44336; color: #c62828; padding: 16px; border-radius: 14px; margin-bottom: 24px; text-align: center; font-weight: 600; display: none; }
+    .error-message.show { display: block; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .results-card { background: white; border-radius: 24px; padding: 32px 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); border: 1px solid #eee; display: none; }
+    .results-card.show { display: block; animation: slideUp 0.4s ease; }
+
+    .loading { text-align: center; padding: 40px; display: none; }
+    .loading.show { display: block; }
+    .loading-spinner { width: 48px; height: 48px; border: 4px solid #f3f3f3; border-top: 4px solid #FF6B35; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loading-text { color: #666; font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .loading-subtext { color: #999; font-size: 14px; }
+
+    .contract-header { background: #f8f9fa; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .contract-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .info-label { font-size: 12px; color: #888; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+    .info-value { font-size: 15px; color: #333; font-weight: 600; }
+
+    .analysis-section { margin-bottom: 32px; }
+    .analysis-section:last-child { margin-bottom: 0; }
+    .analysis-title { font-size: 20px; font-weight: 700; color: #222; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .analysis-content { background: #f8f9fa; border-radius: 12px; padding: 20px; line-height: 1.8; color: #333; overflow-wrap: anywhere; }
+    .analysis-content h3 { font-size: 16px; color: #FF6B35; margin-top: 16px; margin-bottom: 8px; }
+    .analysis-content h3:first-child { margin-top: 0; }
+    .analysis-content ul { margin-left: 20px; margin-top: 8px; }
+    .analysis-content li { margin-bottom: 8px; }
+    .analysis-content strong { color: #222; }
+
+    .footer { text-align: center; margin-top: 32px; padding: 20px; color: #888; font-size: 14px; }
+    .footer span { color: #FF6B35; font-weight: bold; }
+
+    .select-wrapper { position: relative; }
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 45px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    @media (max-width: 760px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      body { padding: 14px; }
+      .header { padding: 26px 18px; }
+      .form-card, .results-card { padding: 26px 18px; }
+    }
+
+    .download-link { display: inline-block; margin-top: 12px; padding: 10px 16px; background: #e3f2fd; color: #1565c0; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; transition: all 0.3s; }
+    .download-link:hover { background: #1565c0; color: white; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Analista de Previsões Orçamentárias</h1>
+      <p class="subtitle">Envie sua planilha/arquivo e receba uma análise inteligente da previsão mensal</p>
+    </div>
+
+    <div id="errorMessage" class="error-message"><span id="errorText">Erro ao analisar previsão. Tente novamente.</span></div>
+
+    <div class="form-card">
+      <div class="info-banner">
+        <strong>Como funciona</strong>
+        Faça upload do arquivo de previsão e o N8N processará para gerar:
+        <ul>
+          <li>Resumo executivo da previsão</li>
+          <li>Validação de totais e consistências</li>
+          <li>Classificação de despesas e variações relevantes</li>
+          <li>Checagem de “previsão fixa” vs. despesas variáveis</li>
+          <li>Recomendações para ajustes e próximos passos</li>
+        </ul>
+      </div>
+
+      <form id="analysisForm">
+        <div class="section-title">Upload da Previsão</div>
+
+        <div class="form-group">
+          <label class="form-label">Arquivo da Previsão <span class="required">*</span></label>
+          <div class="file-upload-area" id="fileUploadArea">
+            <div class="file-upload-icon">📊</div>
+            <div class="file-upload-text">Clique ou arraste o arquivo aqui</div>
+            <div class="file-upload-hint">XLSX, XLS, CSV, PDF, PNG/JPG até 10MB</div>
+          </div>
+          <input
+            type="file"
+            id="fileInput"
+            accept=".xlsx,.xls,.csv,.pdf,.png,.jpg,.jpeg"
+            required
+          >
+          <div id="fileList" class="file-list"></div>
+          <div class="form-hint">
+            Dica: se for uma imagem (print), envie PNG/JPG; se for planilha, XLSX/CSV é o ideal.
+          </div>
+        </div>
+
+        <div class="section-title">Dados da Previsão</div>
+
+        <div class="form-group">
+          <label class="form-label">Condomínio <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="condominio" required>
+              <option value="">Selecione o condomínio</option>
+              <option value="Calton Hill">Calton Hill</option>
+              <option value="Parque dos Príncipes">Parque dos Príncipes</option>
+              <option value="Edifício Central Park">Edifício Central Park</option>
+              <option value="Residencial Jardins">Residencial Jardins</option>
+              <option value="Condomínio Vista Verde">Condomínio Vista Verde</option>
+              <option value="Torres do Sol">Torres do Sol</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Competência (mês/ano) <span class="required">*</span></label>
+            <input type="text" id="competencia" placeholder="Ex: set/25" required>
+            <div class="form-hint">Use o mesmo padrão do seu modelo (ex: set/25, 09/2025, etc.)</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tipo de Previsão <span class="required">*</span></label>
+            <div class="select-wrapper">
+              <select id="tipoPrevisao" required>
+                <option value="">Selecione</option>
+                <option value="previsao-orcamentaria-mensal">Previsão orçamentária mensal</option>
+                <option value="revisao-orcamentaria">Revisão orçamentária</option>
+                <option value="orcamento-anual-rateio-mensal">Orçamento anual (rateio mensal)</option>
+                <option value="outros">Outros</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-3">
+          <div class="form-group">
+            <label class="form-label">Previsão fixa (R$)</label>
+            <input type="text" id="previsaoFixa" placeholder="Ex: 8623,33">
+            <div class="form-hint">Se não souber, deixe em branco (o N8N pode calcular)</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Unidades</label>
+            <input type="number" id="unidades" placeholder="Ex: 20" min="0" step="1">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Critério de rateio</label>
+            <div class="select-wrapper">
+              <select id="criterioRateio">
+                <option value="">Selecione</option>
+                <option value="por-fracao">Por fração</option>
+                <option value="por-unidade">Por unidade</option>
+                <option value="por-consumo">Por consumo</option>
+                <option value="misto">Misto</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Observações adicionais</label>
+          <textarea id="observacoes" placeholder="Ex: itens extraordinários (salão de festas), mudanças de contrato, variações pontuais, etc."></textarea>
+        </div>
+
+        <div class="btn-group">
+          <button type="submit" class="btn btn-analyze" id="analyzeBtn">Analisar Previsão</button>
+          <button type="button" class="btn btn-clear" id="clearBtn">Limpar</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="loadingState" class="loading">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Analisando previsão...</div>
+      <div class="loading-subtext">Isso pode levar alguns instantes</div>
+    </div>
+
+    <div id="resultsCard" class="results-card">
+      <div class="section-title">Resultado da Análise</div>
+      <div id="analysisResults"></div>
+    </div>
+
+    <div class="footer">Sindi - Analista de Previsões <span>Sindibot - Impactar LLC</span></div>
+  </div>
+
+  <script>
+    // IMPORTANTE: Substitua pela URL do seu webhook do N8N
+    var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/analisar-previsao-orcamentaria';
+
+    var selectedFile = null;
+
+    var fileUploadArea = document.getElementById('fileUploadArea');
+    var fileInput = document.getElementById('fileInput');
+    var fileList = document.getElementById('fileList');
+    var analysisForm = document.getElementById('analysisForm');
+    var clearBtn = document.getElementById('clearBtn');
+    var analyzeBtn = document.getElementById('analyzeBtn');
+
+    fileUploadArea.addEventListener('click', function() {
+      fileInput.click();
+    });
+
+    fileUploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      fileUploadArea.classList.add('dragover');
+    });
+
+    fileUploadArea.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      fileUploadArea.classList.remove('dragover');
+    });
+
+    fileUploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      fileUploadArea.classList.remove('dragover');
+      if (e.dataTransfer.files.length > 0) handleFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files.length > 0) handleFile(fileInput.files[0]);
+    });
+
+    function handleFile(file) {
+      if (file.size > 10 * 1024 * 1024) {
+        showError('❌ Arquivo muito grande. Máximo 10MB.');
+        return;
+      }
+
+      // Alguns navegadores não preenchem file.type para .csv/.xls (depende do SO),
+      // então validamos também por extensão:
+      var okExt = ['xlsx','xls','csv','pdf','png','jpg','jpeg'];
+      var name = (file.name || '').toLowerCase();
+      var ext = name.includes('.') ? name.split('.').pop() : '';
+      if (!okExt.includes(ext)) {
+        showError('❌ Tipo de arquivo inválido. Use XLSX, XLS, CSV, PDF, PNG ou JPG.');
+        return;
+      }
+
+      selectedFile = file;
+      displayFile(file);
+      hideError();
+    }
+
+    function displayFile(file) {
+      var size = (file.size / 1024).toFixed(2);
+      var unit = 'KB';
+      if (size > 1024) { size = (size / 1024).toFixed(2); unit = 'MB'; }
+
+      var icon = '📄';
+      var name = (file.name || '').toLowerCase();
+      if (name.endsWith('.xlsx') || name.endsWith('.xls') || name.endsWith('.csv')) icon = '📊';
+      else if (name.endsWith('.pdf')) icon = '📕';
+      else if (name.endsWith('.png') || name.endsWith('.jpg') || name.endsWith('.jpeg')) icon = '🖼️';
+
+      fileList.innerHTML =
+        '<div class="file-item">' +
+          '<div class="file-info">' +
+            '<div class="file-icon">' + icon + '</div>' +
+            '<div class="file-details">' +
+              '<div class="file-name" title="' + escapeHtml(file.name) + '">' + escapeHtml(file.name) + '</div>' +
+              '<div class="file-size">' + size + ' ' + unit + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<button type="button" class="btn-remove-file" onclick="removeFile()">✖ Remover</button>' +
+        '</div>';
+    }
+
+    function removeFile() {
+      selectedFile = null;
+      fileInput.value = '';
+      fileList.innerHTML = '';
+    }
+
+    clearBtn.addEventListener('click', function() {
+      analysisForm.reset();
+      removeFile();
+      hideError();
+      document.getElementById('resultsCard').classList.remove('show');
+    });
+
+    analysisForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      if (!selectedFile) {
+        showError('❌ Por favor, selecione um arquivo.');
+        return;
+      }
+
+      var condominio = document.getElementById('condominio').value;
+      var competencia = document.getElementById('competencia').value.trim();
+      var tipoPrevisao = document.getElementById('tipoPrevisao').value;
+
+      if (!condominio || !competencia || !tipoPrevisao) {
+        showError('❌ Preencha os campos obrigatórios (Condomínio, Competência e Tipo de Previsão).');
+        return;
+      }
+
+      hideError();
+      document.getElementById('resultsCard').classList.remove('show');
+      document.getElementById('loadingState').classList.add('show');
+
+      analyzeBtn.disabled = true;
+      analyzeBtn.textContent = '⏳ Analisando...';
+
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var dataUrl = ev.target.result || '';
+        var base64Data = dataUrl.includes(',') ? dataUrl.split(',')[1] : '';
+
+        var payload = {
+          condominio: condominio,
+          competencia: competencia,
+          tipoPrevisao: tipoPrevisao,
+          previsaoFixa: document.getElementById('previsaoFixa').value.trim(),
+          unidades: document.getElementById('unidades').value ? Number(document.getElementById('unidades').value) : null,
+          criterioRateio: document.getElementById('criterioRateio').value,
+          observacoes: document.getElementById('observacoes').value,
+          arquivo: {
+            nome: selectedFile.name,
+            tipo: selectedFile.type || null,
+            tamanho: selectedFile.size,
+            extensao: (selectedFile.name || '').toLowerCase().split('.').pop(),
+            conteudoBase64: base64Data
+          },
+          timestamp: new Date().toISOString()
+        };
+
+        fetch(WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(function(r) {
+          if (r.ok) return r.json();
+          return r.text().then(function(t){ throw new Error(t || 'Erro na análise'); });
+        })
+        .then(function(data) {
+          document.getElementById('loadingState').classList.remove('show');
+          displayResults(data, payload);
+        })
+        .catch(function(err) {
+          console.error('Erro:', err);
+          document.getElementById('loadingState').classList.remove('show');
+          showError('❌ Erro ao analisar previsão. Verifique o webhook e tente novamente.');
+        })
+        .finally(function() {
+          analyzeBtn.disabled = false;
+          analyzeBtn.textContent = 'Analisar Previsão';
+        });
+      };
+
+      reader.readAsDataURL(selectedFile);
+    });
+
+    function displayResults(data, sentPayload) {
+      var html = '';
+
+      // Cabeçalho-resumo (mesmo “estilo” do card)
+      html += '<div class="contract-header"><div class="contract-info">';
+      html += '<div class="info-item"><div class="info-label">Condomínio</div><div class="info-value">' + escapeHtml(sentPayload.condominio) + '</div></div>';
+      html += '<div class="info-item"><div class="info-label">Competência</div><div class="info-value">' + escapeHtml(sentPayload.competencia) + '</div></div>';
+      html += '<div class="info-item"><div class="info-label">Tipo</div><div class="info-value">' + escapeHtml(readableTipo(sentPayload.tipoPrevisao)) + '</div></div>';
+      html += '</div></div>';
+
+      // Se o N8N devolver HTML pronto (recomendado), renderiza diretamente
+      if (data && data.htmlResumo) {
+        html += '<div class="analysis-section"><div class="analysis-title">📋 Análise Completa</div><div class="analysis-content">' + data.htmlResumo + '</div></div>';
+      } else {
+        // Caso devolva texto/markdown em campos separados
+        if (data && (data.resumoExecutivo || data.resumo)) {
+          html += '<div class="analysis-section"><div class="analysis-title">📋 Resumo Executivo</div><div class="analysis-content">' + formatText(data.resumoExecutivo || data.resumo) + '</div></div>';
+        }
+        if (data && (data.validacoes || data.pontosAtencao || data.alertas)) {
+          html += '<div class="analysis-section"><div class="analysis-title">⚠️ Validações / Pontos de Atenção</div><div class="analysis-content">' + formatText(data.validacoes || data.pontosAtencao || data.alertas) + '</div></div>';
+        }
+        if (data && (data.recomendacoes || data.proximosPassos)) {
+          html += '<div class="analysis-section"><div class="analysis-title">✅ Recomendações</div><div class="analysis-content">' + formatText(data.recomendacoes || data.proximosPassos) + '</div></div>';
+        }
+
+        // Fallback final: mostrar JSON bruto, se nada vier estruturado
+        if (!data || (!data.htmlResumo && !data.resumoExecutivo && !data.resumo && !data.validacoes && !data.pontosAtencao && !data.alertas && !data.recomendacoes && !data.proximosPassos)) {
+          html += '<div class="analysis-section"><div class="analysis-title">📦 Retorno do N8N</div><div class="analysis-content"><pre style="white-space:pre-wrap;margin:0;">' +
+                  escapeHtml(JSON.stringify(data, null, 2)) +
+                  '</pre></div></div>';
+        }
+      }
+
+      if (data && data.urlArquivoOriginal) {
+        html += '<div class="analysis-section"><div class="analysis-title">🔎 Arquivo Original</div><a href="' + data.urlArquivoOriginal + '" target="_blank" class="download-link">📥 Baixar arquivo enviado</a></div>';
+      }
+
+      document.getElementById('analysisResults').innerHTML = html;
+      document.getElementById('resultsCard').classList.add('show');
+      document.getElementById('resultsCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function readableTipo(v) {
+      if (!v) return '';
+      var map = {
+        'previsao-orcamentaria-mensal': 'Previsão orçamentária mensal',
+        'revisao-orcamentaria': 'Revisão orçamentária',
+        'orcamento-anual-rateio-mensal': 'Orçamento anual (rateio mensal)',
+        'outros': 'Outros'
+      };
+      return map[v] || v;
+    }
+
+    function showError(msg) {
+      document.getElementById('errorText').textContent = msg;
+      document.getElementById('errorMessage').classList.add('show');
+    }
+    function hideError() {
+      document.getElementById('errorMessage').classList.remove('show');
+    }
+
+    // Converte texto simples/markdown básico em HTML (mesma estratégia do seu padrão)
+    function formatText(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/### (.*?)(\n|<br>|$)/g, '<h3>$1</h3>')
+        .replace(/- (.*?)(\n|<br>|$)/g, '<li>$1</li>')
+        .replace(/(<li>.*?<\/li>)+/g, '<ul>$&</ul>');
+    }
+
+    function escapeHtml(s) {
+      return String(s || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
