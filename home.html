@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sindibot - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,7 +13,7 @@
         }
 
         :root {
-            --primary: #FF6B35;
+            --primary: #F17A3E;
             --primary-dark: #E55A2B;
             --danger: #EF4444;
             --warning: #F59E0B;
@@ -20,10 +21,11 @@
             --info: #3B82F6;
             --bg-light: #F9FAFB;
             --bg-white: #FFFFFF;
-            --text-primary: #111827;
-            --text-secondary: #6B7280;
+            --bg-sidebar: #EEEEEE;
+            --text-primary: #4A4A4A;
+            --text-secondary: #8B8B8B;
             --border: #E5E7EB;
-            --sidebar-width: 200px;
+            --sidebar-width: 220px;
         }
 
         body {
@@ -41,9 +43,9 @@
         /* Sidebar */
         .sidebar {
             width: var(--sidebar-width);
-            background: var(--bg-white);
-            border-right: 1px solid var(--border);
-            padding: 24px 0;
+            background: var(--bg-sidebar);
+            border-right: none;
+            padding: 32px 0;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
@@ -56,29 +58,17 @@
         }
 
         .logo {
-            padding: 0 20px 24px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 24px;
-        }
-
-        .logo h1 {
-            font-size: 24px;
-            color: var(--text-primary);
-        }
-
-        .logo span {
-            color: var(--primary);
-        }
-
-        .logo p {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 4px;
+            padding: 0 28px 32px;
+            border-bottom: none;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
 
         .user-badge {
-            width: 40px;
-            height: 40px;
+            width: 56px;
+            height: 56px;
             background: var(--primary);
             border-radius: 50%;
             display: flex;
@@ -86,8 +76,26 @@
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 12px;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            color: var(--text-primary);
+            font-weight: 600;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .logo-text h1 span {
+            color: var(--primary);
+        }
+
+        .logo-text p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1;
         }
 
         .nav-menu {
@@ -95,48 +103,63 @@
         }
 
         .nav-item {
-            margin: 4px 12px;
+            margin: 0 16px 8px;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            padding: 10px 12px;
-            color: var(--text-secondary);
+            padding: 14px 16px;
+            color: var(--text-primary);
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 12px;
             transition: all 0.2s;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
+            position: relative;
         }
 
         .nav-link:hover {
-            background: var(--bg-light);
-            color: var(--text-primary);
+            background: rgba(241, 122, 62, 0.08);
         }
 
         .nav-link.active {
             background: var(--primary);
             color: white;
+            box-shadow: 0 2px 8px rgba(241, 122, 62, 0.3);
         }
 
         .nav-link .badge {
             margin-left: auto;
-            background: var(--primary);
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 13px;
             font-weight: 600;
+            min-width: 28px;
+            text-align: center;
         }
 
         .nav-link.active .badge {
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
         }
 
         .nav-icon {
-            margin-right: 10px;
-            font-size: 18px;
+            margin-right: 14px;
+            font-size: 20px;
+            width: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: inherit;
+        }
+
+        .stat-icon i,
+        .search-icon i,
+        .action-btn i {
+            font-size: inherit;
         }
 
         /* Main Content */
@@ -320,7 +343,7 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 12px;
-            font-size: 20px;
+            font-size: 18px;
         }
 
         .stat-card.danger .stat-icon { background: #FEE2E2; color: var(--danger); }
@@ -497,6 +520,11 @@
             font-size: 24px;
             cursor: pointer;
             color: var(--text-primary);
+            padding: 8px;
+        }
+
+        .mobile-menu-toggle i {
+            font-size: 24px;
         }
 
         /* Responsive */
@@ -555,39 +583,41 @@
         <aside class="sidebar" id="sidebar">
             <div class="logo">
                 <div class="user-badge">AD</div>
-                <h1>Sindi<span>bot</span></h1>
-                <p>Gestão de Demandas</p>
+                <div class="logo-text">
+                    <h1>Zero<span>Caos</span></h1>
+                    <p>Gestão de Demandas</p>
+                </div>
             </div>
             <nav>
                 <ul class="nav-menu">
                     <li class="nav-item">
                         <a href="#" class="nav-link active">
-                            <span class="nav-icon">📊</span>
+                            <span class="nav-icon"><i class="fas fa-th-large"></i></span>
                             Dashboard
                             <span class="badge">18</span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="calendar.html" class="nav-link">
-                            <span class="nav-icon">📅</span>
+                            <span class="nav-icon"><i class="far fa-calendar-alt"></i></span>
                             Calendário
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link">
-                            <span class="nav-icon">👥</span>
+                            <span class="nav-icon"><i class="fas fa-users"></i></span>
                             Grupos
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="statistics.html" class="nav-link">
-                            <span class="nav-icon">📈</span>
+                            <span class="nav-icon"><i class="fas fa-chart-bar"></i></span>
                             Estatísticas
                         </a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link">
-                            <span class="nav-icon">📁</span>
+                            <span class="nav-icon"><i class="fas fa-archive"></i></span>
                             Arquivados
                         </a>
                     </li>
@@ -601,7 +631,9 @@
             <header class="header">
                 <div class="header-top">
                     <div>
-                        <button class="mobile-menu-toggle" id="menuToggle">☰</button>
+                        <button class="mobile-menu-toggle" id="menuToggle">
+                            <i class="fas fa-bars"></i>
+                        </button>
                         <h2>Dashboard</h2>
                         <p>Gerencie as solicitações dos condomínios</p>
                     </div>
@@ -617,14 +649,14 @@
                 </div>
                 <div class="search-bar">
                     <div class="search-input-wrapper">
-                        <span class="search-icon">🔍</span>
+                        <span class="search-icon"><i class="fas fa-search"></i></span>
                         <input type="text" class="search-input" placeholder="Buscar por texto, assunto, morador...">
                     </div>
                     <button class="btn btn-outline">
-                        🎚️ Filtros
+                        <i class="fas fa-sliders-h"></i> Filtros
                     </button>
                     <button class="btn btn-primary">
-                        🔍 Buscar
+                        <i class="fas fa-search"></i> Buscar
                     </button>
                 </div>
             </header>
@@ -632,22 +664,22 @@
             <!-- Stats Cards -->
             <section class="stats-grid">
                 <div class="stat-card danger">
-                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
                     <div class="stat-value">5</div>
                     <div class="stat-label">Alta Prioridade</div>
                 </div>
                 <div class="stat-card warning">
-                    <div class="stat-icon">⏱️</div>
+                    <div class="stat-icon"><i class="far fa-clock"></i></div>
                     <div class="stat-value">4</div>
                     <div class="stat-label">Média Prioridade</div>
                 </div>
                 <div class="stat-card success">
-                    <div class="stat-icon">✅</div>
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
                     <div class="stat-value">9</div>
                     <div class="stat-label">Baixa Prioridade</div>
                 </div>
                 <div class="stat-card info">
-                    <div class="stat-icon">✓</div>
+                    <div class="stat-icon"><i class="fas fa-check-double"></i></div>
                     <div class="stat-value">0</div>
                     <div class="stat-label">Resolvidos</div>
                 </div>
@@ -693,17 +725,17 @@
                     </div>
                     <div class="request-footer">
                         <div class="request-time">
-                            🕐 1h atrás
+                            <i class="far fa-clock"></i> 1h atrás
                         </div>
                         <div class="request-actions">
                             <button class="action-btn">
-                                👁️ Ver mensagem
+                                <i class="far fa-eye"></i> Ver mensagem
                             </button>
                             <button class="action-btn success">
-                                ✓ Respondido
+                                <i class="fas fa-check"></i> Respondido
                             </button>
                             <button class="action-btn">
-                                📁 Arquivar
+                                <i class="fas fa-archive"></i> Arquivar
                             </button>
                         </div>
                     </div>
