@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sindi - Gerador de Avisos Tipo "Posts"</title>
+  <title>Sindi - Gerador de Posts</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    f
+    
     body {
       font-family: system-ui, -apple-system, sans-serif;
       background: white;
@@ -123,115 +123,6 @@
       margin-top: 6px;
     }
     
-    .image-upload-area {
-      border: 3px dashed #e0e0e0;
-      border-radius: 14px;
-      padding: 32px;
-      text-align: center;
-      background: #fafafa;
-      transition: all 0.3s;
-      cursor: pointer;
-      position: relative;
-    }
-    
-    .image-upload-area:hover {
-      border-color: #FF6B35;
-      background: #fff5f2;
-    }
-    
-    .image-upload-area.dragover {
-      border-color: #FF6B35;
-      background: #fff5f2;
-      transform: scale(1.02);
-    }
-    
-    .upload-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
-    }
-    
-    .upload-text {
-      font-size: 16px;
-      color: #666;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    
-    .upload-hint {
-      font-size: 13px;
-      color: #999;
-    }
-    
-    input[type="file"] {
-      display: none;
-    }
-    
-    .image-preview {
-      margin-top: 16px;
-      display: none;
-      position: relative;
-    }
-    
-    .image-preview.show {
-      display: block;
-    }
-    
-    .preview-image {
-      width: 100%;
-      max-height: 400px;
-      object-fit: cover;
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    
-    .remove-image {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: #f44336;
-      color: white;
-      border: none;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      font-size: 20px;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .remove-image:hover {
-      background: #d32f2f;
-      transform: scale(1.1);
-    }
-    
-    .checkbox-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      background: #f9f9f9;
-      border-radius: 12px;
-      margin-top: 12px;
-    }
-    
-    .checkbox-container input[type="checkbox"] {
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
-      accent-color: #FF6B35;
-    }
-    
-    .checkbox-container label {
-      font-size: 15px;
-      color: #444;
-      cursor: pointer;
-      user-select: none;
-    }
-    
     .btn-submit {
       width: 100%;
       background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
@@ -294,7 +185,7 @@
     }
     
     .download-link {
-      background: linear-gradient(135deg, #E1306C 0%, #C13584 50%, #833AB4 100%);
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
       border: none;
       color: white;
       padding: 20px;
@@ -302,7 +193,7 @@
       margin-top: 16px;
       text-align: center;
       display: none;
-      box-shadow: 0 6px 20px rgba(225, 48, 108, 0.3);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.3);
     }
     
     .download-link.show {
@@ -389,6 +280,28 @@
       color: #f44336;
       font-weight: 600;
     }
+    
+    .info-banner {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: start;
+      gap: 12px;
+    }
+    
+    .info-banner-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    
+    .info-banner-text {
+      font-size: 14px;
+      color: #1565c0;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -396,7 +309,7 @@
     <div class="header">
       <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
       <h1>Gerador de Posts</h1>
-      <p class="subtitle">Crie avisos tipos "posts" profissionais para Grupos em segundos</p>
+      <p class="subtitle">Crie avisos padronizados para seu condomínio</p>
     </div>
     
     <div id="successMessage" class="success-message">
@@ -409,10 +322,17 @@
     
     <div id="downloadLink" class="download-link">
       <div class="download-link-header">
-        <span>📸</span>
-        <span>Seu aviso está pronto!</span>
+        <span>📱</span>
+        <span>Seu post está pronto!</span>
       </div>
-      <a href="#" target="_blank" id="pngLink">Baixar PNG para postar no Grupo</a>
+      <a href="#" target="_blank" id="pngLink">Baixar Imagem PNG</a>
+    </div>
+    
+    <div class="info-banner">
+      <div class="info-banner-icon">💡</div>
+      <div class="info-banner-text">
+        <strong>Dica:</strong> O post gerado pode ser compartilhado em grupos de WhatsApp, redes sociais ou murais digitais do condomínio.
+      </div>
     </div>
     
     <div class="form-card">
@@ -475,31 +395,8 @@
           <div class="form-hint">Opcional - preencha se houver horário específico</div>
         </div>
         
-        <div class="section-title">🖼️ Imagem do Post</div>
-        
-        <div class="form-group">
-          <label class="form-label">Adicionar Imagem Personalizada</label>
-          <div class="image-upload-area" id="uploadArea">
-            <div class="upload-icon">📷</div>
-            <div class="upload-text">Clique ou arraste uma imagem</div>
-            <div class="upload-hint">PNG, JPG ou JPEG (máx. 5MB)</div>
-          </div>
-          <input type="file" id="imageInput" accept="image/png,image/jpeg,image/jpg">
-          
-          <div class="image-preview" id="imagePreview">
-            <img id="previewImg" class="preview-image" alt="Preview">
-            <button type="button" class="remove-image" id="removeImage">×</button>
-          </div>
-          
-          <div class="checkbox-container">
-            <input type="checkbox" id="useGenericImage" checked>
-            <label for="useGenericImage">Usar imagem genérica padrão do sistema</label>
-          </div>
-          <div class="form-hint">Se marcado, uma imagem padrão será usada caso não envie uma personalizada</div>
-        </div>
-        
         <button type="submit" class="btn-submit" id="submitBtn">
-          Gerar Aviso para Grupo
+          Gerar Post
         </button>
       </form>
     </div>
@@ -510,7 +407,7 @@
   </div>
   
   <script>
-    var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/grupo-post';
+    var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/gerar-post';
     
     var form = document.getElementById('postForm');
     var submitBtn = document.getElementById('submitBtn');
@@ -519,19 +416,10 @@
     var downloadLink = document.getElementById('downloadLink');
     var pngLink = document.getElementById('pngLink');
     
-    var uploadArea = document.getElementById('uploadArea');
-    var imageInput = document.getElementById('imageInput');
-    var imagePreview = document.getElementById('imagePreview');
-    var previewImg = document.getElementById('previewImg');
-    var removeImageBtn = document.getElementById('removeImage');
-    var useGenericImage = document.getElementById('useGenericImage');
-    
     var tituloInput = document.getElementById('titulo');
     var mensagemInput = document.getElementById('mensagem');
     var tituloCounter = document.getElementById('tituloCounter');
     var mensagemCounter = document.getElementById('mensagemCounter');
-    
-    var uploadedImage = null;
     
     tituloInput.addEventListener('input', function() {
       var length = this.value.length;
@@ -567,64 +455,6 @@
       }
     });
     
-    uploadArea.addEventListener('click', function() {
-      imageInput.click();
-    });
-    
-    uploadArea.addEventListener('dragover', function(e) {
-      e.preventDefault();
-      this.classList.add('dragover');
-    });
-    
-    uploadArea.addEventListener('dragleave', function(e) {
-      e.preventDefault();
-      this.classList.remove('dragover');
-    });
-    
-    uploadArea.addEventListener('drop', function(e) {
-      e.preventDefault();
-      this.classList.remove('dragover');
-      
-      var files = e.dataTransfer.files;
-      if (files.length > 0) {
-        handleImageUpload(files[0]);
-      }
-    });
-    
-    imageInput.addEventListener('change', function(e) {
-      if (e.target.files.length > 0) {
-        handleImageUpload(e.target.files[0]);
-      }
-    });
-    
-    removeImageBtn.addEventListener('click', function() {
-      uploadedImage = null;
-      imagePreview.classList.remove('show');
-      imageInput.value = '';
-      useGenericImage.checked = true;
-    });
-    
-    function handleImageUpload(file) {
-      if (!file.type.match('image/(png|jpeg|jpg)')) {
-        alert('Por favor, selecione uma imagem PNG, JPG ou JPEG');
-        return;
-      }
-      
-      if (file.size > 5 * 1024 * 1024) {
-        alert('A imagem deve ter no máximo 5MB');
-        return;
-      }
-      
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        uploadedImage = e.target.result;
-        previewImg.src = e.target.result;
-        imagePreview.classList.add('show');
-        useGenericImage.checked = false;
-      };
-      reader.readAsDataURL(file);
-    }
-    
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -642,8 +472,6 @@
         mensagem: document.getElementById('mensagem').value,
         dataEvento: document.getElementById('dataEvento').value || null,
         horario: document.getElementById('horario').value || null,
-        useGenericImage: useGenericImage.checked,
-        imagemPersonalizada: uploadedImage,
         timestamp: new Date().toISOString()
       };
       
@@ -669,9 +497,6 @@
         }
         
         form.reset();
-        uploadedImage = null;
-        imagePreview.classList.remove('show');
-        useGenericImage.checked = true;
         tituloCounter.textContent = '0/60';
         mensagemCounter.textContent = '0/300';
         tituloCounter.classList.remove('warning', 'error');
@@ -695,7 +520,7 @@
       })
       .finally(function() {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Gerar Aviso para Grupo';
+        submitBtn.textContent = 'Gerar Post';
       });
     });
   </script>
