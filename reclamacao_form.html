@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sindi - Formulário de Reclamação</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      background: white;
+      border-radius: 28px;
+      padding: 32px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+      text-align: center;
+      border: 1px solid #eee;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 4px solid #FF6B35;
+      margin: 0 auto 16px;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+    }
+    
+    h1 {
+      font-size: 28px;
+      color: #222;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    .subtitle {
+      color: #666;
+      font-size: 16px;
+    }
+    
+    .form-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #eee;
+      margin-bottom: 24px;
+    }
+    
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #FF6B35;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #FFE5DD;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    
+    .required {
+      color: #FF6B35;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 14px;
+      font-size: 15px;
+      background: white;
+      color: #333;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+    
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #FF6B35;
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+    }
+    
+    textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+    
+    .form-hint {
+      font-size: 13px;
+      color: #999;
+      margin-top: 6px;
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    
+    @media (min-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .warning-box {
+      background: #fff3e0;
+      border-left: 4px solid #ff9800;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .warning-box-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e65100;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .warning-box-text {
+      font-size: 14px;
+      color: #e65100;
+      line-height: 1.6;
+    }
+    
+    .info-box {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .info-box-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1565c0;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .info-box-text {
+      font-size: 14px;
+      color: #1565c0;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    
+    .info-box-contact {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(33, 150, 243, 0.2);
+    }
+    
+    .contact-item {
+      font-size: 14px;
+      color: #1565c0;
+      margin: 6px 0;
+      font-weight: 600;
+    }
+    
+    .upload-area {
+      border: 3px dashed #e0e0e0;
+      border-radius: 14px;
+      padding: 32px;
+      text-align: center;
+      background: #fafafa;
+      transition: all 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .upload-area:hover {
+      border-color: #FF6B35;
+      background: #fff5f2;
+    }
+    
+    .upload-area.dragover {
+      border-color: #FF6B35;
+      background: #fff5f2;
+      transform: scale(1.02);
+    }
+    
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    .upload-text {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    
+    .upload-hint {
+      font-size: 13px;
+      color: #999;
+    }
+    
+    input[type="file"] {
+      display: none;
+    }
+    
+    .files-preview {
+      margin-top: 16px;
+      display: none;
+    }
+    
+    .files-preview.show {
+      display: block;
+    }
+    
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: white;
+      border-radius: 10px;
+      border: 2px solid #e0e0e0;
+      margin-bottom: 8px;
+    }
+    
+    .file-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    
+    .file-icon {
+      font-size: 24px;
+    }
+    
+    .file-details {
+      flex: 1;
+    }
+    
+    .file-name {
+      font-size: 14px;
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .file-size {
+      font-size: 12px;
+      color: #999;
+    }
+    
+    .remove-file {
+      background: #f44336;
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .remove-file:hover {
+      background: #d32f2f;
+      transform: scale(1.1);
+    }
+    
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+      transition: all 0.3s;
+      margin-top: 32px;
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+    }
+    
+    .btn-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .success-message {
+      background: #e8f5e9;
+      border: 2px solid #4caf50;
+      color: #2e7d32;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .success-message.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    .error-message {
+      background: #ffebee;
+      border: 2px solid #f44336;
+      color: #c62828;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 24px;
+      text-align: center;
+      font-weight: 600;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      padding: 20px;
+      color: #888;
+      font-size: 14px;
+    }
+    
+    .footer span {
+      color: #FF6B35;
+      font-weight: bold;
+    }
+    
+    .select-wrapper {
+      position: relative;
+    }
+    
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 45px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+      <h1>Formulário de Reclamação</h1>
+      <p class="subtitle">Registre sua reclamação de forma segura e sigilosa</p>
+    </div>
+    
+    <div id="successMessage" class="success-message">
+      Reclamação enviada com sucesso! A administração entrará em contato em breve.
+    </div>
+    
+    <div id="errorMessage" class="error-message">
+      Erro ao enviar reclamação. Por favor, tente novamente.
+    </div>
+    
+    <div class="warning-box">
+      <div class="warning-box-title">
+        <span>⚠️</span>
+        <span>Importante</span>
+      </div>
+      <div class="warning-box-text">
+        As informações contidas neste formulário são de total responsabilidade do reclamante, e serão analisadas pela administradora e pelo síndico da gestão, com base no regulamento interno do condomínio. Todas as informações dadas aqui são sigilosas e de uso exclusivo da administração do condomínio. Somente serão divulgadas por meio de solicitação judicial.
+      </div>
+    </div>
+    
+    <div class="form-card">
+      <form id="reclamacaoForm">
+        <div class="form-group">
+          <label class="form-label">Condomínio <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="condominio" required>
+              <option value="">Selecione o condomínio</option>
+              <option value="Edifício Central Park">Edifício Central Park</option>
+              <option value="Residencial Jardins">Residencial Jardins</option>
+              <option value="Condomínio Vista Verde">Condomínio Vista Verde</option>
+              <option value="Torres do Sol">Torres do Sol</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="section-title">👤 Dados do Reclamante</div>
+        
+        <div class="form-group">
+          <label class="form-label">Nome Completo <span class="required">*</span></label>
+          <input type="text" id="nomeReclamante" placeholder="Seu nome completo" required>
+        </div>
+        
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Apartamento/Unidade <span class="required">*</span></label>
+            <input type="text" id="aptoReclamante" placeholder="Ex: 101, 202" required>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Telefone/WhatsApp <span class="required">*</span></label>
+            <input type="tel" id="telefoneReclamante" placeholder="(00) 00000-0000" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input type="email" id="emailReclamante" placeholder="seu@email.com">
+          <div class="form-hint">Opcional - para receber atualizações sobre sua reclamação</div>
+        </div>
+        
+        <div class="section-title">📍 Dados do Reclamado</div>
+        
+        <div class="form-group">
+          <label class="form-label">Tipo de Reclamado <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="tipoReclamado" required>
+              <option value="">Selecione o tipo</option>
+              <option value="Outro morador">Outro morador</option>
+              <option value="Síndico">Síndico</option>
+              <option value="Administradora">Administradora</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+        </div>
+        
+        <div id="formOutroMorador" class="conditional-form" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Nome do Condômino</label>
+            <input type="text" id="nomeReclamadoMorador" placeholder="Nome (se souber)">
+            <div class="form-hint">Opcional - preencha se souber quem é o responsável</div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Apartamento/Unidade <span class="required">*</span></label>
+            <input type="text" id="aptoReclamado" placeholder="Ex: 303, 404">
+          </div>
+        </div>
+        
+        <div id="formSindico" class="conditional-form" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Nome do Síndico <span class="required">*</span></label>
+            <input type="text" id="nomeSindico" placeholder="Nome do síndico">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Motivo da Reclamação <span class="required">*</span></label>
+            <textarea id="motivoSindico" placeholder="Descreva o motivo da reclamação contra o síndico..." style="min-height: 100px;"></textarea>
+          </div>
+        </div>
+        
+        <div id="formAdministradora" class="conditional-form" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Nome da Administradora <span class="required">*</span></label>
+            <input type="text" id="nomeAdministradora" placeholder="Nome da administradora" value="Corteze Administradora">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Setor/Departamento</label>
+            <input type="text" id="setorAdministradora" placeholder="Ex: Financeiro, Manutenção, Atendimento">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Motivo da Reclamação <span class="required">*</span></label>
+            <textarea id="motivoAdministradora" placeholder="Descreva o motivo da reclamação..." style="min-height: 100px;"></textarea>
+          </div>
+        </div>
+        
+        <div id="formOutros" class="conditional-form" style="display: none;">
+          <div class="form-group">
+            <label class="form-label">Especifique o Reclamado <span class="required">*</span></label>
+            <input type="text" id="especificarOutros" placeholder="Ex: Empresa de limpeza, Porteiro, Zelador, etc.">
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Detalhes Adicionais</label>
+            <textarea id="detalhesOutros" placeholder="Forneça mais detalhes sobre o reclamado..." style="min-height: 100px;"></textarea>
+          </div>
+        </div>
+        
+        <div class="section-title">📝 Detalhes da Reclamação</div>
+        
+        <div class="form-group">
+          <label class="form-label">Descrição Detalhada <span class="required">*</span></label>
+          <textarea id="descricao" placeholder="Descreva detalhadamente o fato, citando datas e horários..." required></textarea>
+          <div class="form-hint">Seja o mais específico possível: quando ocorreu, onde, como, frequência, etc.</div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Anexar Evidências (Fotos, Vídeos ou Áudios)</label>
+          <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📎</div>
+            <div class="upload-text">Clique ou arraste arquivos aqui</div>
+            <div class="upload-hint">Fotos, vídeos ou áudios (máx. 10MB por arquivo)</div>
+          </div>
+          <input type="file" id="fileInput" accept="image/*,video/*,audio/*" multiple>
+          
+          <div class="files-preview" id="filesPreview"></div>
+        </div>
+        
+        <button type="submit" class="btn-submit" id="submitBtn">
+          Enviar Reclamação
+        </button>
+      </form>
+    </div>
+    
+    <div class="info-box">
+      <div class="info-box-title">
+        <span>📧</span>
+        <span>Contato Direto</span>
+      </div>
+      <div class="info-box-text">
+        Se preferir, você também pode enviar sua reclamação diretamente por:
+      </div>
+      <div class="info-box-contact">
+        <div class="contact-item">✉️ E-mail: cobranca@corteze.adm.br</div>
+        <div class="contact-item">📱 WhatsApp: (41) 99926-0788</div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      Sindi - Formulário de Reclamação <span>Sindibot - Impactar LLC</span>
+    </div>
+  </div>
+  
+  <script>
+    var WEBHOOK_URL = 'https://n8n.polenta.chat/webhook-test/reclamacao';
+    
+    var form = document.getElementById('reclamacaoForm');
+    var submitBtn = document.getElementById('submitBtn');
+    var successMessage = document.getElementById('successMessage');
+    var errorMessage = document.getElementById('errorMessage');
+    
+    var uploadArea = document.getElementById('uploadArea');
+    var fileInput = document.getElementById('fileInput');
+    var filesPreview = document.getElementById('filesPreview');
+    
+    var tipoReclamadoSelect = document.getElementById('tipoReclamado');
+    var formOutroMorador = document.getElementById('formOutroMorador');
+    var formSindico = document.getElementById('formSindico');
+    var formAdministradora = document.getElementById('formAdministradora');
+    var formOutros = document.getElementById('formOutros');
+    
+    var uploadedFiles = [];
+    
+    tipoReclamadoSelect.addEventListener('change', function() {
+      formOutroMorador.style.display = 'none';
+      formSindico.style.display = 'none';
+      formAdministradora.style.display = 'none';
+      formOutros.style.display = 'none';
+      
+      document.getElementById('nomeReclamadoMorador').removeAttribute('required');
+      document.getElementById('aptoReclamado').removeAttribute('required');
+      document.getElementById('nomeSindico').removeAttribute('required');
+      document.getElementById('motivoSindico').removeAttribute('required');
+      document.getElementById('nomeAdministradora').removeAttribute('required');
+      document.getElementById('motivoAdministradora').removeAttribute('required');
+      document.getElementById('especificarOutros').removeAttribute('required');
+      
+      var tipo = this.value;
+      
+      if (tipo === 'Outro morador') {
+        formOutroMorador.style.display = 'block';
+        document.getElementById('aptoReclamado').setAttribute('required', 'required');
+      } else if (tipo === 'Síndico') {
+        formSindico.style.display = 'block';
+        document.getElementById('nomeSindico').setAttribute('required', 'required');
+        document.getElementById('motivoSindico').setAttribute('required', 'required');
+      } else if (tipo === 'Administradora') {
+        formAdministradora.style.display = 'block';
+        document.getElementById('nomeAdministradora').setAttribute('required', 'required');
+        document.getElementById('motivoAdministradora').setAttribute('required', 'required');
+      } else if (tipo === 'Outros') {
+        formOutros.style.display = 'block';
+        document.getElementById('especificarOutros').setAttribute('required', 'required');
+      }
+    });
+    
+    uploadArea.addEventListener('click', function() {
+      fileInput.click();
+    });
+    
+    uploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.classList.add('dragover');
+    });
+    
+    uploadArea.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      this.classList.remove('dragover');
+    });
+    
+    uploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('dragover');
+      
+      var files = Array.from(e.dataTransfer.files);
+      handleFiles(files);
+    });
+    
+    fileInput.addEventListener('change', function(e) {
+      var files = Array.from(e.target.files);
+      handleFiles(files);
+    });
+    
+    function handleFiles(files) {
+      files.forEach(function(file) {
+        if (file.size > 10 * 1024 * 1024) {
+          alert('Arquivo "' + file.name + '" excede 10MB');
+          return;
+        }
+        
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          uploadedFiles.push({
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            data: e.target.result
+          });
+          renderFiles();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    function renderFiles() {
+      if (uploadedFiles.length === 0) {
+        filesPreview.classList.remove('show');
+        return;
+      }
+      
+      filesPreview.classList.add('show');
+      filesPreview.innerHTML = '';
+      
+      uploadedFiles.forEach(function(file, index) {
+        var fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        
+        var icon = '📄';
+        if (file.type.startsWith('image/')) icon = '🖼️';
+        if (file.type.startsWith('video/')) icon = '🎥';
+        if (file.type.startsWith('audio/')) icon = '🎵';
+        
+        var sizeKB = (file.size / 1024).toFixed(1);
+        
+        fileItem.innerHTML = `
+          <div class="file-info">
+            <div class="file-icon">${icon}</div>
+            <div class="file-details">
+              <div class="file-name">${file.name}</div>
+              <div class="file-size">${sizeKB} KB</div>
+            </div>
+          </div>
+          <button type="button" class="remove-file" data-index="${index}">×</button>
+        `;
+        
+        filesPreview.appendChild(fileItem);
+      });
+      
+      document.querySelectorAll('.remove-file').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var index = parseInt(this.getAttribute('data-index'));
+          uploadedFiles.splice(index, 1);
+          renderFiles();
+        });
+      });
+    }
+    
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      successMessage.classList.remove('show');
+      errorMessage.classList.remove('show');
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando reclamação...';
+      
+      var tipoReclamado = document.getElementById('tipoReclamado').value;
+      var reclamadoData = {
+        tipo: tipoReclamado
+      };
+      
+      if (tipoReclamado === 'Outro morador') {
+        reclamadoData.nome = document.getElementById('nomeReclamadoMorador').value || null;
+        reclamadoData.apartamento = document.getElementById('aptoReclamado').value;
+      } else if (tipoReclamado === 'Síndico') {
+        reclamadoData.nome = document.getElementById('nomeSindico').value;
+        reclamadoData.motivo = document.getElementById('motivoSindico').value;
+      } else if (tipoReclamado === 'Administradora') {
+        reclamadoData.nome = document.getElementById('nomeAdministradora').value;
+        reclamadoData.setor = document.getElementById('setorAdministradora').value || null;
+        reclamadoData.motivo = document.getElementById('motivoAdministradora').value;
+      } else if (tipoReclamado === 'Outros') {
+        reclamadoData.especificacao = document.getElementById('especificarOutros').value;
+        reclamadoData.detalhes = document.getElementById('detalhesOutros').value || null;
+      }
+      
+      var formData = {
+        condominio: document.getElementById('condominio').value,
+        reclamante: {
+          nome: document.getElementById('nomeReclamante').value,
+          apartamento: document.getElementById('aptoReclamante').value,
+          telefone: document.getElementById('telefoneReclamante').value,
+          email: document.getElementById('emailReclamante').value || null
+        },
+        reclamado: reclamadoData,
+        descricao: document.getElementById('descricao').value,
+        arquivos: uploadedFiles,
+        timestamp: new Date().toISOString()
+      };
+      
+      fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(function(response) {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Erro na requisição');
+      })
+      .then(function(data) {
+        successMessage.classList.add('show');
+        
+        form.reset();
+        uploadedFiles = [];
+        renderFiles();
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        setTimeout(function() {
+          successMessage.classList.remove('show');
+        }, 8000);
+      })
+      .catch(function(error) {
+        console.error('Erro:', error);
+        errorMessage.classList.add('show');
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        setTimeout(function() {
+          errorMessage.classList.remove('show');
+        }, 5000);
+      })
+      .finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Enviar Reclamação';
+      });
+    });
+  </script>
+</body>
+</html>
