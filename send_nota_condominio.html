@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sindi - Enviar Nota Fiscal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 28px;
+            padding: 32px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.08);
+            text-align: center;
+            border: 1px solid #eee;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid #FF6B35;
+            margin: 0 auto 16px;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.25);
+        }
+        
+        h1 {
+            font-size: 28px;
+            color: #222;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .form-card {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .required {
+            color: #FF6B35;
+        }
+        
+        select,
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
+            font-size: 15px;
+            background: white;
+            color: #333;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        select:focus,
+        input[type="text"]:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: #FF6B35;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.15);
+        }
+        
+        .select-wrapper {
+            position: relative;
+        }
+        
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23FF6B35' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 45px;
+            cursor: pointer;
+        }
+        
+        input[type="file"] {
+            cursor: pointer;
+            padding: 12px 16px;
+        }
+        
+        input[type="file"]::file-selector-button {
+            padding: 10px 20px;
+            border: none;
+            background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 15px;
+            transition: all 0.3s;
+        }
+        
+        input[type="file"]::file-selector-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+        }
+        
+        .add-supplier-container {
+            display: none;
+            margin-top: 12px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px dashed #FF6B35;
+        }
+        
+        .add-supplier-container.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .add-supplier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .add-supplier-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FF6B35;
+        }
+        
+        .btn-cancel-add {
+            background: transparent;
+            border: none;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .btn-cancel-add:hover {
+            background: #fff;
+            color: #FF6B35;
+        }
+        
+        .btn-add-supplier {
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(76,175,80,0.3);
+            width: 100%;
+            margin-top: 8px;
+        }
+        
+        .btn-add-supplier:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(76,175,80,0.4);
+        }
+        
+        .btn-new-supplier {
+            background: transparent;
+            color: #FF6B35;
+            border: 2px solid #FF6B35;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 8px;
+        }
+        
+        .btn-new-supplier:hover {
+            background: #FF6B35;
+            color: white;
+        }
+        
+        .error-message {
+            color: #FF6B35;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .error-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+            transition: all 0.3s;
+            margin-top: 32px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+        }
+        
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .success-message,
+        .error-alert {
+            background: white;
+            border-radius: 24px;
+            padding: 48px 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message.show,
+        .error-alert.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .success-message {
+            border-top: 4px solid #4caf50;
+        }
+        
+        .error-alert {
+            border-top: 4px solid #FF6B35;
+        }
+        
+        .success-message h2,
+        .error-alert h2 {
+            font-size: 28px;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+        
+        .success-message h2 {
+            color: #4caf50;
+        }
+        
+        .error-alert h2 {
+            color: #FF6B35;
+        }
+        
+        .success-message p,
+        .error-alert p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, #FF6B35 0%, #ff8555 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(255,107,53,0.3);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,107,53,0.4);
+        }
+        
+        .loading {
+            background: white;
+            border-radius: 24px;
+            padding: 48px 32px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+            text-align: center;
+            display: none;
+        }
+        
+        .loading.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #FF6B35;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .loading p {
+            color: #666;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 32px;
+            padding: 20px;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .footer span {
+            color: #FF6B35;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 640px) {
+            h1 {
+                font-size: 24px;
+            }
+            
+            .subtitle {
+                font-size: 15px;
+            }
+            
+            .header {
+                padding: 24px 20px;
+            }
+            
+            .form-card,
+            .success-message,
+            .error-alert,
+            .loading {
+                padding: 24px 20px;
+            }
+            
+            .logo {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img class="logo" src="https://salvatore.s3.us-east-2.amazonaws.com/sindi/SindiCIrcle.png" alt="Sindi">
+            <h1>Enviar Nota Fiscal</h1>
+            <p class="subtitle">Faça o upload de notas fiscais para processamento<br><b>Formatos aceitos: PDF, XML, JPG, PNG</b></p>
+        </div>
+        
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+            <h2>✓ Nota fiscal enviada com sucesso!</h2>
+            <p>Sua nota fiscal foi enviada e será processada em breve.</p>
+            <button class="action-button" onclick="resetForm()">Enviar Outra Nota Fiscal</button>
+        </div>
+        
+        <!-- Error Message -->
+        <div class="error-alert" id="errorMessage">
+            <h2>✗ Erro ao enviar nota fiscal</h2>
+            <p id="errorText">Ocorreu um erro ao enviar a nota fiscal. Por favor, tente novamente.</p>
+            <button class="action-button" onclick="resetForm()">Tentar Novamente</button>
+        </div>
+        
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Enviando nota fiscal...</p>
+        </div>
+        
+        <!-- Form Content -->
+        <div class="form-card" id="formContent">
+            <form id="invoiceForm">
+                <div class="form-group">
+                    <label class="form-label" for="condominio">
+                        Condomínio <span class="required">*</span>
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="condominio" name="condominio" required>
+                            <option value="">Selecione o condomínio</option>
+                            <option value="Calton Hill">Calton Hill</option>
+                            <option value="Parque dos Príncipes">Parque dos Príncipes</option>
+                        </select>
+                    </div>
+                    <div class="error-message" id="condominioError">
+                        Este campo é obrigatório
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="categoria">
+                        Categoria da Despesa <span class="required">*</span>
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="categoria" name="categoria" required>
+                            <option value="">Selecione a categoria</option>
+                            <option value="Água">Água</option>
+                            <option value="Luz">Luz</option>
+                            <option value="Gás">Gás</option>
+                            <option value="Limpeza">Limpeza</option>
+                            <option value="Manutenção">Manutenção</option>
+                            <option value="Jardinagem">Jardinagem</option>
+                            <option value="Segurança">Segurança</option>
+                            <option value="Elevadores">Elevadores</option>
+                            <option value="Piscina">Piscina</option>
+                            <option value="Internet">Internet</option>
+                            <option value="Telefonia">Telefonia</option>
+                            <option value="Seguro">Seguro</option>
+                            <option value="IPTU">IPTU</option>
+                            <option value="Honorários">Honorários</option>
+                            <option value="Material de Escritório">Material de Escritório</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="error-message" id="categoriaError">
+                        Este campo é obrigatório
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="fornecedor">
+                        Fornecedor <span class="required">*</span>
+                    </label>
+                    <div class="select-wrapper">
+                        <select id="fornecedor" name="fornecedor" required>
+                            <option value="">Selecione o fornecedor</option>
+                            <option value="COPEL">COPEL - Companhia Paranaense de Energia</option>
+                            <option value="SANEPAR">SANEPAR - Companhia de Saneamento do Paraná</option>
+                            <option value="COMPAGAS">COMPAGAS - Companhia Paranaense de Gás</option>
+                            <option value="Claro">Claro</option>
+                            <option value="Vivo">Vivo</option>
+                            <option value="Tim">Tim</option>
+                            <option value="NET">NET</option>
+                            <option value="novo">+ Adicionar Novo Fornecedor</option>
+                        </select>
+                    </div>
+                    <div class="error-message" id="fornecedorError">
+                        Este campo é obrigatório
+                    </div>
+                    
+                    <!-- Add New Supplier Container -->
+                    <div class="add-supplier-container" id="addSupplierContainer">
+                        <div class="add-supplier-header">
+                            <span class="add-supplier-title">Novo Fornecedor</span>
+                            <button type="button" class="btn-cancel-add" onclick="cancelAddSupplier()">✕ Cancelar</button>
+                        </div>
+                        <input type="text" id="novoFornecedor" placeholder="Digite o nome do fornecedor">
+                        <button type="button" class="btn-add-supplier" onclick="confirmAddSupplier()">✓ Adicionar Fornecedor</button>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="notaFiscal">
+                        Nota Fiscal <span class="required">*</span>
+                    </label>
+                    <input type="file" id="notaFiscal" name="notaFiscal" accept=".pdf,.xml,.jpg,.jpeg,.png" required>
+                    <div class="error-message" id="notaFiscalError">
+                        Por favor, selecione um arquivo válido
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    Enviar Nota Fiscal
+                </button>
+            </form>
+        </div>
+        
+        <div class="footer">
+            Sindi - Gestão de Notas Fiscais <span>Sindibot - Impactar LLC</span>
+        </div>
+    </div>
+    
+    <script>
+        // CONFIGURE YOUR N8N WEBHOOK URL HERE
+        const WEBHOOK_URL = 'https://n8n.polenta.chat/webhook/invoice-upload';
+        
+        const form = document.getElementById('invoiceForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const formContent = document.getElementById('formContent');
+        const fornecedorSelect = document.getElementById('fornecedor');
+        const addSupplierContainer = document.getElementById('addSupplierContainer');
+        const novoFornecedorInput = document.getElementById('novoFornecedor');
+        
+        // Handle supplier selection
+        fornecedorSelect.addEventListener('change', function() {
+            if (this.value === 'novo') {
+                addSupplierContainer.classList.add('show');
+                novoFornecedorInput.focus();
+            } else {
+                addSupplierContainer.classList.remove('show');
+                novoFornecedorInput.value = '';
+            }
+        });
+        
+        function cancelAddSupplier() {
+            fornecedorSelect.value = '';
+            addSupplierContainer.classList.remove('show');
+            novoFornecedorInput.value = '';
+        }
+        
+        function confirmAddSupplier() {
+            const newSupplier = novoFornecedorInput.value.trim();
+            
+            if (!newSupplier) {
+                alert('Por favor, digite o nome do fornecedor');
+                return;
+            }
+            
+            // Add new option to select
+            const option = document.createElement('option');
+            option.value = newSupplier;
+            option.text = newSupplier;
+            option.selected = true;
+            
+            // Insert before the "Add new" option
+            const lastOption = fornecedorSelect.options[fornecedorSelect.options.length - 1];
+            fornecedorSelect.insertBefore(option, lastOption);
+            
+            // Hide add supplier container
+            addSupplierContainer.classList.remove('show');
+            novoFornecedorInput.value = '';
+        }
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            
+            // Validate form
+            const condominio = document.getElementById('condominio').value;
+            const categoria = document.getElementById('categoria').value;
+            const fornecedor = fornecedorSelect.value;
+            const notaFiscal = document.getElementById('notaFiscal').files[0];
+            
+            let hasError = false;
+            
+            if (!condominio) {
+                document.getElementById('condominioError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (!categoria) {
+                document.getElementById('categoriaError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (!fornecedor || fornecedor === 'novo') {
+                document.getElementById('fornecedorError').textContent = 'Selecione um fornecedor ou adicione um novo';
+                document.getElementById('fornecedorError').classList.add('show');
+                hasError = true;
+            }
+            
+            if (!notaFiscal) {
+                document.getElementById('notaFiscalError').classList.add('show');
+                hasError = true;
+            } else {
+                const allowedTypes = ['application/pdf', 'text/xml', 'application/xml', 'image/jpeg', 'image/jpg', 'image/png'];
+                if (!allowedTypes.includes(notaFiscal.type)) {
+                    document.getElementById('notaFiscalError').textContent = 'Apenas PDF, XML, JPG e PNG são permitidos';
+                    document.getElementById('notaFiscalError').classList.add('show');
+                    hasError = true;
+                }
+            }
+            
+            if (hasError) return;
+            
+            // Show loading
+            formContent.style.display = 'none';
+            loading.classList.add('show');
+            submitBtn.disabled = true;
+            
+            try {
+                // Convert file to base64
+                const base64File = await fileToBase64(notaFiscal);
+                
+                // Check if it's a new supplier
+                const isNewSupplier = !['COPEL', 'SANEPAR', 'COMPAGAS', 'Claro', 'Vivo', 'Tim', 'NET'].includes(fornecedor);
+                
+                // Prepare data
+                const formData = {
+                    condominio: condominio,
+                    categoria: categoria,
+                    fornecedor: fornecedor,
+                    isNewSupplier: isNewSupplier,
+                    notaFiscal: {
+                        filename: notaFiscal.name,
+                        mimetype: notaFiscal.type,
+                        data: base64File
+                    }
+                };
+                
+                // Send to n8n webhook
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response.ok) {
+                    // Show success
+                    loading.classList.remove('show');
+                    successMessage.classList.add('show');
+                    form.reset();
+                } else {
+                    throw new Error('Erro ao enviar nota fiscal');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                loading.classList.remove('show');
+                errorMessage.classList.add('show');
+                submitBtn.disabled = false;
+            }
+        });
+        
+        function resetForm() {
+            successMessage.classList.remove('show');
+            errorMessage.classList.remove('show');
+            formContent.style.display = 'block';
+            submitBtn.disabled = false;
+            form.reset();
+            addSupplierContainer.classList.remove('show');
+        }
+        
+        // Convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    // Remove the data:*/*;base64, prefix
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+    </script>
+</body>
+</html>
