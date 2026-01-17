@@ -45,7 +45,7 @@
             width: var(--sidebar-width);
             background: var(--bg-sidebar);
             border-right: none;
-            padding: 32px 0;
+            padding: 0;
             position: fixed;
             height: 100vh;
             overflow-y: auto;
@@ -58,12 +58,35 @@
         }
 
         .logo {
-            padding: 0 28px 32px;
+            padding: 28px 28px 24px;
             border-bottom: none;
-            margin-bottom: 32px;
+            margin-bottom: 0;
             display: flex;
-            align-items: center;
-            gap: 16px;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0;
+        }
+
+        .logo-text {
+            flex: 1;
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            color: var(--text-primary);
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .logo-text h1 span {
+            color: var(--primary);
+        }
+
+        .logo-text p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.3;
         }
 
         .user-badge {
@@ -80,36 +103,19 @@
             flex-shrink: 0;
         }
 
-        .logo-text h1 {
-            font-size: 28px;
-            color: var(--text-primary);
-            font-weight: 600;
-            line-height: 1;
-            margin-bottom: 4px;
-        }
-
-        .logo-text h1 span {
-            color: var(--primary);
-        }
-
-        .logo-text p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1;
-        }
-
         .nav-menu {
             list-style: none;
+            padding-top: 24px;
         }
 
         .nav-item {
-            margin: 0 16px 8px;
+            margin: 0 16px 6px;
         }
 
         .nav-link {
             display: flex;
             align-items: center;
-            padding: 14px 16px;
+            padding: 12px 16px;
             color: var(--text-primary);
             text-decoration: none;
             border-radius: 12px;
@@ -133,7 +139,7 @@
             margin-left: auto;
             background: rgba(255, 255, 255, 0.9);
             color: var(--primary);
-            padding: 3px 10px;
+            padding: 2px 10px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 600;
@@ -147,9 +153,9 @@
         }
 
         .nav-icon {
-            margin-right: 14px;
+            margin-right: 12px;
             font-size: 20px;
-            width: 24px;
+            width: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -582,11 +588,11 @@
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="logo">
-                <div class="user-badge">AD</div>
                 <div class="logo-text">
                     <h1>Zero<span>Caos</span></h1>
                     <p>Gestão de Demandas</p>
                 </div>
+                <div class="user-badge">AD</div>
             </div>
             <nav>
                 <ul class="nav-menu">
