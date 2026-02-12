@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora ROI - SkyBlue WhatsApp Intelligence</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -329,7 +330,21 @@
 
         <div class="content">
             <div class="input-section">
-                <h2 class="section-title">Estrutura da Operação</h2>
+                <h2 class="section-title">Informações do Cliente</h2>
+
+                <div class="input-group">
+                    <label>Nome da Empresa/Negócio</label>
+                    <input type="text" id="businessName" placeholder="Ex: Supermercados São José">
+                    <div class="helper-text">Nome que aparecerá no orçamento</div>
+                </div>
+
+                <div class="input-group">
+                    <label>Responsável pela Negociação</label>
+                    <input type="text" id="contactName" placeholder="Ex: João Silva">
+                    <div class="helper-text">Nome do decisor ou contato principal</div>
+                </div>
+
+                <h2 class="section-title" style="margin-top: 30px;">Estrutura da Operação</h2>
 
                 <div class="input-group">
                     <label>Tipo de Negócio</label>
@@ -343,13 +358,12 @@
                         <option value="servicos">Serviços B2B</option>
                         <option value="outro">Outro</option>
                     </select>
-                    <div class="helper-text">Isso ajudará a ajustar os cálculos para sua realidade</div>
                 </div>
 
                 <div class="input-group">
-                    <label>Número de Unidades/Lojas/Pontos de Operação</label>
+                    <label>Número de Unidades/Lojas/Clientes</label>
                     <input type="number" id="numUnits" value="20" min="1">
-                    <div class="helper-text">Quantos locais, condomínios, lojas, ou pontos sua empresa opera?</div>
+                    <div class="helper-text">Quantos locais, condomínios, lojas ou clientes opera?</div>
                 </div>
 
                 <div class="input-group">
@@ -382,12 +396,12 @@
                     <div class="helper-text">Mensagens perdidas, duplicadas ou mal gerenciadas</div>
                 </div>
 
-                <h2 class="section-title" style="margin-top: 30px;">Equipe e Custos</h2>
+                <h2 class="section-title" style="margin-top: 30px;">Equipe Operacional</h2>
 
                 <div class="input-group">
-                    <label>Funcionários Dedicados a Responder WhatsApp</label>
+                    <label>Pessoas Dedicadas a Responder WhatsApp</label>
                     <input type="number" id="numEmployees" value="2" min="0" step="0.5">
-                    <div class="helper-text">Pessoas que trabalham respondendo mensagens (use decimais para tempo parcial)</div>
+                    <div class="helper-text">Funcionários que trabalham respondendo mensagens</div>
                 </div>
 
                 <div class="input-group">
@@ -402,56 +416,30 @@
                     <div class="helper-text">Horas diárias gastas gerenciando mensagens</div>
                 </div>
 
-                <h2 class="section-title" style="margin-top: 30px;">Gestores e Líderes</h2>
+                <h2 class="section-title" style="margin-top: 30px;">Gestores de Unidade</h2>
 
                 <div class="input-group">
                     <label>Gestores/Gerentes de Unidade</label>
                     <input type="number" id="managersOnCall" value="8" min="0">
-                    <div class="helper-text">Gerentes de loja/unidade, supervisores que precisam estar sempre disponíveis</div>
+                    <div class="helper-text">Gerentes de loja/unidade que ficam "presos" ao WhatsApp</div>
                 </div>
 
                 <div class="input-group">
                     <label>Valor Hora Produtiva desses Gestores (R$)</label>
                     <input type="number" id="managerProductiveHourValue" value="180" min="0">
-                    <div class="helper-text">Quanto vale 1 hora deles focados no negócio (vendas, operação, atendimento)?</div>
+                    <div class="helper-text">Quanto vale 1 hora deles focados na operação presencial?</div>
                 </div>
 
                 <div class="input-group">
                     <label>Interrupções por WhatsApp por Dia (por gestor)</label>
                     <input type="number" id="dailyInterruptions" value="35" min="0">
-                    <div class="helper-text">Quantas vezes por dia precisam parar para checar mensagens?</div>
+                    <div class="helper-text">Quantas vezes por dia precisam checar mensagens?</div>
                 </div>
 
                 <div class="input-group">
                     <label>Tempo de Recuperação de Foco (minutos)</label>
                     <input type="number" id="refocusTime" value="8" min="1" max="30">
-                    <div class="helper-text">Tempo para voltar a se concentrar após interrupção (pesquisas: 5-23 min)</div>
-                </div>
-
-                <div class="input-group">
-                    <label>Horas Mensais de Diretoria no WhatsApp</label>
-                    <input type="number" id="managerHours" value="30" min="0">
-                    <div class="helper-text">Horas que diretores/alta gestão gastam em grupos</div>
-                </div>
-
-                <div class="input-group">
-                    <label>Custo Hora Diretoria (R$)</label>
-                    <input type="number" id="managerHourlyCost" value="120" min="0">
-                    <div class="helper-text">Custo por hora de diretores que também lidam com WhatsApp</div>
-                </div>
-
-                <h2 class="section-title" style="margin-top: 30px;">Profissionais em Campo/Movimento</h2>
-
-                <div class="input-group">
-                    <label>Profissionais que Trabalham em Campo/Movimento</label>
-                    <input type="number" id="fieldWorkers" value="15" min="0">
-                    <div class="helper-text">Técnicos, vendedores, supervisores que circulam entre unidades</div>
-                </div>
-
-                <div class="input-group">
-                    <label>% do Tempo em Trânsito/Campo</label>
-                    <input type="number" id="fieldTimePercent" value="60" min="0" max="100">
-                    <div class="helper-text">Quanto tempo passam fora do escritório?</div>
+                    <div class="helper-text">Tempo para voltar a se concentrar (pesquisas: 5-23 min)</div>
                 </div>
 
                 <h2 class="section-title" style="margin-top: 30px;">Incidentes Críticos</h2>
@@ -468,7 +456,7 @@
                     <div class="helper-text">Cliente insatisfeito, multa, perda de venda, problema que escalou</div>
                 </div>
 
-                <button class="calculate-btn" onclick="calculateROI()">Calcular Benefícios</button>
+                <button class="calculate-btn" onclick="calculateROI()">Calcular Benefícios e ROI</button>
             </div>
 
             <div class="results-section" id="results">
@@ -479,6 +467,42 @@
     </div>
 
     <script>
+        // Função para calcular preço recomendado baseado no porte
+        function calculateRecommendedPricing(numGroups, numUnits, groupComposition) {
+            // Setup: R$ 40-80 por grupo (conservador)
+            let setupBase = numGroups * 60;
+            
+            // Mensalidade: R$ 8-15 por grupo
+            let monthlyBase = numGroups * 10;
+            
+            // Ajustes por composição
+            if (groupComposition === 'externo') {
+                setupBase *= 1.2;
+                monthlyBase *= 1.15;
+            } else if (groupComposition === 'misto') {
+                setupBase *= 1.1;
+                monthlyBase *= 1.08;
+            }
+            
+            // Ajuste por complexidade (número de unidades)
+            if (numUnits > 30) {
+                setupBase *= 1.15;
+                monthlyBase *= 1.1;
+            } else if (numUnits > 15) {
+                setupBase *= 1.08;
+                monthlyBase *= 1.05;
+            }
+            
+            // Arredondar para múltiplos de 500/100
+            setupBase = Math.round(setupBase / 500) * 500;
+            monthlyBase = Math.round(monthlyBase / 100) * 100;
+            
+            return {
+                setup: setupBase,
+                monthly: monthlyBase
+            };
+        }
+
         function loadScenario(type) {
             const scenarios = {
                 condominio: {
@@ -495,10 +519,6 @@
                     managerProductiveHourValue: 180,
                     dailyInterruptions: 30,
                     refocusTime: 7,
-                    managerHours: 40,
-                    managerHourlyCost: 150,
-                    fieldWorkers: 8,
-                    fieldTimePercent: 70,
                     criticalIncidents: 5,
                     incidentCost: 3000
                 },
@@ -516,10 +536,6 @@
                     managerProductiveHourValue: 200,
                     dailyInterruptions: 40,
                     refocusTime: 8,
-                    managerHours: 30,
-                    managerHourlyCost: 120,
-                    fieldWorkers: 5,
-                    fieldTimePercent: 30,
                     criticalIncidents: 6,
                     incidentCost: 4000
                 },
@@ -537,10 +553,6 @@
                     managerProductiveHourValue: 150,
                     dailyInterruptions: 45,
                     refocusTime: 6,
-                    managerHours: 25,
-                    managerHourlyCost: 100,
-                    fieldWorkers: 10,
-                    fieldTimePercent: 40,
                     criticalIncidents: 8,
                     incidentCost: 2500
                 },
@@ -558,10 +570,6 @@
                     managerProductiveHourValue: 180,
                     dailyInterruptions: 35,
                     refocusTime: 7,
-                    managerHours: 28,
-                    managerHourlyCost: 130,
-                    fieldWorkers: 6,
-                    fieldTimePercent: 35,
                     criticalIncidents: 4,
                     incidentCost: 3200
                 },
@@ -579,10 +587,6 @@
                     managerProductiveHourValue: 170,
                     dailyInterruptions: 38,
                     refocusTime: 7,
-                    managerHours: 32,
-                    managerHourlyCost: 125,
-                    fieldWorkers: 8,
-                    fieldTimePercent: 50,
                     criticalIncidents: 5,
                     incidentCost: 3300
                 },
@@ -600,10 +604,6 @@
                     managerProductiveHourValue: 170,
                     dailyInterruptions: 35,
                     refocusTime: 6,
-                    managerHours: 35,
-                    managerHourlyCost: 140,
-                    fieldWorkers: 25,
-                    fieldTimePercent: 80,
                     criticalIncidents: 8,
                     incidentCost: 3500
                 },
@@ -621,10 +621,6 @@
                     managerProductiveHourValue: 160,
                     dailyInterruptions: 25,
                     refocusTime: 7,
-                    managerHours: 25,
-                    managerHourlyCost: 130,
-                    fieldWorkers: 12,
-                    fieldTimePercent: 60,
                     criticalIncidents: 3,
                     incidentCost: 2500
                 },
@@ -642,10 +638,6 @@
                     managerProductiveHourValue: 150,
                     dailyInterruptions: 20,
                     refocusTime: 7,
-                    managerHours: 20,
-                    managerHourlyCost: 100,
-                    fieldWorkers: 5,
-                    fieldTimePercent: 50,
                     criticalIncidents: 2,
                     incidentCost: 2000
                 }
@@ -659,110 +651,143 @@
                         element.value = scenario[key];
                     }
                 });
+                // Atualizar recomendações de preço após carregar cenário
+                updatePricingRecommendations();
             }
         }
 
         function calculateROI() {
-            // Capturar inputs
+            // Capturar inputs básicos
+            const businessName = document.getElementById('businessName').value || 'Sua Empresa';
+            const contactName = document.getElementById('contactName').value || '';
             const businessType = document.getElementById('businessType').value;
             const numUnits = parseFloat(document.getElementById('numUnits').value) || 0;
             const numGroups = parseFloat(document.getElementById('numGroups').value) || 0;
             const groupComposition = document.getElementById('groupComposition').value;
             const dailyMessages = parseFloat(document.getElementById('dailyMessages').value) || 0;
             const reworkPercent = parseFloat(document.getElementById('reworkPercent').value) || 0;
+            
+            // Equipe
             const numEmployees = parseFloat(document.getElementById('numEmployees').value) || 0;
             const avgSalary = parseFloat(document.getElementById('avgSalary').value) || 0;
             const hoursPerDay = parseFloat(document.getElementById('hoursPerDay').value) || 0;
+            
+            // Gestores
             const managersOnCall = parseFloat(document.getElementById('managersOnCall').value) || 0;
             const managerProductiveHourValue = parseFloat(document.getElementById('managerProductiveHourValue').value) || 0;
             const dailyInterruptions = parseFloat(document.getElementById('dailyInterruptions').value) || 0;
             const refocusTime = parseFloat(document.getElementById('refocusTime').value) || 0;
-            const managerHours = parseFloat(document.getElementById('managerHours').value) || 0;
-            const managerHourlyCost = parseFloat(document.getElementById('managerHourlyCost').value) || 0;
-            const fieldWorkers = parseFloat(document.getElementById('fieldWorkers').value) || 0;
-            const fieldTimePercent = parseFloat(document.getElementById('fieldTimePercent').value) || 0;
+            
+            // Incidentes
             const criticalIncidents = parseFloat(document.getElementById('criticalIncidents').value) || 0;
             const incidentCost = parseFloat(document.getElementById('incidentCost').value) || 0;
+            
+            // Calcular investimento recomendado
+            const recommended = calculateRecommendedPricing(numGroups, numUnits, groupComposition);
+            
+            // Usar valores recomendados ou valores já editados pelo usuário (se recalculando)
+            let setupFee = recommended.setup;
+            let monthlyFee = recommended.monthly;
+            
+            // Se já existem valores editados (recalculando), usar aqueles
+            const existingSetup = document.getElementById('editSetupFee');
+            const existingMonthly = document.getElementById('editMonthlyFee');
+            if (existingSetup && existingMonthly) {
+                setupFee = parseFloat(existingSetup.value) || setupFee;
+                monthlyFee = parseFloat(existingMonthly.value) || monthlyFee;
+            }
 
-            // CÁLCULOS BASEADOS EM METODOLOGIA DE CONSULTORIA
+            // CÁLCULOS DE BENEFÍCIOS
 
             // 1. Custo Atual da Operação
             const monthlyEmployeeCost = numEmployees * avgSalary;
-            const monthlyManagerCost = managerHours * managerHourlyCost;
-            const totalMonthlyCost = monthlyEmployeeCost + monthlyManagerCost;
-            const annualCurrentCost = totalMonthlyCost * 12;
+            const annualCurrentCost = monthlyEmployeeCost * 12;
 
-            // 2. Tempo Desperdiçado (Benchmarks de eficiência)
-            const monthlyMessages = dailyMessages * 22; // dias úteis
-            const avgTimePerMessage = 2.5; // minutos (benchmark)
+            // 2. Tempo Desperdiçado
+            const monthlyMessages = dailyMessages * 22;
+            const avgTimePerMessage = 2.5; // minutos
             const totalMonthlyMinutes = monthlyMessages * avgTimePerMessage;
             const wastedTimePercent = reworkPercent / 100;
             const wastedMinutes = totalMonthlyMinutes * wastedTimePercent;
             const wastedHours = wastedMinutes / 60;
-            const wastedCost = (wastedHours / 160) * avgSalary; // 160 horas/mês
+            const wastedCost = (wastedHours / 160) * avgSalary;
 
-            // 3. Ganhos de Eficiência com SkyBlue (baseado em estudos de automação)
-            const efficiencyGain = 0.45; // 45% de ganho de eficiência (conservador)
+            // 3. Ganhos de Eficiência (45%)
+            const efficiencyGain = 0.45;
             const timeSaved = totalMonthlyMinutes * efficiencyGain;
             const hoursSaved = timeSaved / 60;
             const monthlySavings = (hoursSaved / 160) * avgSalary;
 
-            // 4. Redução de Retrabalho
-            const reworkReduction = 0.70; // 70% de redução de retrabalho
+            // 4. Redução de Retrabalho (70%)
+            const reworkReduction = 0.70;
             const reworkSavings = wastedCost * reworkReduction;
 
-            // 5. Liberação de Gestores
-            const managerTimeSaved = managerHours * 0.60; // 60% do tempo liberado
-            const managerSavings = managerTimeSaved * managerHourlyCost;
-
-            // 6. Custo de Interrupções e Perda de Foco (Context Switching Cost)
+            // 5. Custo de Interrupções (Context Switching)
             const workDaysPerMonth = 22;
             const monthlyInterruptions = dailyInterruptions * workDaysPerMonth * managersOnCall;
             const totalRefocusMinutes = monthlyInterruptions * refocusTime;
             const refocusHoursLost = totalRefocusMinutes / 60;
             const interruptionCost = refocusHoursLost * managerProductiveHourValue;
 
-            // 7. Custo de Incidentes Críticos Perdidos
-            // Ajuste baseado na composição dos grupos (externo = maior risco)
+            // 6. Custo de Incidentes Críticos
             let incidentMultiplier = 1.0;
             if (groupComposition === 'externo') incidentMultiplier = 1.3;
             else if (groupComposition === 'misto') incidentMultiplier = 1.15;
             
             const adjustedIncidents = criticalIncidents * incidentMultiplier;
             const monthlyIncidentCost = adjustedIncidents * incidentCost;
-            const annualIncidentCost = monthlyIncidentCost * 12;
             
-            // Com SkyBlue: redução de 80% nos incidentes perdidos
+            // 80% de redução com SkyBlue
             const incidentReduction = 0.80;
             const incidentSavings = monthlyIncidentCost * incidentReduction;
 
-            // 8. Custo de Profissionais em Campo (novo)
-            // Profissionais em movimento têm maior dificuldade para gerenciar WhatsApp
-            const fieldHoursPerMonth = fieldWorkers * 160 * (fieldTimePercent / 100);
-            const fieldInefficiency = 0.25; // 25% menos eficientes ao gerenciar WhatsApp em movimento
-            const fieldCostPerHour = avgSalary / 160;
-            const fieldInefficiencyCost = fieldHoursPerMonth * fieldInefficiency * fieldCostPerHour;
-            
-            // SkyBlue reduz essa ineficiência em 70% (acesso organizado, busca rápida, priorização)
-            const fieldSavings = fieldInefficiencyCost * 0.70;
-
-            // 9. Investimento SkyBlue
-            const setupFee = 6000;
-            const monthlyFee = 500;
+            // 7. Investimento SkyBlue
             const annualFee = (monthlyFee * 12) + setupFee;
 
-            // 10. Savings Totais
-            const totalMonthlySavings = monthlySavings + reworkSavings + managerSavings + interruptionCost + incidentSavings + fieldSavings;
+            // 8. Savings Totais
+            const totalMonthlySavings = monthlySavings + reworkSavings + interruptionCost + incidentSavings;
             const totalAnnualSavings = totalMonthlySavings * 12;
 
-            // 11. ROI
+            // 9. ROI
             const netAnnualBenefit = totalAnnualSavings - annualFee;
             const roi = ((netAnnualBenefit / annualFee) * 100).toFixed(0);
-            const paybackMonths = (annualFee / totalMonthlySavings).toFixed(1);
+            const paybackMonths = annualFee > 0 ? (annualFee / totalMonthlySavings).toFixed(1) : 0;
 
-            // 12. Produtividade Recuperada
-            const hoursRecovered = (hoursSaved + managerTimeSaved + refocusHoursLost + (fieldInefficiencyCost * 0.70 / fieldCostPerHour)).toFixed(0);
+            // 10. Produtividade Recuperada
+            const hoursRecovered = (hoursSaved + refocusHoursLost).toFixed(0);
             const fteRecovered = (hoursRecovered / 160).toFixed(1);
+
+            // Armazenar dados para PDF e recálculo
+            window.calculationData = {
+                businessName,
+                contactName,
+                businessType,
+                numUnits,
+                numGroups,
+                groupComposition,
+                setupFee,
+                monthlyFee,
+                recommendedSetup: recommended.setup,
+                recommendedMonthly: recommended.monthly,
+                annualFee,
+                totalMonthlySavings,
+                totalAnnualSavings,
+                netAnnualBenefit,
+                roi,
+                paybackMonths,
+                monthlySavings,
+                reworkSavings,
+                interruptionCost,
+                incidentSavings,
+                hoursRecovered,
+                fteRecovered,
+                hoursSaved,
+                refocusHoursLost,
+                managersOnCall,
+                dailyInterruptions,
+                refocusTime,
+                annualCurrentCost
+            };
 
             // Renderizar Resultados
             const resultsHTML = `
@@ -778,10 +803,41 @@
                     <div class="metric-detail">R$ ${totalMonthlySavings.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})} por mês</div>
                 </div>
 
-                <div class="metric-card">
-                    <div class="metric-label">Investimento Anual SkyBlue</div>
-                    <div class="metric-value">R$ ${annualFee.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</div>
-                    <div class="metric-detail">Setup: R$ 6.000 + R$ 500/mês</div>
+                <div style="background: #fff3e0; padding: 25px; border-radius: 12px; margin: 20px 0; border: 2px solid #ff9800;">
+                    <h3 style="color: #e65100; margin-bottom: 15px; font-size: 1.2em;">💰 Investimento SkyBlue (Editável)</h3>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label style="display: block; font-weight: 600; color: #333; margin-bottom: 5px; font-size: 0.9em;">
+                                Setup (Implantação) - R$
+                            </label>
+                            <input type="number" id="editSetupFee" value="${setupFee}" min="0" step="100" 
+                                   style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1.1em;">
+                            <div style="font-size: 0.8em; color: #666; margin-top: 3px;">
+                                Sugerido: R$ ${recommended.setup.toLocaleString('pt-BR')}
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-weight: 600; color: #333; margin-bottom: 5px; font-size: 0.9em;">
+                                Mensalidade - R$
+                            </label>
+                            <input type="number" id="editMonthlyFee" value="${monthlyFee}" min="0" step="50" 
+                                   style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1.1em;">
+                            <div style="font-size: 0.8em; color: #666; margin-top: 3px;">
+                                Sugerido: R$ ${recommended.monthly.toLocaleString('pt-BR')}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="calculateROI()" 
+                            style="width: 100%; padding: 12px; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; border: none; border-radius: 8px; font-size: 1em; font-weight: 600; cursor: pointer;">
+                        🔄 Recalcular com Novos Valores
+                    </button>
+                    
+                    <div style="margin-top: 12px; padding: 12px; background: white; border-radius: 8px; font-size: 0.9em;">
+                        <strong>Investimento Anual Total:</strong> R$ ${annualFee.toLocaleString('pt-BR', {minimumFractionDigits: 0})}
+                        <br><small style="color: #666;">(Setup + 12 mensalidades)</small>
+                    </div>
                 </div>
 
                 <div class="metric-card">
@@ -819,24 +875,11 @@
                         <br><small>Sistema organizado evita informações perdidas e solicitações redundantes</small>
                     </div>
 
-                    <div class="benefit-item">
-                        <strong>👔 Liberação de Tempo de Diretoria</strong>
-                        ${managerTimeSaved.toFixed(0)} horas liberadas = R$ ${managerSavings.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
-                        <br><small>Diretores focam em decisões estratégicas, não em triagem de mensagens</small>
-                    </div>
-
                     <div class="benefit-item" style="border-left: 4px solid #ff6b6b;">
                         <strong>🧠 Recuperação de Foco e Eliminação de Interrupções</strong>
                         ${refocusHoursLost.toFixed(0)} horas de foco recuperadas = R$ ${interruptionCost.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês
                         <br><small>${managersOnCall} gestores × ${dailyInterruptions} interrupções/dia × ${refocusTime} min para retomar foco</small>
-                        <br><small style="color: #d32f2f; font-weight: 600;">⚠️ Context switching cost: Gestores ficam "presos" ao celular ao invés de focarem na operação presencial</small>
-                    </div>
-
-                    <div class="benefit-item" style="border-left: 4px solid #ff9800;">
-                        <strong>🚗 Eficiência de Profissionais em Campo/Movimento</strong>
-                        R$ ${fieldSavings.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}/mês economizados
-                        <br><small>${fieldWorkers} profissionais em campo (${fieldTimePercent}% do tempo em movimento)</small>
-                        <br><small style="color: #e65100; font-weight: 600;">⚠️ Gerenciar WhatsApp enquanto em trânsito/campo é 25% menos eficiente. SkyBlue organiza e prioriza, reduzindo essa ineficiência em 70%</small>
+                        <br><small style="color: #d32f2f; font-weight: 600;">⚠️ Gestores "presos" ao celular voltam a focar na operação presencial</small>
                     </div>
 
                     <div class="benefit-item" style="border-left: 4px solid #ff6b6b;">
@@ -850,69 +893,57 @@
                     <div class="benefit-item">
                         <strong>📊 Capacidade Recuperada Total</strong>
                         Equivalente a ${fteRecovered} funcionário(s) em tempo integral por mês
-                        <br><small>Tempo que pode ser realocado para atividades de maior valor agregado</small>
-                        <br><small style="color: #1565c0; font-weight: 600;">💡 Baseado em ${numUnits} unidades operacionais com ${numGroups} grupos ativos</small>
+                        <br><small>Baseado em ${numUnits} unidades operacionais com ${numGroups} grupos ativos</small>
                     </div>
                 </div>
 
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="calculate-btn" onclick="generatePDF()" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                        📄 Gerar Proposta em PDF
+                    </button>
+                </div>
+
                 <div class="intangible-section">
-                    <h3>🌟 Benefícios Intangíveis (Alto Impacto)</h3>
+                    <h3>🌟 Benefícios Intangíveis (Alto Impacto Estratégico)</h3>
                     
                     <div class="intangible-item">
                         <strong>🎯 Libertação dos Gestores: "Olho no SkyBlue, Não no WhatsApp"</strong>
-                        <p><em>Este é o diferencial crítico:</em> Com ${numUnits} unidades operacionais e ${managersOnCall} gestores, cada um pode finalmente LARGAR o celular. Uma única interface priorizada substitui alternar entre ${numGroups} grupos. <strong>Gestores voltam a estar presentes na operação, atendendo clientes, liderando equipes, resolvendo situações em tempo real.</strong></p>
-                        <p style="color: #d32f2f; font-weight: 600; margin-top: 8px;">⚠️ Problema Atual: Gestores precisam estar com celular na mão o tempo todo, dividindo atenção entre piso de venda/operação e grupos do WhatsApp. Isso gera stress, reduz qualidade do atendimento presencial e causa burnout.</p>
+                        <p><em>Este é o diferencial crítico:</em> Com ${numUnits} unidades e ${managersOnCall} gestores, cada um pode finalmente LARGAR o celular. Uma única interface priorizada substitui alternar entre ${numGroups} grupos. <strong>Gestores voltam a estar presentes na operação, atendendo clientes, liderando equipes.</strong></p>
                     </div>
 
                     <div class="intangible-item">
-                        <strong>🚗 Coordenação de Operações Distribuídas</strong>
-                        <p>Com ${fieldWorkers} profissionais circulando em campo/entre unidades (${fieldTimePercent}% do tempo em movimento), coordenar via múltiplos grupos do WhatsApp é caótico. SkyBlue centraliza comunicação, prioriza urgências e permite que profissionais em campo acessem apenas o essencial, sem precisar ler centenas de mensagens irrelevantes.</p>
-                        <p style="margin-top: 8px;"><strong>Operações multi-site</strong> se beneficiam exponencialmente: informação certa chega à pessoa certa no momento certo, independente de onde esteja.</p>
+                        <strong>🧠 Fim da Fadiga Cognitiva</strong>
+                        <p>Pesquisas mostram que cada interrupção leva 5-23 minutos para recuperar foco. Com dezenas de interrupções diárias, profissionais operam em modo "sempre parcialmente focado". SkyBlue elimina 80% dessas interrupções.</p>
                     </div>
 
                     <div class="intangible-item">
-                        <strong>🧠 Eliminação da Fadiga Cognitiva (Context Switching)</strong>
-                        <p>Pesquisas da UC Irvine mostram que cada interrupção leva 5-23 minutos para recuperar o foco total. Com dezenas de interrupções diárias, profissionais operam em modo "sempre parcialmente focado". SkyBlue elimina 80% dessas interrupções através de priorização inteligente.</p>
+                        <strong>📊 Decisões Baseadas em Dados (Valor Estratégico para Diretoria)</strong>
+                        <p>Gráficos e funcionalidade "Fale com seus Dados" (chat com o banco de dados) revelam padrões invisíveis. Diretoria pode perguntar: "Quais ${businessType === 'varejo' ? 'lojas' : businessType === 'condominio' ? 'condomínios' : 'unidades'} têm mais reclamações?" ou "Qual horário tem mais demandas?" e receber respostas instantâneas. <strong>Transforma caos em inteligência estratégica.</strong></p>
                     </div>
 
                     <div class="intangible-item">
-                        <strong>📈 Melhoria no Tempo de Resposta Seletiva</strong>
-                        <p>Não se trata de responder tudo mais rápido, mas sim de <strong>responder O QUE IMPORTA imediatamente</strong>. Cliente VIP com problema? Incêndio na ${businessType === 'varejo' ? 'loja' : businessType === 'restaurante' ? 'pizzaria' : businessType === 'farmacia' ? 'farmácia' : 'unidade'}? Sistema fora do ar? SkyBlue prioriza automaticamente. ${groupComposition === 'externo' || groupComposition === 'misto' ? 'Especialmente crítico quando grupos incluem clientes e fornecedores.' : ''}</p>
+                        <strong>😊 Satisfação de Clientes ${groupComposition === 'externo' || groupComposition === 'misto' ? '(CRÍTICO com grupos externos)' : ''}</strong>
+                        <p>Sistema rastreia histórico completo. Clientes não precisam repetir solicitações. ${groupComposition === 'externo' ? 'Com grupos de clientes/fornecedores, isso é VITAL para manter contratos e reputação.' : groupComposition === 'misto' ? 'Em grupos mistos, a imagem profissional impacta diretamente vendas.' : 'Profissionalismo que diferencia da concorrência.'}</p>
                     </div>
 
                     <div class="intangible-item">
-                        <strong>😊 Satisfação e Retenção de Clientes</strong>
-                        <p>Sistema rastreia histórico completo. Clientes não precisam repetir solicitações. Demonstra profissionalismo e organização. ${groupComposition === 'externo' ? 'Com grupos externos, isso é vital para manter reputação e contratos.' : groupComposition === 'misto' ? 'Em grupos mistos, a imagem profissional impacta diretamente vendas e renovações.' : 'Mesmo internamente, organização melhora moral da equipe.'}</p>
+                        <strong>🛡️ Compliance e Redução de Risco</strong>
+                        <p>Histórico organizado de TODAS as comunicações. Essencial para auditorias, disputas trabalhistas, reclamações. Quem disse o quê, quando, e qual foi o follow-up.</p>
                     </div>
 
                     <div class="intangible-item">
-                        <strong>🎯 Tomada de Decisão Baseada em Dados</strong>
-                        <p>Gráficos revelam padrões invisíveis: quais ${businessType === 'varejo' ? 'lojas' : businessType === 'condominio' ? 'condomínios' : businessType === 'farmacia' ? 'farmácias' : businessType === 'restaurante' ? 'restaurantes' : 'unidades'} demandam mais, problemas recorrentes, períodos de pico, pessoas que mais solicitam. Permite gestão proativa ao invés de reativa em ${numUnits} locais.</p>
+                        <strong>💼 Qualidade de Vida = Retenção de Talentos</strong>
+                        <p><strong>Redução drástica do burnout.</strong> Profissionais não vivem mais com ansiedade de "será que perdi algo importante?". Fim de semana SEM precisar checar grupos. ${businessType === 'varejo' || businessType === 'restaurante' ? 'Crítico em setores com alta rotatividade.' : ''}</p>
                     </div>
 
                     <div class="intangible-item">
-                        <strong>🛡️ Redução de Risco e Compliance</strong>
-                        <p>Histórico organizado e pesquisável de todas comunicações. Essencial para auditorias, disputas trabalhistas, reclamações de clientes. Quem disse o quê, quando, e qual foi o follow-up. ${groupComposition === 'externo' ? 'CRÍTICO quando comunicação externa pode virar disputa legal.' : ''}</p>
+                        <strong>📱 Escalabilidade Sustentável</strong>
+                        <p>Capacidade de adicionar ${(numUnits * 1.5).toFixed(0)}-${(numUnits * 2).toFixed(0)} ${businessType === 'varejo' ? 'lojas' : businessType === 'condominio' ? 'condomínios' : businessType === 'restaurante' ? 'unidades' : businessType === 'farmacia' ? 'farmácias' : businessType === 'franquia' ? 'franquias' : 'pontos'} sem precisar contratar proporcionalmente. Crescimento com mesma estrutura.</p>
                     </div>
 
                     <div class="intangible-item">
-                        <strong>💼 Qualidade de Vida e Retenção de Talentos</strong>
-                        <p><strong>Redução drástica do burnout.</strong> Profissionais não precisam mais viver com ansiedade de "será que perdi alguma mensagem importante?". Fim de semana SEM precisar checar grupos. Vida pessoal protegida. ${businessType === 'varejo' || businessType === 'restaurante' ? 'Especialmente importante no varejo/alimentação onde turnover é alto e gestores são escassos.' : ''}</p>
-                    </div>
-
-                    <div class="intangible-item">
-                        <strong>📱 Escalabilidade sem Aumentar Headcount</strong>
-                        <p>Capacidade de adicionar mais ${businessType === 'varejo' ? 'lojas' : businessType === 'condominio' ? 'condomínios' : businessType === 'restaurante' ? 'unidades' : businessType === 'farmacia' ? 'farmácias' : businessType === 'franquia' ? 'franquias' : 'pontos de operação'} (ex: ${(numUnits * 1.5).toFixed(0)}-${(numUnits * 2).toFixed(0)} unidades) sem precisar contratar proporcionalmente. Crescimento sustentável com mesma estrutura. ${businessType === 'franquia' ? 'Essencial para franqueadoras que expandem rapidamente.' : ''}</p>
-                    </div>
-
-                    <div class="intangible-item">
-                        <strong>🔍 Accountability e Transparência Operacional</strong>
-                        <p>Atribuição de mensagens rastreia responsabilidades. Gestão sabe EXATAMENTE quem está trabalhando em quê, quais demandas estão pendentes, quais foram resolvidas. Fim da "caixa preta" do WhatsApp em operações multi-site.</p>
-                    </div>
-
-                    <div class="intangible-item">
-                        <strong>🚀 Vantagem Competitiva: Profissionalização</strong>
-                        <p>Enquanto concorrentes ainda usam WhatsApp caótico, sua empresa opera como multinacional com processos organizados. Cliente percebe a diferença. Colaboradores sentem orgulho de trabalhar em empresa organizada. ${businessType === 'franquia' ? 'Franqueados valorizam esse suporte profissional.' : ''}</p>
+                        <strong>🚀 Vantagem Competitiva</strong>
+                        <p>Enquanto concorrentes ainda usam WhatsApp caótico, sua empresa opera com processos organizados. Cliente percebe a diferença. Colaboradores sentem orgulho.</p>
                     </div>
                 </div>
 
@@ -949,6 +980,217 @@
 
             document.getElementById('results').innerHTML = resultsHTML;
             document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function generatePDF() {
+            if (!window.calculationData) {
+                alert('Por favor, calcule os benefícios primeiro!');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const data = window.calculationData;
+            const today = new Date().toLocaleDateString('pt-BR');
+            
+            // Configurações
+            const margin = 20;
+            const pageWidth = doc.internal.pageSize.width;
+            const pageHeight = doc.internal.pageSize.height;
+            let yPos = margin;
+            
+            // Cabeçalho
+            doc.setFillColor(30, 60, 114);
+            doc.rect(0, 0, pageWidth, 40, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.text('PROPOSTA COMERCIAL', pageWidth / 2, 15, { align: 'center' });
+            
+            doc.setFontSize(14);
+            doc.text('SkyBlue WhatsApp Intelligence', pageWidth / 2, 25, { align: 'center' });
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text(today, pageWidth / 2, 33, { align: 'center' });
+            
+            yPos = 50;
+            
+            // Dados do Cliente
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('CLIENTE', margin, yPos);
+            yPos += 8;
+            
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Empresa: ${data.businessName}`, margin, yPos);
+            yPos += 6;
+            if (data.contactName) {
+                doc.text(`Contato: ${data.contactName}`, margin, yPos);
+                yPos += 6;
+            }
+            doc.text(`Unidades: ${data.numUnits} | Grupos WhatsApp: ${data.numGroups}`, margin, yPos);
+            yPos += 12;
+            
+            // Linha divisória
+            doc.setDrawColor(102, 126, 234);
+            doc.setLineWidth(0.5);
+            doc.line(margin, yPos, pageWidth - margin, yPos);
+            yPos += 10;
+            
+            // ROI Destacado
+            doc.setFillColor(102, 126, 234);
+            doc.roundedRect(margin, yPos, pageWidth - 2 * margin, 30, 3, 3, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('RETORNO SOBRE INVESTIMENTO', pageWidth / 2, yPos + 10, { align: 'center' });
+            
+            doc.setFontSize(24);
+            doc.text(`${data.roi}%`, pageWidth / 2, yPos + 22, { align: 'center' });
+            yPos += 40;
+            
+            // Investimento
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('INVESTIMENTO', margin, yPos);
+            yPos += 8;
+            
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Setup (Implantação): R$ ${data.setupFee.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, margin, yPos);
+            yPos += 6;
+            doc.text(`Mensalidade: R$ ${data.monthlyFee.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, margin, yPos);
+            yPos += 6;
+            doc.setFont(undefined, 'bold');
+            doc.text(`Investimento Anual (Ano 1): R$ ${data.annualFee.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, margin, yPos);
+            yPos += 12;
+            
+            // Benefícios
+            doc.setFontSize(14);
+            doc.text('BENEFÍCIOS ANUAIS', margin, yPos);
+            yPos += 8;
+            
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'normal');
+            doc.text(`Economia Total: R$ ${data.totalAnnualSavings.toLocaleString('pt-BR', {minimumFractionDigits: 0})}`, margin, yPos);
+            yPos += 6;
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(40, 167, 69);
+            doc.text(`Benefício Líquido: R$ ${data.netAnnualBenefit.toLocaleString('pt-BR', {minimumFractionDigits: 0})}`, margin, yPos);
+            doc.setTextColor(0, 0, 0);
+            yPos += 6;
+            doc.setFont(undefined, 'normal');
+            doc.text(`Payback: ${data.paybackMonths} meses`, margin, yPos);
+            yPos += 12;
+            
+            // Benefícios Detalhados
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('DETALHAMENTO DOS BENEFÍCIOS MENSAIS', margin, yPos);
+            yPos += 8;
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            
+            const benefits = [
+                { label: 'Ganho de Eficiência Operacional', value: data.monthlySavings },
+                { label: 'Eliminação de Retrabalho', value: data.reworkSavings },
+                { label: 'Recuperação de Foco (gestores)', value: data.interruptionCost },
+                { label: 'Prevenção de Incidentes Críticos', value: data.incidentSavings }
+            ];
+            
+            benefits.forEach(benefit => {
+                if (yPos > pageHeight - 30) {
+                    doc.addPage();
+                    yPos = margin;
+                }
+                doc.text(`• ${benefit.label}:`, margin + 5, yPos);
+                doc.text(`R$ ${benefit.value.toLocaleString('pt-BR', {minimumFractionDigits: 0})}`, pageWidth - margin - 35, yPos);
+                yPos += 6;
+            });
+            
+            yPos += 6;
+            doc.setFont(undefined, 'bold');
+            doc.text(`Capacidade Recuperada: ${data.fteRecovered} FTE (funcionários em tempo integral equivalente)`, margin, yPos);
+            yPos += 12;
+            
+            // Nova página para benefícios intangíveis
+            doc.addPage();
+            yPos = margin;
+            
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('BENEFÍCIOS INTANGÍVEIS (ALTO IMPACTO)', margin, yPos);
+            yPos += 10;
+            
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            
+            const intangibles = [
+                'Libertação dos Gestores: "Olho no SkyBlue, Não no WhatsApp"',
+                `${data.managersOnCall} gestores podem largar o celular e voltar a focar na operação presencial`,
+                '',
+                'Eliminação da Fadiga Cognitiva',
+                'Redução de 80% das interrupções através de priorização inteligente',
+                '',
+                'Satisfação e Retenção de Clientes',
+                'Histórico completo evita que clientes precisem repetir solicitações',
+                '',
+                'Tomada de Decisão Baseada em Dados',
+                'Gráficos revelam padrões, problemas recorrentes e permitem gestão proativa',
+                '',
+                'Redução de Risco e Compliance',
+                'Histórico organizado essencial para auditorias e disputas',
+                '',
+                'Qualidade de Vida e Retenção de Talentos',
+                'Redução drástica do burnout. Fim de semana sem precisar checar grupos',
+                '',
+                'Escalabilidade',
+                `Capacidade de adicionar ${Math.round(data.numUnits * 0.5)}-${Math.round(data.numUnits)} novas unidades sem contratar proporcionalmente`,
+                '',
+                'Vantagem Competitiva',
+                'Opera como multinacional enquanto concorrentes usam WhatsApp caótico'
+            ];
+            
+            intangibles.forEach(line => {
+                if (yPos > pageHeight - 20) {
+                    doc.addPage();
+                    yPos = margin;
+                }
+                if (line === '') {
+                    yPos += 3;
+                } else if (line.includes(':')) {
+                    doc.setFont(undefined, 'bold');
+                    doc.text(`• ${line}`, margin + 3, yPos);
+                    doc.setFont(undefined, 'normal');
+                    yPos += 5;
+                } else {
+                    doc.text(`  ${line}`, margin + 7, yPos);
+                    yPos += 4.5;
+                }
+            });
+            
+            // Rodapé final
+            yPos = pageHeight - 25;
+            doc.setFillColor(30, 60, 114);
+            doc.rect(0, yPos, pageWidth, 25, 'F');
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.text('SkyBlue - Transformando WhatsApp em Inteligência de Negócios', pageWidth / 2, yPos + 10, { align: 'center' });
+            doc.setFontSize(8);
+            doc.text('Esta proposta foi gerada pela Calculadora de ROI SkyBlue', pageWidth / 2, yPos + 17, { align: 'center' });
+            
+            // Salvar PDF
+            const filename = `Proposta_SkyBlue_${data.businessName.replace(/ /g, '_')}_${today.replace(/\//g, '-')}.pdf`;
+            doc.save(filename);
         }
     </script>
 </body>
