@@ -812,6 +812,7 @@
                                 Setup (Implantação) - R$
                             </label>
                             <input type="number" id="editSetupFee" value="${setupFee}" min="0" step="100" 
+                                   onchange="updateDisplayInvestment()"
                                    style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1.1em;">
                             <div style="font-size: 0.8em; color: #666; margin-top: 3px;">
                                 Sugerido: R$ ${recommended.setup.toLocaleString('pt-BR')}
@@ -822,6 +823,7 @@
                                 Mensalidade - R$
                             </label>
                             <input type="number" id="editMonthlyFee" value="${monthlyFee}" min="0" step="50" 
+                                   onchange="updateDisplayInvestment()"
                                    style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1.1em;">
                             <div style="font-size: 0.8em; color: #666; margin-top: 3px;">
                                 Sugerido: R$ ${recommended.monthly.toLocaleString('pt-BR')}
@@ -850,7 +852,7 @@
                     <h3 style="color: #1e3c72; margin-bottom: 20px;">Comparação: Ano 1 vs Situação Atual</h3>
                     <div>
                         <p style="margin-bottom: 5px; font-weight: 600;">Custo Atual (sem SkyBlue)</p>
-                        <div class="bar" style="width: 100%;">R$ ${annualCurrentCost.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</div>
+                        <div class="bar" style="width: 100%; background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);">R$ ${annualCurrentCost.toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</div>
                     </div>
                     <div style="margin-top: 20px;">
                         <p style="margin-bottom: 5px; font-weight: 600;">Custo com SkyBlue</p>
@@ -949,14 +951,14 @@
 
                 <div class="pricing-section">
                     <h3 style="color: #1565c0; margin-bottom: 15px;">💡 Análise de Precificação</h3>
-                    <p><strong>Investimento Atual:</strong> R$ 6.000 (setup) + R$ 500/mês</p>
+                    <p><strong>Investimento Recomendado:</strong> <span id="displayInvestment">R$ ${setupFee.toLocaleString('pt-BR')} (setup) + R$ ${monthlyFee.toLocaleString('pt-BR')}/mês</span></p>
                     <p style="margin-top: 10px;"><strong>Valor Justo de Mercado:</strong> Para uma operação do seu porte:</p>
                     <ul style="margin-left: 20px; margin-top: 10px;">
-                        <li>Setup: R$ ${(numGroups * 50).toLocaleString('pt-BR')} - R$ ${(numGroups * 80).toLocaleString('pt-BR')}</li>
-                        <li>Mensalidade: R$ ${(numGroups * 8).toLocaleString('pt-BR')} - R$ ${(numGroups * 15).toLocaleString('pt-BR')}</li>
+                        <li>Setup: R$ ${recommended.setup.toLocaleString('pt-BR')} - R$ ${(recommended.setup * 1.5).toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</li>
+                        <li>Mensalidade: R$ ${recommended.monthly.toLocaleString('pt-BR')} - R$ ${(recommended.monthly * 1.5).toLocaleString('pt-BR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</li>
                     </ul>
                     <p style="margin-top: 15px; color: #2e7d32; font-weight: 600;">
-                        ✅ Mesmo com precificação de mercado, o ROI se manteria altamente positivo (150-300%).
+                        ✅ Mesmo com precificação no topo do mercado, o ROI se manteria positivo e atrativo.
                     </p>
                 </div>
 
@@ -980,6 +982,16 @@
 
             document.getElementById('results').innerHTML = resultsHTML;
             document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function updateDisplayInvestment() {
+            const setup = parseFloat(document.getElementById('editSetupFee').value) || 0;
+            const monthly = parseFloat(document.getElementById('editMonthlyFee').value) || 0;
+            
+            const displayElement = document.getElementById('displayInvestment');
+            if (displayElement) {
+                displayElement.textContent = `R$ ${setup.toLocaleString('pt-BR')} (setup) + R$ ${monthly.toLocaleString('pt-BR')}/mês`;
+            }
         }
 
         function generatePDF() {
